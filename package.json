@@ -1,0 +1,11 @@
+{
+  "name": "todo-speckit",
+  "private": true,
+  "description": "Spec-driven todo app — monorepo root (deploy scripts orchestrate frontend/ and backend/)",
+  "scripts": {
+    "build:frontend": "npm run build --prefix frontend",
+    "bundle:frontend": "npm run bundle --prefix frontend",
+    "bundle:backend": "npm run bundle --prefix backend",
+    "bundle": "npm run bundle:backend && npm run build:frontend && npm run bundle:frontend"
+  }
+}

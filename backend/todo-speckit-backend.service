@@ -1,0 +1,13 @@
+[Unit]
+Description=Todo Speckit Node.js API
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/nodeapps/todo-speckit-backend/
+ExecStart=npm run start
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

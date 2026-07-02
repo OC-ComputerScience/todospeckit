@@ -1,0 +1,24 @@
+---
+description: Automated test standards — Jest (backend) and Vitest (frontend).
+globs: "**/*.test.js, **/*.spec.js, **/tests/**/*"
+---
+# Quality Assurance & Test Verification
+
+Every feature in `features/` must name its test coverage. Ghost tests are forbidden.
+
+## Backend (Jest + supertest)
+*   Import the Express `app` export (server does not listen in `NODE_ENV=test`).
+*   Integration-test each endpoint with supertest.
+*   Per success case, also test:
+    1.  Missing/invalid input → `400` with `{ message }`.
+    2.  Missing/expired token → `401`.
+    3.  Another user's resource → `404` (scoped access).
+*   Use a dedicated test database or transaction rollback.
+
+## Frontend (Vitest + @vue/test-utils)
+*   Mount views/components with reactive state.
+*   Assert client-side validation blocks submit before API call.
+*   Assert loading and error UI states on promise resolve/reject.
+
+## SDD Link
+Each Gherkin scenario in `features/sprint-*.md` maps to at least one `describe`/`it` block. No `expect(true).toBe(true)`.
