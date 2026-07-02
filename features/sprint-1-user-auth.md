@@ -101,7 +101,8 @@ Sprint 1 establishes identity; Sprints 2–3 enforce per-user data boundaries.
 ### [View: Dashboard placeholder] — route name `home`
 *   Minimal protected landing page shown after successful login (full dashboard built in Sprint 2).
 *   Displays a welcome message using the user's first name.
-*   Sign out action available (can live on placeholder page until `MenuBar` exists).
+*   **No `MenuBar`** in Sprint 1 — auth pages and this placeholder use a full-screen layout only.
+*   **Sign out** button on this page (standalone `v-btn`; removed from page content when `MenuBar` is added in Sprint 2).
 
 ---
 

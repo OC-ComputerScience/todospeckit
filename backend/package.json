@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "bundle": "rm -rf deploy && mkdir deploy && cp -r app server.js package.json package-lock.json todo-speckit-backend.service .env deploy"
   },
   "keywords": ["node.js", "express", "sequelize"],
@@ -22,5 +24,9 @@
     "sequelize": "^6.37.5",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }

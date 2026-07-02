@@ -6,6 +6,9 @@
     "build:frontend": "npm run build --prefix frontend",
     "bundle:frontend": "npm run bundle --prefix frontend",
     "bundle:backend": "npm run bundle --prefix backend",
-    "bundle": "npm run bundle:backend && npm run build:frontend && npm run bundle:frontend"
+    "bundle": "npm run bundle:backend && npm run build:frontend && npm run bundle:frontend",
+    "test": "npm run test --prefix backend && npm run test --prefix frontend",
+    "test:backend": "npm run test --prefix backend",
+    "test:frontend": "npm run test --prefix frontend"
   }
 }

@@ -1,44 +1,38 @@
 ---
-description: Vuetify 3 design system — layout, components, and view UI states (NO Tailwind).
+description: Vuetify 4 design system — layout, components, and view UI states (NO Tailwind).
 globs: "frontend/**/*.vue, frontend/src/plugins/**/*"
 ---
-
 # UI Style System
 
-Vuetify 3 only — no Tailwind, no Options API.
+Vuetify 4 only — no Tailwind, no Options API.
 
 ## Stack
-
-- Vue 3 `<script setup>` exclusively.
-- Vuetify 4 via `vite-plugin-vuetify` (`autoImport: false`).
-- `@mdi/font` icons; custom theme in `plugins/vuetify.js`.
+*   Vue 3 `<script setup>` exclusively.
+*   Vuetify 4 via `vite-plugin-vuetify` (`autoImport: false`).
+*   `@mdi/font` icons; custom theme in `plugins/vuetify.js`.
 
 ## App Shell (`App.vue`)
-
 ```vue
 <v-app>
   <MenuBar />
   <v-main><router-view /></v-main>
 </v-app>
 ```
-
-Hide `MenuBar` on login route if the spec requires a full-screen auth page.
+Hide `MenuBar` on login and register routes (Sprint 1). Introduce `MenuBar` in Sprint 2.
 
 ## Form Components
-
-- Reusable forms use `v-model` via `defineProps({ modelValue })` + `emit("update:modelValue")`.
-- Vuetify inline rules: `[(v) => !!v?.trim() || "Required"]`.
-- Add/Edit/View modes via props (`readOnly`, `isAddMode`) — one form component, multiple views.
+*   Reusable forms use `v-model` via `defineProps({ modelValue })` + `emit("update:modelValue")`.
+*   Vuetify inline rules: `[(v) => !!v?.trim() || "Required"]`.
+*   Add/Edit/View modes via props (`readOnly`, `isAddMode`) — one form component, multiple views.
 
 ## Vuetify Defaults
-
-- Layout: `<v-container>`, `<v-row>`, `<v-col cols="12" md="6">`.
-- Inputs: `<v-text-field density="comfortable">`.
-- Buttons: `<v-btn color="primary" variant="elevated" :loading="loading">`.
-- Cards: `<v-card elevation="2">` with title/text/actions slots.
-- Errors: `<v-alert type="error" density="compact">`.
-- Theme color tokens only in components — hex values belong in `plugins/vuetify.js`.
+*   Layout: `<v-container>`, `<v-row>`, `<v-col cols="12" md="6">`.
+*   Inputs: `<v-text-field density="comfortable">`.
+*   Buttons: `<v-btn color="primary" variant="elevated" :loading="loading">`.
+*   Cards: `<v-card elevation="2">` with title/text/actions slots.
+*   Errors: `<v-alert type="error" density="compact">`.
+*   Dialogs: `<v-dialog>` for create/rename flows (list and todo edit).
+*   Theme color tokens only in components — hex values belong in `plugins/vuetify.js`.
 
 ## View States
-
 Every data-driven view handles: **loading** (`:loading` or spinner), **empty** (zero-length message), **error** (ref + alert).

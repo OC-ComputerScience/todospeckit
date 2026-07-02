@@ -112,7 +112,9 @@ Extends the Sprint 2 dashboard. Sidebar behavior is unchanged; **main panel** is
 **Main panel**
 *   Heading shows the selected list name, or **"Select a list"** when none is selected.
 *   Text field + **Add** button to create a new todo in the selected list (disabled when no list is selected).
-*   Todo rows: checkbox (`completed`), title text, **edit** and **delete** actions.
+*   Todo rows: checkbox (`completed`), title text, **edit** icon, **delete** icon.
+*   **Edit:** clicking the edit icon opens a `<v-dialog>` with a `<v-text-field>` pre-filled with the current title; **Save** / **Cancel**.
+*   **Delete:** clicking delete opens a confirmation `<v-dialog>`.
 *   Completed todos show struck-through or muted title styling.
 *   **Empty state:** **"No todos in this list yet."** when the selected list has zero todos.
 *   **Loading state:** skeleton or progress indicator while todos are fetching.

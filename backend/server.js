@@ -10,17 +10,19 @@ const syncOptions =
     ? { alter: true }
     : {};
 
-db.sequelize
-  .sync(syncOptions)
-  .then(() => {
-    if (syncOptions.alter) {
-      logger.info("Database sync completed with alter: true.");
-    }
-  })
-  .catch((err) => {
-    logger.error(`Database sync failed: ${err.message}`);
-    process.exit(1);
-  });
+if (process.env.NODE_ENV !== "test") {
+  db.sequelize
+    .sync(syncOptions)
+    .then(() => {
+      if (syncOptions.alter) {
+        logger.info("Database sync completed with alter: true.");
+      }
+    })
+    .catch((err) => {
+      logger.error(`Database sync failed: ${err.message}`);
+      process.exit(1);
+    });
+}
 
 const app = express();
 

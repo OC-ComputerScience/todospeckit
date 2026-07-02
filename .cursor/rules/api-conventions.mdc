@@ -21,7 +21,7 @@ globs: "backend/**/*, **/*.routes.js, **/*.controller.js, **/*.model.js"
 
 ## Route Layout
 *   `app/routes/index.js` — central router registering each `*.routes.js`.
-*   Auth at mount root: `POST /login`, `POST /logout`, `POST /reset-password` (dev only).
+*   Auth at mount root: `POST /register`, `POST /login`, `POST /logout`, `POST /reset-password` (dev only).
 *   Resource routes: `router.use("/lists", ListRoutes)` etc.
 *   Nested children on parent router: `GET /lists/:listId/todos`.
 

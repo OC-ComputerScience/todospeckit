@@ -13,7 +13,7 @@ Every feature in `features/` must name its test coverage. Ghost tests are forbid
     1.  Missing/invalid input → `400` with `{ message }`.
     2.  Missing/expired token → `401`.
     3.  Another user's resource → `404` (scoped access).
-*   Use a dedicated test database or transaction rollback.
+*   Use a dedicated test database (`todospeckit-db`); copy `backend/.env.test.example` to `backend/.env.test`.
 
 ## Frontend (Vitest + @vue/test-utils)
 *   Mount views/components with reactive state.

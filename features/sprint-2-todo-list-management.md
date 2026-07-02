@@ -108,9 +108,9 @@ Replaces the Sprint 1 placeholder home page.
 
 **Sidebar**
 *   Heading: **My Lists**
-*   `[+ New List]` button opens a dialog with a name field.
+*   `[+ New List]` button opens a `<v-dialog>` with a name `<v-text-field>` and **Create** / **Cancel** actions.
 *   Clickable list of list names; active list is visually highlighted.
-*   Each list row has actions to **rename** and **delete** (delete requires confirmation dialog).
+*   Each list row has a **rename** icon (opens a `<v-dialog>` pre-filled with the current name; **Save** / **Cancel**) and a **delete** icon (opens a confirmation `<v-dialog>`).
 *   **Empty state:** **"No lists yet. Create your first list."** when the user has zero lists.
 
 **Main panel (placeholder — Sprint 2)**
@@ -120,7 +120,8 @@ Replaces the Sprint 1 placeholder home page.
 *   **Error state:** `<v-alert type="error">` for API failures.
 
 **App chrome**
-*   `MenuBar` visible with the signed-in user's name and **Sign out** (from Sprint 1).
+*   Introduce `MenuBar` in this sprint (not present in Sprint 1): signed-in user's name and **Sign out**.
+*   `MenuBar` is hidden on login and register routes.
 
 ---
 
