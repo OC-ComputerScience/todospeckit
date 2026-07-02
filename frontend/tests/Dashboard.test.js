@@ -1,0 +1,165 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { flushPromises } from "@vue/test-utils";
+import Dashboard from "../src/views/Dashboard.vue";
+import listServices from "../src/services/listServices.js";
+import { mountWithPlugins } from "./testUtils.js";
+
+vi.mock("../src/services/listServices.js", () => ({
+  default: {
+    getLists: vi.fn(),
+    createList: vi.fn(),
+    updateList: vi.fn(),
+    deleteList: vi.fn(),
+  },
+}));
+
+const workList = { id: 1, name: "Work", userId: 1 };
+const personalList = { id: 2, name: "Personal", userId: 1 };
+
+async function mountDashboard() {
+  const { wrapper } = await mountWithPlugins(Dashboard);
+  await flushPromises();
+  return wrapper;
+}
+
+async function clickButton(wrapper, text) {
+  const localButton = wrapper.findAll("button").find((button) => button.text() === text);
+
+  if (localButton) {
+    await localButton.trigger("click");
+    return;
+  }
+
+  const globalButton = [...document.body.querySelectorAll("button")].find(
+    (button) => button.textContent?.trim() === text
+  );
+
+  expect(globalButton).toBeDefined();
+  globalButton.click();
+}
+
+describe("Dashboard.vue sidebar", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("shows empty state when the user has no lists", async () => {
+    listServices.getLists.mockResolvedValue({ data: [] });
+
+    const wrapper = await mountDashboard();
+
+    expect(wrapper.text()).toContain("No lists yet. Create your first list.");
+    expect(wrapper.text()).toContain("Select a list");
+  });
+
+  it("loads lists and selects the first list by default", async () => {
+    listServices.getLists.mockResolvedValue({ data: [workList, personalList] });
+
+    const wrapper = await mountDashboard();
+
+    expect(wrapper.text()).toContain("Work");
+    expect(wrapper.text()).toContain("Personal");
+    expect(wrapper.text()).toContain("Todo items will appear here in the next sprint.");
+    expect(wrapper.findAllComponents({ name: "VListItem" })[0].props("active")).toBe(true);
+  });
+
+  it("updates the main panel when a different list is selected", async () => {
+    listServices.getLists.mockResolvedValue({ data: [workList, personalList] });
+
+    const wrapper = await mountDashboard();
+    const listItems = wrapper.findAllComponents({ name: "VListItem" });
+
+    await listItems[1].trigger("click");
+    await flushPromises();
+
+    expect(listItems[1].props("active")).toBe(true);
+    expect(wrapper.text()).toContain("Personal");
+    expect(wrapper.text()).toContain("Todo items will appear here in the next sprint.");
+  });
+
+  it("creates a list from the new list dialog", async () => {
+    listServices.getLists.mockResolvedValue({ data: [] });
+    listServices.createList.mockResolvedValue({
+      data: { id: 3, name: "Groceries", userId: 1 },
+    });
+
+    const wrapper = await mountDashboard();
+
+    await clickButton(wrapper, "+ New List");
+    await flushPromises();
+
+    const fields = wrapper.findAllComponents({ name: "VTextField" });
+    await fields[0].setValue("Groceries");
+    await clickButton(wrapper, "Create");
+    await flushPromises();
+
+    expect(listServices.createList).toHaveBeenCalledWith("Groceries");
+    expect(wrapper.text()).toContain("Groceries");
+    expect(wrapper.text()).toContain("Todo items will appear here in the next sprint.");
+  });
+
+  it("renames a list from the rename dialog", async () => {
+    listServices.getLists.mockResolvedValue({ data: [workList] });
+    listServices.updateList.mockResolvedValue({
+      data: { id: 1, name: "Office", userId: 1 },
+    });
+
+    const wrapper = await mountDashboard();
+
+    await wrapper.get('[aria-label="Rename list"]').trigger("click");
+    await flushPromises();
+
+    const renameField = wrapper
+      .findAllComponents({ name: "VTextField" })
+      .find((field) => field.props("modelValue") === "Work");
+    await renameField.setValue("Office");
+    await clickButton(wrapper, "Save");
+    await flushPromises();
+
+    expect(listServices.updateList).toHaveBeenCalledWith(1, "Office");
+    expect(wrapper.text()).toContain("Office");
+    expect(wrapper.text()).not.toContain("Work");
+  });
+
+  it("deletes a list after confirmation", async () => {
+    listServices.getLists.mockResolvedValue({ data: [workList, personalList] });
+    listServices.deleteList.mockResolvedValue({});
+
+    const wrapper = await mountDashboard();
+    const deleteButtons = wrapper.findAll('[aria-label="Delete list"]');
+
+    await deleteButtons[0].trigger("click");
+    await flushPromises();
+    await clickButton(wrapper, "Delete");
+    await flushPromises();
+
+    expect(listServices.deleteList).toHaveBeenCalledWith(1);
+    expect(wrapper.text()).not.toContain("Work");
+    expect(wrapper.text()).toContain("Personal");
+    expect(wrapper.findAllComponents({ name: "VListItem" })[0].props("active")).toBe(true);
+  });
+});
+
+describe("Dashboard.vue create list dialog", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    listServices.getLists.mockResolvedValue({ data: [] });
+  });
+
+  it("blocks create and shows validation when the list name is empty", async () => {
+    const wrapper = await mountDashboard();
+
+    await clickButton(wrapper, "+ New List");
+    await flushPromises();
+
+    const createForm = wrapper.findAllComponents({ name: "VForm" })[0];
+    await clickButton(wrapper, "Create");
+    await flushPromises();
+
+    const validation = await createForm.vm.validate();
+
+    expect(validation.valid).toBe(false);
+    expect(document.body.textContent).toContain("List name is required.");
+    expect(listServices.createList).not.toHaveBeenCalled();
+  });
+});

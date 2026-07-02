@@ -1,22 +1,19 @@
 import { describe, it, expect } from "vitest";
-import { mount } from "@vue/test-utils";
-import { createVuetify } from "vuetify";
-import * as components from "vuetify/components";
-import * as directives from "vuetify/directives";
 import App from "../src/App.vue";
-
-const vuetify = createVuetify({ components, directives });
+import { mountWithPlugins, createTestRouter } from "./testUtils.js";
 
 describe("App.vue", () => {
-  it("mounts the Vuetify application shell", () => {
-    const wrapper = mount(App, {
+  it("mounts the Vuetify application shell", async () => {
+    const { wrapper } = await mountWithPlugins(App, {
+      router: await createTestRouter("/"),
       global: {
-        plugins: [vuetify],
         stubs: {
           "router-view": true,
+          MenuBar: true,
         },
       },
     });
+
     expect(wrapper.find(".v-application").exists()).toBe(true);
   });
 });

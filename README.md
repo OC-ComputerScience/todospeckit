@@ -107,6 +107,7 @@ Each app maintains its own `node_modules/` (`frontend/node_modules/`, `backend/n
 
 ```sql
 CREATE DATABASE `todospeckit-db`;
+CREATE DATABASE `todospeckit-db-test`;
 ```
 
 ### 3. Configure environment
@@ -117,6 +118,8 @@ cp backend/.env.test.example backend/.env.test
 ```
 
 Edit `backend/.env` with your MySQL credentials. Default database name: `todospeckit-db`.
+
+Backend tests use `backend/.env.test` with `DB_NAME=todospeckit-db-test` so `npm test` does not wipe dev data.
 
 For local development you may set `SEQUELIZE_SYNC_ALTER=true` so Sequelize creates/updates tables on startup.
 
