@@ -5,11 +5,13 @@ No application code may be written unless it maps to a requirement in one of the
 
 ## Sprint order
 
-| Sprint | File | Branch | Depends on |
-|--------|------|--------|------------|
-| 1 | [sprint-1-user-auth.md](./sprint-1-user-auth.md) | `feature/sprint-1-user-auth` | — |
-| 2 | [sprint-2-todo-list-management.md](./sprint-2-todo-list-management.md) | `feature/sprint-2-todo-list-management` | Sprint 1 |
-| 3 | [sprint-3-todo-list-item-management.md](./sprint-3-todo-list-item-management.md) | `feature/sprint-3-todo-list-item-management` | Sprint 1, 2 |
+| Sprint | File | Branch | Merge into | Depends on |
+|--------|------|--------|------------|------------|
+| 1 | [sprint-1-user-auth.md](./sprint-1-user-auth.md) | `feature/sprint-1-user-auth` | `dev` | — |
+| 2 | [sprint-2-todo-list-management.md](./sprint-2-todo-list-management.md) | `feature/sprint-2-todo-list-management` | `dev` | Sprint 1 on `dev` |
+| 3 | [sprint-3-todo-list-item-management.md](./sprint-3-todo-list-item-management.md) | `feature/sprint-3-todo-list-item-management` | `dev` | Sprints 1–2 on `dev` |
+
+**Branch roles:** `main` = scaffold-only starter kit · `dev` = integration (branch from `main`, merge sprints here) · `feature/sprint-*` = sprint implementation (branch from `dev`).
 
 ## Implementation order (each sprint)
 
