@@ -50,6 +50,20 @@ describe("Register.vue", () => {
     vi.clearAllMocks();
   });
 
+  it("shows validation when email format is invalid", async () => {
+    const { wrapper } = await mountWithPlugins(Register, {
+      router: await createTestRouter("/register"),
+    });
+    const form = await getForm(wrapper);
+
+    await fillValidRegisterForm(wrapper, { email: "notanemail" });
+    await submitRegisterForm(wrapper);
+    const validation = await form.vm.validate();
+
+    expect(validation.valid).toBe(false);
+    expect(authServices.registerUser).not.toHaveBeenCalled();
+  });
+
   it("shows validation when email is missing", async () => {
     const { wrapper } = await mountWithPlugins(Register, {
       router: await createTestRouter("/register"),

@@ -1,37 +1,69 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import listServices from "../services/listServices.js";
+import todoServices from "../services/todoServices.js";
 
 const lists = ref([]);
 const selectedListId = ref(null);
 const listsLoading = ref(false);
 const listsError = ref("");
 
+const todos = ref([]);
+const todosLoading = ref(false);
+const todosError = ref("");
+
 const createDialogOpen = ref(false);
 const renameDialogOpen = ref(false);
 const deleteDialogOpen = ref(false);
+const editTodoDialogOpen = ref(false);
+const deleteTodoDialogOpen = ref(false);
 
 const createForm = ref(null);
 const renameForm = ref(null);
+const addTodoForm = ref(null);
+const editTodoForm = ref(null);
 
 const newListName = ref("");
 const renameListName = ref("");
+const newTodoTitle = ref("");
+const editTodoTitle = ref("");
+
 const listToRename = ref(null);
 const listToDelete = ref(null);
+const todoToEdit = ref(null);
+const todoToDelete = ref(null);
 
 const createLoading = ref(false);
 const renameLoading = ref(false);
 const deleteLoading = ref(false);
+const addTodoLoading = ref(false);
+const editTodoLoading = ref(false);
+const deleteTodoLoading = ref(false);
 const dialogError = ref("");
+const todoDialogError = ref("");
 
 const listNameRules = [
   (value) => !!value?.trim() || "List name is required.",
   (value) => value.trim().length <= 100 || "List name must be 100 characters or fewer.",
 ];
 
+const todoTitleRules = [
+  (value) => !!value?.trim() || "Todo title is required.",
+  (value) => value.trim().length <= 255 || "Todo title must be 255 characters or fewer.",
+];
+
 const selectedList = computed(() =>
   lists.value.find((list) => list.id === selectedListId.value) ?? null
 );
+
+const sortTodos = (items) =>
+  [...items].sort((a, b) => {
+    if (a.completed !== b.completed) {
+      return a.completed ? 1 : -1;
+    }
+
+    return new Date(a.createdAt) - new Date(b.createdAt);
+  });
 
 const loadLists = async () => {
   listsLoading.value = true;
@@ -54,6 +86,26 @@ const loadLists = async () => {
     listsError.value = error.response?.data?.message || "Failed to load lists.";
   } finally {
     listsLoading.value = false;
+  }
+};
+
+const loadTodos = async () => {
+  if (!selectedListId.value) {
+    todos.value = [];
+    return;
+  }
+
+  todosLoading.value = true;
+  todosError.value = "";
+
+  try {
+    const response = await todoServices.getTodos(selectedListId.value);
+    todos.value = sortTodos(response.data);
+  } catch (error) {
+    todos.value = [];
+    todosError.value = error.response?.data?.message || "Failed to load todos.";
+  } finally {
+    todosLoading.value = false;
   }
 };
 
@@ -171,6 +223,128 @@ const handleDeleteList = async () => {
   }
 };
 
+const handleAddTodo = async () => {
+  if (!selectedListId.value) {
+    return;
+  }
+
+  todosError.value = "";
+  const { valid } = await addTodoForm.value.validate();
+
+  if (!valid) {
+    return;
+  }
+
+  addTodoLoading.value = true;
+
+  try {
+    const response = await todoServices.createTodo(
+      selectedListId.value,
+      newTodoTitle.value.trim()
+    );
+    todos.value = sortTodos([...todos.value, response.data]);
+    newTodoTitle.value = "";
+    addTodoForm.value.reset();
+  } catch (error) {
+    todosError.value = error.response?.data?.message || "Failed to create todo.";
+  } finally {
+    addTodoLoading.value = false;
+  }
+};
+
+const handleToggleComplete = async (todo, completed) => {
+  todosError.value = "";
+
+  try {
+    const response = await todoServices.updateTodo(todo.id, { completed });
+    todos.value = sortTodos(
+      todos.value.map((item) => (item.id === todo.id ? response.data : item))
+    );
+  } catch (error) {
+    todosError.value = error.response?.data?.message || "Failed to update todo.";
+  }
+};
+
+const openEditTodoDialog = (todo) => {
+  todoDialogError.value = "";
+  todoToEdit.value = todo;
+  editTodoTitle.value = todo.title;
+  editTodoDialogOpen.value = true;
+};
+
+const closeEditTodoDialog = () => {
+  editTodoDialogOpen.value = false;
+  todoToEdit.value = null;
+  editTodoTitle.value = "";
+  todoDialogError.value = "";
+};
+
+const handleEditTodo = async () => {
+  todoDialogError.value = "";
+  const { valid } = await editTodoForm.value.validate();
+
+  if (!valid || !todoToEdit.value) {
+    return;
+  }
+
+  editTodoLoading.value = true;
+
+  try {
+    const response = await todoServices.updateTodo(todoToEdit.value.id, {
+      title: editTodoTitle.value.trim(),
+    });
+    todos.value = sortTodos(
+      todos.value.map((item) => (item.id === todoToEdit.value.id ? response.data : item))
+    );
+    closeEditTodoDialog();
+  } catch (error) {
+    todoDialogError.value = error.response?.data?.message || "Failed to update todo.";
+  } finally {
+    editTodoLoading.value = false;
+  }
+};
+
+const openDeleteTodoDialog = (todo) => {
+  todoToDelete.value = todo;
+  deleteTodoDialogOpen.value = true;
+};
+
+const closeDeleteTodoDialog = () => {
+  deleteTodoDialogOpen.value = false;
+  todoToDelete.value = null;
+};
+
+const handleDeleteTodo = async () => {
+  if (!todoToDelete.value) {
+    return;
+  }
+
+  deleteTodoLoading.value = true;
+
+  try {
+    await todoServices.deleteTodo(todoToDelete.value.id);
+    todos.value = todos.value.filter((todo) => todo.id !== todoToDelete.value.id);
+    closeDeleteTodoDialog();
+  } catch (error) {
+    todosError.value = error.response?.data?.message || "Failed to delete todo.";
+    closeDeleteTodoDialog();
+  } finally {
+    deleteTodoLoading.value = false;
+  }
+};
+
+watch(selectedListId, (listId) => {
+  newTodoTitle.value = "";
+
+  if (listId) {
+    loadTodos();
+  } else {
+    todos.value = [];
+    todosError.value = "";
+    todosLoading.value = false;
+  }
+});
+
 onMounted(() => {
   loadLists();
 });
@@ -244,9 +418,87 @@ onMounted(() => {
           </v-card-title>
 
           <v-card-text>
-            <p v-if="selectedList" class="text-body-1 text-medium-emphasis">
-              Todo items will appear here in the next sprint.
+            <v-alert v-if="todosError" type="error" density="compact" class="mb-4">
+              {{ todosError }}
+            </v-alert>
+
+            <v-progress-linear
+              v-if="todosLoading"
+              indeterminate
+              color="primary"
+              class="mb-4"
+            />
+
+            <v-form ref="addTodoForm" @submit.prevent="handleAddTodo">
+              <div class="d-flex align-start ga-2 mb-4">
+                <v-text-field
+                  v-model="newTodoTitle"
+                  label="New todo"
+                  density="comfortable"
+                  :rules="todoTitleRules"
+                  :disabled="!selectedList || todosLoading"
+                  hide-details="auto"
+                  class="flex-grow-1"
+                />
+                <v-btn
+                  color="primary"
+                  variant="elevated"
+                  type="submit"
+                  :disabled="!selectedList || todosLoading"
+                  :loading="addTodoLoading"
+                >
+                  Add
+                </v-btn>
+              </div>
+            </v-form>
+
+            <p
+              v-if="selectedList && !todosLoading && todos.length === 0"
+              class="text-body-2 text-medium-emphasis"
+            >
+              No todos in this list yet.
             </p>
+
+            <v-list
+              v-else-if="selectedList && todos.length > 0"
+              density="comfortable"
+              class="pa-0"
+            >
+              <v-list-item v-for="todo in todos" :key="todo.id">
+                <template #prepend>
+                  <v-checkbox-btn
+                    :model-value="todo.completed"
+                    color="primary"
+                    @update:model-value="(value) => handleToggleComplete(todo, value)"
+                  />
+                </template>
+
+                <v-list-item-title
+                  :class="{
+                    'text-decoration-line-through text-medium-emphasis': todo.completed,
+                  }"
+                >
+                  {{ todo.title }}
+                </v-list-item-title>
+
+                <template #append>
+                  <v-btn
+                    icon="mdi-pencil"
+                    variant="text"
+                    size="small"
+                    aria-label="Edit todo"
+                    @click="openEditTodoDialog(todo)"
+                  />
+                  <v-btn
+                    icon="mdi-delete"
+                    variant="text"
+                    size="small"
+                    aria-label="Delete todo"
+                    @click="openDeleteTodoDialog(todo)"
+                  />
+                </template>
+              </v-list-item>
+            </v-list>
           </v-card-text>
         </v-card>
       </v-col>
@@ -341,6 +593,65 @@ onMounted(() => {
             variant="elevated"
             :loading="deleteLoading"
             @click="handleDeleteList"
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="editTodoDialogOpen" max-width="480">
+      <v-card>
+        <v-card-title>Edit todo</v-card-title>
+        <v-card-text>
+          <v-form ref="editTodoForm" @submit.prevent="handleEditTodo">
+            <v-text-field
+              v-model="editTodoTitle"
+              label="Todo title"
+              density="comfortable"
+              :rules="todoTitleRules"
+              autofocus
+            />
+            <v-alert
+              v-if="todoDialogError"
+              type="error"
+              density="compact"
+              class="mt-2"
+            >
+              {{ todoDialogError }}
+            </v-alert>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="closeEditTodoDialog">Cancel</v-btn>
+          <v-btn
+            color="primary"
+            variant="elevated"
+            :loading="editTodoLoading"
+            @click="handleEditTodo"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="deleteTodoDialogOpen" max-width="480">
+      <v-card>
+        <v-card-title>Delete todo</v-card-title>
+        <v-card-text>
+          Are you sure you want to delete
+          <strong>{{ todoToDelete?.title }}</strong>?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="closeDeleteTodoDialog">Cancel</v-btn>
+          <v-btn
+            color="error"
+            variant="elevated"
+            :loading="deleteTodoLoading"
+            @click="handleDeleteTodo"
           >
             Delete
           </v-btn>

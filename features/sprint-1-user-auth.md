@@ -44,6 +44,7 @@
 *   Reuse a non-expired session for the same user on login when one already exists.
 *   Default role for new users: `worker`.
 *   **Data ownership foundation:** every authenticated request must resolve to exactly one user via `req.user.id` from the session token. Later sprints scope all lists and todo items to this ID.
+*   **Frontend email validation:** registration uses shared `emailRules` from `frontend/src/config/validation.js` — required plus regex format check (`/^[^\s@]+@[^\s@]+\.[^\s@]+$/`); invalid format message: **"Enter a valid email address."**
 
 ---
 
@@ -94,6 +95,7 @@ Sprint 1 establishes identity; Sprints 2–3 enforce per-user data boundaries.
 ### [View: Register Page] — route name `register`
 *   Full-screen auth layout (no `MenuBar`).
 *   Fields: first name, last name, email, username, password, confirm password.
+*   Email field uses shared `emailRules` from `frontend/src/config/validation.js` (required + regex format).
 *   Primary action: **Create account**.
 *   Link or button to navigate to login.
 *   Client-side validation before API call; server errors shown via `<v-alert type="error">`.
@@ -149,6 +151,14 @@ Sprint 1 establishes identity; Sprints 2–3 enforce per-user data boundaries.
 *   **And** I submit the form
 *   **Then** inline validation blocks the request
 *   **And** I see the message **"Email is required."**
+*   **And** no API request is sent
+
+#### Scenario: User submits registration with invalid email format
+*   **Given** I am on the registration page
+*   **When** I enter a value that is not a valid email address (e.g. `notanemail`)
+*   **And** I submit the form
+*   **Then** inline validation blocks the request
+*   **And** I see the message **"Enter a valid email address."**
 *   **And** no API request is sent
 
 #### Scenario: User submits registration with missing username
@@ -273,7 +283,7 @@ Each scenario above must map to at least one automated test.
 | `POST /todo/login` | Jest + supertest | Valid login, invalid password, missing username/password |
 | `POST /todo/logout` | Jest + supertest | Valid logout, missing token |
 | `authenticate` middleware | Jest + supertest | Valid token, missing token, expired token |
-| `Register.vue` | Vitest | Client-side validation scenarios (missing email, username, password rules, mismatch) |
+| `Register.vue` | Vitest (`Register.test.js`) | Client-side validation scenarios (missing email, invalid email format, missing username, password rules, mismatch) |
 | `Login.vue` | Vitest | Client-side validation, error display on failed login |
 | `router.js` guards | Vitest | Unauthenticated redirect, signed-in redirect away from login |
 

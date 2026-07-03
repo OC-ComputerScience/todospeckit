@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import authServices from "../services/authServices.js";
 import Utils from "../config/utils.js";
+import { emailRules } from "../config/validation.js";
 
 const router = useRouter();
 const form = ref(null);
@@ -17,7 +18,6 @@ const errorMessage = ref("");
 
 const fNameRules = [(value) => !!value?.trim() || "First name is required."];
 const lNameRules = [(value) => !!value?.trim() || "Last name is required."];
-const emailRules = [(value) => !!value?.trim() || "Email is required."];
 const usernameRules = [(value) => !!value?.trim() || "Username is required."];
 const passwordRules = [
   (value) => !!value || "Password is required.",

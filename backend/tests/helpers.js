@@ -7,6 +7,7 @@ export const syncTestDatabase = async () => {
 };
 
 export const resetTestDatabase = async () => {
+  await db.todo.destroy({ where: {} });
   await db.list.destroy({ where: {} });
   await db.session.destroy({ where: {} });
   await db.user.destroy({ where: {} });
@@ -34,4 +35,12 @@ export const registerUser = async (overrides = {}) => {
 
 export const createList = async (authHeader, name) => {
   return request(app).post("/todo/lists").set(authHeader).send({ name });
+};
+
+export const createTodo = async (authHeader, listId, title) => {
+  return request(app).post(`/todo/lists/${listId}/todos`).set(authHeader).send({ title });
+};
+
+export const updateProfile = async (authHeader, userId, payload) => {
+  return request(app).put(`/todo/users/${userId}`).set(authHeader).send(payload);
 };
