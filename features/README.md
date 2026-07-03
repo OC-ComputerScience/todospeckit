@@ -5,11 +5,12 @@ No application code may be written unless it maps to a requirement in one of the
 
 ## Sprint order
 
-| Sprint | File | Branch | Merge into | Depends on |
-|--------|------|--------|------------|------------|
-| 1 | [sprint-1-user-auth.md](./sprint-1-user-auth.md) | `feature/sprint-1-user-auth` | `dev` | — |
-| 2 | [sprint-2-todo-list-management.md](./sprint-2-todo-list-management.md) | `feature/sprint-2-todo-list-management` | `dev` | Sprint 1 on `dev` |
-| 3 | [sprint-3-todo-list-item-management.md](./sprint-3-todo-list-item-management.md) | `feature/sprint-3-todo-list-item-management` | `dev` | Sprints 1–2 on `dev` |
+| Sprint | File                                                                             | Branch                                       | Merge into | Depends on           |
+| ------ | -------------------------------------------------------------------------------- | -------------------------------------------- | ---------- | -------------------- |
+| 1      | [sprint-1-user-auth.md](./sprint-1-user-auth.md)                                 | `feature/sprint-1-user-auth`                 | `dev`      | —                    |
+| 2      | [sprint-2-todo-list-management.md](./sprint-2-todo-list-management.md)           | `feature/sprint-2-todo-list-management`      | `dev`      | Sprint 1 on `dev`    |
+| 3      | [sprint-3-todo-list-item-management.md](./sprint-3-todo-list-item-management.md) | `feature/sprint-3-todo-list-item-management` | `dev`      | Sprints 1–2 on `dev` |
+| 4      | [sprint-4-todo-user-profile-management.md](./sprint-4-todo-user-profile-management.md) | `feature/sprint-4-user-profile-management`   | `dev`      | Sprints 1–3 on `dev` |
 
 **Branch roles:** `main` = scaffold-only starter kit · `dev` = integration (branch from `main`, merge sprints here) · `feature/sprint-*` = sprint implementation (branch from `dev`).
 
@@ -25,10 +26,10 @@ No application code may be written unless it maps to a requirement in one of the
 
 ## Related project docs
 
-*   Cursor rules: `.cursor/rules/`
-*   Backend env: `backend/.env` (copy from `backend/.env.example`)
-*   Test env: `backend/.env.test` (copy from `backend/.env.test.example`)
-*   UI references (optional): `docs/ui/` — link Figma exports from each sprint spec
+- Cursor rules: `.cursor/rules/`
+- Backend env: `backend/.env` (copy from `backend/.env.example`)
+- Test env: `backend/.env.test` (copy from `backend/.env.test.example`)
+- UI references (optional): `docs/ui/` — link Figma exports from each sprint spec
 
 ## Running tests
 
