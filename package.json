@@ -9,6 +9,11 @@
     "bundle": "npm run bundle:backend && npm run build:frontend && npm run bundle:frontend",
     "test": "npm run test --prefix backend && npm run test --prefix frontend",
     "test:backend": "npm run test --prefix backend",
-    "test:frontend": "npm run test --prefix frontend"
+    "test:frontend": "npm run test --prefix frontend",
+    "specs:pdf": "node scripts/export-specs-pdf.mjs",
+    "specs:pdf:setup": "npx puppeteer browsers install chrome"
+  },
+  "devDependencies": {
+    "md-to-pdf": "^5.2.4"
   }
 }
