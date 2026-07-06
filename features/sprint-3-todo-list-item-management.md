@@ -298,7 +298,8 @@ Extends the Sprint 2 dashboard. Sidebar behavior is unchanged; **main panel** is
 
 *   New list CRUD features (owned by Sprint 2)
 *   Drag-and-drop reordering of todos
-*   Due dates, priorities, labels, or notes on todos
+*   Due dates → [sprint-5-todo-due-date.md](./sprint-5-todo-due-date.md) (Sprint 5)
+*   Priorities, labels, or notes on todos
 *   Sharing lists or todos with other users
 *   Search or filter across todos
 *   Bulk complete / bulk delete

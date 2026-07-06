@@ -60,6 +60,7 @@ describe("Todo API", () => {
       expect(response.body.every((todo) => todo.userId === userA.user.userId)).toBe(true);
       expect(response.body.filter((todo) => todo.completed)).toHaveLength(1);
       expect(response.body.filter((todo) => !todo.completed)).toHaveLength(2);
+      expect(response.body.every((todo) => "dueDate" in todo)).toBe(true);
     });
 
     it("returns 404 for another user's list", async () => {
@@ -108,6 +109,50 @@ describe("Todo API", () => {
         userId: user.user.userId,
       });
       expect(response.body.id).toBeDefined();
+    });
+
+    it("creates a todo with a due date", async () => {
+      const user = await registerUser();
+      const list = await createList(user.authHeader, "Groceries");
+
+      const response = await createTodo(
+        user.authHeader,
+        list.body.id,
+        "Buy milk",
+        "2026-07-15"
+      );
+
+      expect(response.status).toBe(201);
+      expect(response.body).toMatchObject({
+        title: "Buy milk",
+        dueDate: "2026-07-15",
+      });
+    });
+
+    it("creates a todo without a due date", async () => {
+      const user = await registerUser();
+      const list = await createList(user.authHeader, "Groceries");
+
+      const response = await createTodo(user.authHeader, list.body.id, "Buy milk");
+
+      expect(response.status).toBe(201);
+      expect(response.body.dueDate).toBeNull();
+    });
+
+    it("returns 400 when due date is invalid on create", async () => {
+      const user = await registerUser();
+      const list = await createList(user.authHeader, "Groceries");
+
+      const response = await request(app)
+        .post(`/todo/lists/${list.body.id}/todos`)
+        .set(user.authHeader)
+        .send({ title: "Task", dueDate: "not-a-date" });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toMatch(/Due date/i);
+
+      const todos = await db.todo.findAll({ where: { listId: list.body.id } });
+      expect(todos).toHaveLength(0);
     });
 
     it("returns 400 when the todo title is empty", async () => {
@@ -198,6 +243,85 @@ describe("Todo API", () => {
 
       expect(incompleteResponse.status).toBe(200);
       expect(incompleteResponse.body.completed).toBe(false);
+    });
+
+    it("sets a due date on update", async () => {
+      const user = await registerUser();
+      const list = await createList(user.authHeader, "Groceries");
+      const created = await createTodo(user.authHeader, list.body.id, "Buy milk");
+
+      const response = await request(app)
+        .put(`/todo/todos/${created.body.id}`)
+        .set(user.authHeader)
+        .send({ dueDate: "2026-07-20" });
+
+      expect(response.status).toBe(200);
+      expect(response.body.dueDate).toBe("2026-07-20");
+    });
+
+    it("clears a due date on update", async () => {
+      const user = await registerUser();
+      const list = await createList(user.authHeader, "Groceries");
+      const created = await createTodo(
+        user.authHeader,
+        list.body.id,
+        "Buy milk",
+        "2026-07-20"
+      );
+
+      const response = await request(app)
+        .put(`/todo/todos/${created.body.id}`)
+        .set(user.authHeader)
+        .send({ dueDate: null });
+
+      expect(response.status).toBe(200);
+      expect(response.body.dueDate).toBeNull();
+    });
+
+    it("returns 400 when due date is invalid on update", async () => {
+      const user = await registerUser();
+      const list = await createList(user.authHeader, "Groceries");
+      const created = await createTodo(
+        user.authHeader,
+        list.body.id,
+        "Buy milk",
+        "2026-07-20"
+      );
+
+      const response = await request(app)
+        .put(`/todo/todos/${created.body.id}`)
+        .set(user.authHeader)
+        .send({ dueDate: "2026-99-99" });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toMatch(/Due date/i);
+
+      const unchanged = await db.todo.findByPk(created.body.id);
+      expect(unchanged.dueDate).toBe("2026-07-20");
+    });
+
+    it("returns 404 when setting due date on another user's todo", async () => {
+      const userA = await registerUser({
+        email: "a@example.com",
+        username: "usera",
+      });
+      const userB = await registerUser({
+        email: "b@example.com",
+        username: "userb",
+      });
+      const list = await createList(userB.authHeader, "Secret");
+      const secretTodo = await createTodo(userB.authHeader, list.body.id, "Hidden task");
+
+      const response = await request(app)
+        .put(`/todo/todos/${secretTodo.body.id}`)
+        .set(userA.authHeader)
+        .send({ dueDate: "2026-07-15" });
+
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe(`Todo with id=${secretTodo.body.id} not found.`);
+
+      const unchanged = await db.todo.findByPk(secretTodo.body.id);
+      expect(unchanged.dueDate).toBeNull();
     });
 
     it("returns 404 when updating another user's todo and preserves the row", async () => {

@@ -62,6 +62,10 @@ const SPEC_FILES = [
   "features/sprint-2-todo-list-management.md",
   "features/sprint-3-todo-list-item-management.md",
   "features/sprint-4-todo-user-profile-management.md",
+  "features/sprint-5-todo-due-date.md",
+  "features/reference/README.md",
+  "features/reference/data-model.md",
+  "features/reference/api.md",
 ];
 
 const PAGE_BREAK = '\n\n<div style="page-break-after: always;"></div>\n\n';
@@ -105,7 +109,11 @@ function buildCombinedMarkdown() {
     PAGE_BREAK,
     "# Part 2: Feature Specifications",
     "",
-    specSections.join(PAGE_BREAK),
+    specSections.slice(0, 6).join(PAGE_BREAK),
+    PAGE_BREAK,
+    "# Part 3: Reference (current integrated state)",
+    "",
+    specSections.slice(6).join(PAGE_BREAK),
   ].join("\n");
 }
 

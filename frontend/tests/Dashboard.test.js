@@ -61,6 +61,7 @@ const milkTodo = {
   listId: 1,
   title: "Buy milk",
   completed: false,
+  dueDate: null,
   userId: 1,
   createdAt: "2026-01-01T00:00:00.000Z",
 };
@@ -95,6 +96,20 @@ function getNewTodoField(wrapper) {
   return wrapper
     .findAllComponents({ name: "VTextField" })
     .find((field) => field.props("label") === "New todo");
+}
+
+function getDueDateField(wrapper, label = "Due date") {
+  return wrapper
+    .findAllComponents({ name: "VTextField" })
+    .find((field) => field.props("label") === label);
+}
+
+function getEditDialogDueDateField(wrapper) {
+  const dueDateFields = wrapper
+    .findAllComponents({ name: "VTextField" })
+    .filter((field) => field.props("label") === "Due date");
+
+  return dueDateFields[dueDateFields.length - 1];
 }
 
 function getAddTodoForm(wrapper) {
@@ -329,8 +344,25 @@ describe("Dashboard.vue todo input", () => {
     await getAddTodoForm(wrapper).trigger("submit");
     await flushPromises();
 
-    expect(todoServices.createTodo).toHaveBeenCalledWith(1, "Buy milk");
+    expect(todoServices.createTodo).toHaveBeenCalledWith(1, "Buy milk", undefined);
     expect(wrapper.text()).toContain("Buy milk");
+  });
+
+  it("creates a todo with a due date", async () => {
+    listServices.getLists.mockResolvedValue({ data: [workList] });
+    todoServices.createTodo.mockResolvedValue({
+      data: { ...milkTodo, dueDate: "2026-07-15" },
+    });
+
+    const wrapper = await mountDashboard();
+
+    await getNewTodoField(wrapper).setValue("Buy milk");
+    await getDueDateField(wrapper).setValue("2026-07-15");
+    await getAddTodoForm(wrapper).trigger("submit");
+    await flushPromises();
+
+    expect(todoServices.createTodo).toHaveBeenCalledWith(1, "Buy milk", "2026-07-15");
+    expect(wrapper.text()).toContain("Due");
   });
 });
 
@@ -373,9 +405,86 @@ describe("Dashboard.vue todo row", () => {
     clickLastBodyButton("Save");
     await flushPromises();
 
-    expect(todoServices.updateTodo).toHaveBeenCalledWith(30, { title: "Buy oat milk" });
+    expect(todoServices.updateTodo).toHaveBeenCalledWith(30, {
+      title: "Buy oat milk",
+      dueDate: null,
+    });
     expect(wrapper.text()).toContain("Buy oat milk");
     expect(wrapper.text()).not.toContain("Buy milk");
+  });
+
+  it("sets a due date from the edit dialog", async () => {
+    todoServices.updateTodo.mockResolvedValue({
+      data: { ...milkTodo, dueDate: "2026-07-20" },
+    });
+
+    const wrapper = await mountDashboard();
+
+    await wrapper.get('[aria-label="Edit todo"]').trigger("click");
+    await flushPromises();
+
+    await getEditDialogDueDateField(wrapper).setValue("2026-07-20");
+    clickLastBodyButton("Save");
+    await flushPromises();
+
+    expect(todoServices.updateTodo).toHaveBeenCalledWith(30, {
+      title: "Buy milk",
+      dueDate: "2026-07-20",
+    });
+    expect(wrapper.text()).toContain("Due");
+  });
+
+  it("clears a due date from the edit dialog", async () => {
+    todoServices.getTodos.mockResolvedValue({
+      data: [{ ...milkTodo, dueDate: "2026-07-20" }],
+    });
+    todoServices.updateTodo.mockResolvedValue({
+      data: { ...milkTodo, dueDate: null },
+    });
+
+    const wrapper = await mountDashboard();
+
+    await wrapper.get('[aria-label="Edit todo"]').trigger("click");
+    await flushPromises();
+
+    await getEditDialogDueDateField(wrapper).setValue("");
+    clickLastBodyButton("Save");
+    await flushPromises();
+
+    expect(todoServices.updateTodo).toHaveBeenCalledWith(30, {
+      title: "Buy milk",
+      dueDate: null,
+    });
+  });
+
+  it("shows overdue styling for incomplete past-due todos", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-10T12:00:00"));
+
+    todoServices.getTodos.mockResolvedValue({
+      data: [{ ...milkTodo, dueDate: "2026-07-09" }],
+    });
+
+    const wrapper = await mountDashboard();
+
+    expect(wrapper.find(".text-error").exists()).toBe(true);
+
+    vi.useRealTimers();
+  });
+
+  it("does not show overdue styling for completed past-due todos", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-10T12:00:00"));
+
+    todoServices.getTodos.mockResolvedValue({
+      data: [{ ...milkTodo, dueDate: "2026-07-09", completed: true }],
+    });
+
+    const wrapper = await mountDashboard();
+
+    expect(wrapper.find(".text-error").exists()).toBe(false);
+
+    vi.useRealTimers();
   });
 
   it("deletes a todo after confirmation", async () => {
