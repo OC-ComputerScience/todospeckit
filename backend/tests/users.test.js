@@ -1,3 +1,8 @@
+/**
+ * Feature 4 — User Profile Management
+ * Spec: features/feature-4-user-profile-management.md
+ */
+
 import bcrypt from "bcryptjs";
 import request from "supertest";
 import app from "../server.js";
@@ -16,7 +21,7 @@ const validProfile = {
   username: "jdoe",
 };
 
-describe("User API", () => {
+describe("Feature 4 — User API", () => {
   beforeAll(async () => {
     await syncTestDatabase();
   });
@@ -29,8 +34,8 @@ describe("User API", () => {
     await db.sequelize.close();
   });
 
-  describe("GET /todo/users/:id", () => {
-    it("returns the caller's profile without a password hash", async () => {
+  describe("US-4.2 — Edit profile", () => {
+    it("User fetches their own profile", async () => {
       const user = await registerUser({
         fName: "Jane",
         lName: "Doe",
@@ -52,7 +57,7 @@ describe("User API", () => {
       expect(response.body.password).toBeUndefined();
     });
 
-    it("returns 404 when fetching another user's profile", async () => {
+    it("User attempts to fetch another user's profile", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",
@@ -70,7 +75,7 @@ describe("User API", () => {
       expect(response.body.message).toBe(`User with id=${userB.user.userId} not found.`);
     });
 
-    it("returns 401 without a token", async () => {
+    it("Unauthenticated profile API request", async () => {
       const user = await registerUser();
 
       const response = await request(app).get(`/todo/users/${user.user.userId}`);
@@ -78,15 +83,14 @@ describe("User API", () => {
       expect(response.status).toBe(401);
       expect(response.body.message).toMatch(/Unauthorized/i);
     });
-  });
 
-  describe("PUT /todo/users/:id", () => {
-    it("updates profile fields for the authenticated user", async () => {
+    it("User saves profile changes", async () => {
       const user = await registerUser({
         fName: "Jane",
         lName: "Doe",
         email: "jane@example.com",
         username: "jdoe",
+        password: "password123",
       });
 
       const response = await updateProfile(user.authHeader, user.user.userId, {
@@ -94,6 +98,7 @@ describe("User API", () => {
         lName: "Smith",
         email: "janet@example.com",
         username: "jsmith",
+        password: "newpassword123",
       });
 
       expect(response.status).toBe(200);
@@ -104,30 +109,13 @@ describe("User API", () => {
         username: "jsmith",
       });
       expect(response.body.password).toBeUndefined();
-    });
-
-    it("updates the password when a valid new password is provided", async () => {
-      const user = await registerUser({
-        email: "jane@example.com",
-        username: "jdoe",
-        password: "password123",
-      });
-
-      const response = await updateProfile(user.authHeader, user.user.userId, {
-        ...validProfile,
-        email: user.user.email,
-        username: user.user.username,
-        password: "newpassword123",
-      });
-
-      expect(response.status).toBe(200);
 
       const storedUser = await db.user.unscoped().findByPk(user.user.userId);
       const passwordMatch = await bcrypt.compare("newpassword123", storedUser.password);
       expect(passwordMatch).toBe(true);
     });
 
-    it("returns 400 when the password is too short", async () => {
+    it("Profile update rejects a password that is too short", async () => {
       const user = await registerUser({
         email: "jane@example.com",
         username: "jdoe",
@@ -144,7 +132,7 @@ describe("User API", () => {
       expect(response.body.message).toBe("Password must be at least 8 characters.");
     });
 
-    it("returns 400 when required fields are missing", async () => {
+    it("Profile update rejects missing required fields", async () => {
       const user = await registerUser();
 
       const response = await updateProfile(user.authHeader, user.user.userId, {
@@ -157,7 +145,7 @@ describe("User API", () => {
       expect(response.body.message).toBe("First name is required.");
     });
 
-    it("returns 400 when the username is already taken", async () => {
+    it("Profile update rejects a duplicate username", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",
@@ -181,7 +169,7 @@ describe("User API", () => {
       expect(unchanged.username).toBe("userb");
     });
 
-    it("returns 400 when the email is already registered", async () => {
+    it("Profile update rejects a duplicate email", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",
@@ -205,7 +193,7 @@ describe("User API", () => {
       expect(unchanged.email).toBe("b@example.com");
     });
 
-    it("returns 401 without a token", async () => {
+    it("Unauthenticated profile update API request", async () => {
       const user = await registerUser();
 
       const response = await request(app)
@@ -216,7 +204,7 @@ describe("User API", () => {
       expect(response.body.message).toMatch(/Unauthorized/i);
     });
 
-    it("returns 404 when updating another user's profile and preserves the row", async () => {
+    it("User attempts to update another user's profile", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",

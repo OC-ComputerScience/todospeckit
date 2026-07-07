@@ -1,5 +1,5 @@
 ---
-description: Login, session, and frontend auth state patterns shared across sprints.
+description: Login, session, and frontend auth state patterns shared across features.
 globs: "frontend/src/**/*, backend/app/controllers/auth.*, backend/app/models/session.*, backend/app/routes/auth.*"
 ---
 # Auth & Session Patterns

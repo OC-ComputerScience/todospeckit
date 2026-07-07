@@ -23,7 +23,7 @@ This document establishes the absolute operational guardrails for this engineeri
 
 ## 🌿 Principle 2: Branching & Git Discipline
 *   **The Law:** You are strictly forbidden from writing or pushing changes directly to the `main` or `master` branches.
-*   **The Guardrail:** All feature development must take place on dedicated feature branches named according to this pattern: `feature/sprint-[X]-[feature-name]` (e.g., `feature/sprint-1-login-form`).
+*   **The Guardrail:** All feature development must take place on dedicated feature branches named according to this pattern: `feature/[N]-[feature-name]` (e.g., `feature/1-user-auth`).
 
 ## 🧪 Principle 3: No Ghost Testing / Strict Verification
 *   **The Law:** Code cannot be considered "Done" until a matching automated test suite passes. 

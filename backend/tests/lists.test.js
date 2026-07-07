@@ -1,3 +1,8 @@
+/**
+ * Feature 2 — Todo List Management
+ * Spec: features/feature-2-todo-list-management.md
+ */
+
 import request from "supertest";
 import app from "../server.js";
 import db from "../app/models/index.js";
@@ -8,7 +13,7 @@ import {
   createList,
 } from "./helpers.js";
 
-describe("List API", () => {
+describe("Feature 2 — List API", () => {
   beforeAll(async () => {
     await syncTestDatabase();
   });
@@ -21,8 +26,42 @@ describe("List API", () => {
     await db.sequelize.close();
   });
 
-  describe("GET /todo/lists", () => {
-    it("returns only the authenticated user's lists in alphabetical order", async () => {
+  describe("US-2.1 — Create todo lists", () => {
+    it("User creates a new list", async () => {
+      const user = await registerUser();
+
+      const response = await createList(user.authHeader, "Groceries");
+
+      expect(response.status).toBe(201);
+      expect(response.body).toMatchObject({
+        name: "Groceries",
+        userId: user.user.userId,
+      });
+      expect(response.body.id).toBeDefined();
+    });
+
+    it("User creates a list with an empty name", async () => {
+      const user = await registerUser();
+
+      const response = await createList(user.authHeader, "   ");
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe("List name is required.");
+    });
+
+    it("User creates a list with a name that is too long", async () => {
+      const user = await registerUser();
+      const longName = "a".repeat(101);
+
+      const response = await createList(user.authHeader, longName);
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe("List name must be 100 characters or fewer.");
+    });
+  });
+
+  describe("US-2.2 — View my lists", () => {
+    it("Dashboard loads with existing lists", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",
@@ -44,51 +83,9 @@ describe("List API", () => {
       expect(response.body).toHaveLength(2);
       expect(response.body.map((list) => list.name)).toEqual(["Personal", "Work"]);
       expect(response.body.every((list) => list.userId === userA.user.userId)).toBe(true);
-      expect(response.body.some((list) => list.name === "Secret Project")).toBe(false);
     });
 
-    it("returns 401 without a token", async () => {
-      const response = await request(app).get("/todo/lists");
-
-      expect(response.status).toBe(401);
-      expect(response.body.message).toMatch(/Unauthorized/i);
-    });
-  });
-
-  describe("POST /todo/lists", () => {
-    it("creates a list for the authenticated user", async () => {
-      const user = await registerUser();
-
-      const response = await createList(user.authHeader, "Groceries");
-
-      expect(response.status).toBe(201);
-      expect(response.body).toMatchObject({
-        name: "Groceries",
-        userId: user.user.userId,
-      });
-      expect(response.body.id).toBeDefined();
-    });
-
-    it("returns 400 when the list name is empty", async () => {
-      const user = await registerUser();
-
-      const response = await createList(user.authHeader, "   ");
-
-      expect(response.status).toBe(400);
-      expect(response.body.message).toBe("List name is required.");
-    });
-
-    it("returns 400 when the list name is too long", async () => {
-      const user = await registerUser();
-      const longName = "a".repeat(101);
-
-      const response = await createList(user.authHeader, longName);
-
-      expect(response.status).toBe(400);
-      expect(response.body.message).toBe("List name must be 100 characters or fewer.");
-    });
-
-    it("ignores a spoofed userId in the request body", async () => {
+    it("User cannot see another user's lists", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",
@@ -98,19 +95,36 @@ describe("List API", () => {
         username: "userb",
       });
 
-      const response = await request(app)
-        .post("/todo/lists")
-        .set(userA.authHeader)
-        .send({ name: "Groceries", userId: userB.user.userId });
+      await createList(userB.authHeader, "Secret Project");
+      await createList(userA.authHeader, "Work");
 
-      expect(response.status).toBe(201);
-      expect(response.body.userId).toBe(userA.user.userId);
-      expect(response.body.userId).not.toBe(userB.user.userId);
+      const response = await request(app)
+        .get("/todo/lists")
+        .set(userA.authHeader);
+
+      expect(response.status).toBe(200);
+      expect(response.body.some((list) => list.name === "Secret Project")).toBe(false);
     });
   });
 
-  describe("PUT /todo/lists/:listId", () => {
-    it("renames a list owned by the authenticated user", async () => {
+  describe("US-2.3 — Select a list", () => {
+    it("User selects a different list", async () => {
+      const user = await registerUser();
+      await createList(user.authHeader, "Work");
+      await createList(user.authHeader, "Personal");
+
+      const response = await request(app)
+        .get("/todo/lists")
+        .set(user.authHeader);
+
+      expect(response.status).toBe(200);
+      expect(response.body.map((list) => list.name)).toContain("Work");
+      expect(response.body.map((list) => list.name)).toContain("Personal");
+    });
+  });
+
+  describe("US-2.4 — Rename and delete lists", () => {
+    it("User renames a list", async () => {
       const user = await registerUser();
       const created = await createList(user.authHeader, "Groceries");
 
@@ -124,7 +138,24 @@ describe("List API", () => {
       expect(response.body.userId).toBe(user.user.userId);
     });
 
-    it("returns 404 when renaming another user's list", async () => {
+    it("User deletes a list", async () => {
+      const user = await registerUser();
+      const created = await createList(user.authHeader, "Groceries");
+
+      const response = await request(app)
+        .delete(`/todo/lists/${created.body.id}`)
+        .set(user.authHeader);
+
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe("List deleted successfully.");
+
+      const deleted = await db.list.findByPk(created.body.id);
+      expect(deleted).toBeNull();
+    });
+  });
+
+  describe("US-2.5 — Private lists only", () => {
+    it("User attempts to rename another user's list", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",
@@ -146,25 +177,8 @@ describe("List API", () => {
       const unchanged = await db.list.findByPk(secretList.body.id);
       expect(unchanged.name).toBe("Secret Project");
     });
-  });
 
-  describe("DELETE /todo/lists/:listId", () => {
-    it("deletes a list owned by the authenticated user", async () => {
-      const user = await registerUser();
-      const created = await createList(user.authHeader, "Groceries");
-
-      const response = await request(app)
-        .delete(`/todo/lists/${created.body.id}`)
-        .set(user.authHeader);
-
-      expect(response.status).toBe(200);
-      expect(response.body.message).toBe("List deleted successfully.");
-
-      const deleted = await db.list.findByPk(created.body.id);
-      expect(deleted).toBeNull();
-    });
-
-    it("returns 404 when deleting another user's list and preserves the row", async () => {
+    it("User attempts to delete another user's list", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",
@@ -185,6 +199,33 @@ describe("List API", () => {
       const preserved = await db.list.findByPk(secretList.body.id);
       expect(preserved).not.toBeNull();
       expect(preserved.name).toBe("Secret Project");
+    });
+
+    it("Client cannot assign a list to another user on create", async () => {
+      const userA = await registerUser({
+        email: "a@example.com",
+        username: "usera",
+      });
+      const userB = await registerUser({
+        email: "b@example.com",
+        username: "userb",
+      });
+
+      const response = await request(app)
+        .post("/todo/lists")
+        .set(userA.authHeader)
+        .send({ name: "Groceries", userId: userB.user.userId });
+
+      expect(response.status).toBe(201);
+      expect(response.body.userId).toBe(userA.user.userId);
+      expect(response.body.userId).not.toBe(userB.user.userId);
+    });
+
+    it("Unauthenticated API request to lists", async () => {
+      const response = await request(app).get("/todo/lists");
+
+      expect(response.status).toBe(401);
+      expect(response.body.message).toMatch(/Unauthorized/i);
     });
   });
 });

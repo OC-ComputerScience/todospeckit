@@ -1,33 +1,33 @@
 # Feature: User Authentication & Session Management
 
-**Sprint:** 1  
-**Branch pattern:** `feature/sprint-1-user-auth`
+**Feature ID:** 1
+**Branch pattern:** `feature/1-user-auth`
 
 ---
 
 ## User Stories
 
-### US-1: Register an account
+### US-1.1: Register an account
 **As a** new user  
 **I want to** create an account with my name, email, username, and password  
 **So that** I can sign in and manage my own private todo lists
 
-### US-2: Sign in
+### US-1.2: Sign in
 **As a** registered user  
 **I want to** sign in with my username and password  
 **So that** I can access the application dashboard securely
 
-### US-3: Stay signed in across page loads
+### US-1.3: Stay signed in across page loads
 **As a** signed-in user  
 **I want** my session to persist in the browser  
 **So that** I do not have to sign in again every time I refresh the page
 
-### US-4: Sign out
+### US-1.4: Sign out
 **As a** signed-in user  
 **I want to** sign out  
 **So that** no one else can use my account on a shared device
 
-### US-5: Block unauthenticated access
+### US-1.5: Block unauthenticated access
 **As the** application  
 **I want to** require a valid session for all non-auth screens  
 **So that** users can only see and modify their own data
@@ -43,18 +43,18 @@
 *   Session lifetime: **24 hours** from creation.
 *   Reuse a non-expired session for the same user on login when one already exists.
 *   Default role for new users: `worker`.
-*   **Data ownership foundation:** every authenticated request must resolve to exactly one user via `req.user.id` from the session token. Later sprints scope all lists and todo items to this ID.
+*   **Data ownership foundation:** every authenticated request must resolve to exactly one user via `req.user.id` from the session token. Later features scope all lists and todo items to this ID.
 *   **Frontend email validation:** registration uses shared `emailRules` from `frontend/src/config/validation.js` — required plus regex format check (`/^[^\s@]+@[^\s@]+\.[^\s@]+$/`); invalid format message: **"Enter a valid email address."**
 
 ---
 
 ## Data Ownership & Isolation (foundation)
 
-Sprint 1 establishes identity; Sprints 2–3 enforce per-user data boundaries.
+Feature 1 establishes identity; Features 2–3 enforce per-user data boundaries.
 
 *   Each user account is a separate tenant boundary for todo lists and items.
-*   No API in this sprint returns another user's profile or session.
-*   Sprint 2+ must never expose lists or todos across users — not in list responses, detail views, or error messages that confirm another user's resource exists.
+*   No API in this feature returns another user's profile or session.
+*   Later features must never expose lists or todos across users — not in list responses, detail views, or error messages that confirm another user's resource exists.
 
 ---
 
@@ -101,10 +101,10 @@ Sprint 1 establishes identity; Sprints 2–3 enforce per-user data boundaries.
 *   Client-side validation before API call; server errors shown via `<v-alert type="error">`.
 
 ### [View: Dashboard placeholder] — route name `home`
-*   Minimal protected landing page shown after successful login (full dashboard built in Sprint 2).
+*   Minimal protected landing page shown after successful login (full dashboard built in Feature 2).
 *   Displays a welcome message using the user's first name.
-*   **No `MenuBar`** in Sprint 1 — auth pages and this placeholder use a full-screen layout only.
-*   **Sign out** button on this page (standalone `v-btn`; removed from page content when `MenuBar` is added in Sprint 2).
+*   **No `MenuBar`** in Feature 1 — auth pages and this placeholder use a full-screen layout only.
+*   **Sign out** button on this page (standalone `v-btn`; removed from page content when `MenuBar` is added in Feature 2).
 
 ---
 
@@ -134,7 +134,7 @@ Sprint 1 establishes identity; Sprints 2–3 enforce per-user data boundaries.
 
 ## Acceptance Criteria (Gherkin)
 
-### Registration
+### US-1.1 — Registration
 
 #### Scenario: User registers with valid information
 *   **Given** I am on the registration page
@@ -197,7 +197,7 @@ Sprint 1 establishes identity; Sprints 2–3 enforce per-user data boundaries.
 
 ---
 
-### Login
+### US-1.2 — Sign in
 
 #### Scenario: User signs in with valid credentials
 *   **Given** I am on the login page
@@ -234,35 +234,26 @@ Sprint 1 establishes identity; Sprints 2–3 enforce per-user data boundaries.
 *   **And** I see the message **"Password is required."**
 *   **And** no API request is sent
 
+---
+
+### US-1.3 — Stay signed in across page loads
+
 #### Scenario: Signed-in user visits login page
 *   **Given** I have a valid session in `localStorage`
 *   **When** I navigate to the login page
 *   **Then** I am redirected to the home page
 
----
-
-### Logout
-
-#### Scenario: User signs out
-*   **Given** I am signed in on the home page
-*   **When** I click **Sign out**
-*   **Then** the API invalidates my session token on the server
-*   **And** `localStorage` key `user` is removed
-*   **And** I am redirected to the login page
-
----
-
-### Route protection & session handling
-
-#### Scenario: Unauthenticated user accesses a protected route
-*   **Given** I have no session in `localStorage`
-*   **When** I navigate directly to the home page
-*   **Then** I am redirected to the login page
-
 #### Scenario: API request includes session token
 *   **Given** I am signed in
 *   **When** the frontend makes an authenticated API request
 *   **Then** the request includes header `Authorization: Bearer <token>`
+
+#### Scenario: Protected API request succeeds with a valid session
+*   **Given** I am signed in as user A
+*   **And** user B also exists
+*   **When** I send an authenticated `GET /todo/lists` request
+*   **Then** the API returns `200`
+*   **And** only lists owned by user A are returned
 
 #### Scenario: Expired or invalid session token
 *   **Given** I am signed in with an expired or revoked token
@@ -273,26 +264,57 @@ Sprint 1 establishes identity; Sprints 2–3 enforce per-user data boundaries.
 
 ---
 
+### US-1.4 — Sign out
+
+#### Scenario: User signs out
+*   **Given** I am signed in on the home page
+*   **When** I click **Sign out**
+*   **Then** the API invalidates my session token on the server
+*   **And** `localStorage` key `user` is removed
+*   **And** I am redirected to the login page
+
+---
+
+### US-1.5 — Block unauthenticated access
+
+#### Scenario: Unauthenticated user accesses a protected route
+*   **Given** I have no session in `localStorage`
+*   **When** I navigate directly to the home page
+*   **Then** I am redirected to the login page
+
+---
+
 ## Test Coverage Map
 
 Each scenario above must map to at least one automated test.
 
-| Area | Tool | Scenarios |
-|------|------|-----------|
-| `POST /todo/register` | Jest + supertest | Registration happy path, duplicate username, duplicate email, missing fields, short password |
-| `POST /todo/login` | Jest + supertest | Valid login, invalid password, missing username/password |
-| `POST /todo/logout` | Jest + supertest | Valid logout, missing token |
-| `authenticate` middleware | Jest + supertest | Valid token, missing token, expired token |
-| `Register.vue` | Vitest (`Register.test.js`) | Client-side validation scenarios (missing email, invalid email format, missing username, password rules, mismatch) |
-| `Login.vue` | Vitest | Client-side validation, error display on failed login |
-| `router.js` guards | Vitest | Unauthenticated redirect, signed-in redirect away from login |
+| Story | Scenario | Test file | Test name |
+|-------|----------|-----------|-----------|
+| US-1.1 | User registers with valid information | `backend/tests/auth.test.js` | `User registers with valid information` |
+| US-1.1 | User submits registration with missing email | `backend/tests/auth.test.js` | `User submits registration with missing email` |
+| US-1.1 | User submits registration with invalid email format | `frontend/tests/Register.test.js` | `User submits registration with invalid email format` |
+| US-1.1 | User submits registration with missing username | `frontend/tests/Register.test.js` | `User submits registration with missing username` |
+| US-1.1 | User submits registration with password too short | `backend/tests/auth.test.js`, `frontend/tests/Register.test.js` | `User submits registration with password too short` |
+| US-1.1 | User submits registration with mismatched passwords | `frontend/tests/Register.test.js` | `User submits registration with mismatched passwords` |
+| US-1.1 | User registers with a duplicate username | `backend/tests/auth.test.js` | `User registers with a duplicate username` |
+| US-1.1 | User registers with a duplicate email | `backend/tests/auth.test.js` | `User registers with a duplicate email` |
+| US-1.2 | User signs in with valid credentials | `backend/tests/auth.test.js` | `User signs in with valid credentials` |
+| US-1.2 | User signs in with invalid password | `backend/tests/auth.test.js`, `frontend/tests/Login.test.js` | `User signs in with invalid password` |
+| US-1.2 | User signs in with missing username | `backend/tests/auth.test.js`, `frontend/tests/Login.test.js` | `User signs in with missing username` |
+| US-1.2 | User signs in with missing password | `backend/tests/auth.test.js`, `frontend/tests/Login.test.js` | `User signs in with missing password` |
+| US-1.3 | Signed-in user visits login page | `frontend/tests/router.test.js` | `Signed-in user visits login page` |
+| US-1.3 | API request includes session token | `backend/tests/authenticate.test.js` | `API request includes session token` |
+| US-1.3 | Protected API request succeeds with a valid session | `backend/tests/authenticate.test.js` | `Protected API request succeeds with a valid session` |
+| US-1.3 | Expired or invalid session token | `backend/tests/authenticate.test.js` | `Expired or invalid session token` |
+| US-1.4 | User signs out | `backend/tests/auth.test.js` | `User signs out` |
+| US-1.5 | Unauthenticated user accesses a protected route | `backend/tests/authenticate.test.js`, `frontend/tests/router.test.js` | `Unauthenticated user accesses a protected route` |
 
 ---
 
-## Out of Scope (Sprint 1)
+## Out of Scope
 
 *   Password reset (`POST /todo/reset-password`)
 *   Email verification
 *   OAuth / social login
 *   Admin user management
-*   Full todo dashboard (Sprint 2)
+*   Full todo dashboard (Feature 2)

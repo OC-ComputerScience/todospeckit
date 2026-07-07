@@ -1,34 +1,34 @@
 # Feature: Todo List Management
 
-**Sprint:** 2  
-**Branch pattern:** `feature/sprint-2-todo-list-management`  
-**Depends on:** Sprint 1 (`features/sprint-1-user-auth.md`)
+**Feature ID:** 2
+**Branch pattern:** `feature/2-todo-list-management`
+**Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md)
 
 ---
 
 ## User Stories
 
-### US-1: Create todo lists
+### US-2.1: Create todo lists
 **As a** signed-in user  
 **I want to** create named todo lists (e.g. "Work", "Groceries")  
 **So that** I can organize tasks into separate groups
 
-### US-2: View my lists
+### US-2.2: View my lists
 **As a** signed-in user  
 **I want to** see all of my todo lists in a sidebar  
 **So that** I can see what groups I have created
 
-### US-3: Select a list
+### US-2.3: Select a list
 **As a** signed-in user  
 **I want to** select a list from the sidebar  
-**So that** I can focus on one group at a time (todo items added in Sprint 3)
+**So that** I can focus on one group at a time (todo items added in Feature 3)
 
-### US-4: Rename and delete lists
+### US-2.4: Rename and delete lists
 **As a** signed-in user  
 **I want to** rename or delete a todo list  
 **So that** I can keep my workspace organized
 
-### US-5: Private lists only
+### US-2.5: Private lists only
 **As a** signed-in user  
 **I want** my lists visible only to me  
 **So that** other users cannot read or modify my list names
@@ -43,7 +43,7 @@
 *   On create, set `userId` from `req.user.id` only — **ignore or strip** any `userId` sent in the request body.
 *   List names are trimmed before save; empty strings are rejected.
 *   Lists are ordered alphabetically by name.
-*   This sprint delivers **list CRUD and sidebar UI only** — todo item UI and API are defined in Sprint 3.
+*   This feature delivers **list CRUD and sidebar UI only** — todo item UI and API are defined in Feature 3.
 
 ---
 
@@ -97,14 +97,14 @@ All endpoints return **only data owned by the authenticated user**. Cross-user a
 ## Screen Requirements
 
 ### [View: Application Dashboard] — route name `home`
-Replaces the Sprint 1 placeholder home page.
+Replaces the Feature 1 placeholder home page.
 
 **Layout:** split screen using Vuetify grids (`<v-row>`).
 
-| Column | Breakpoint | Contents (this sprint) |
+| Column | Breakpoint | Contents (this feature) |
 |--------|------------|------------------------|
 | Sidebar | `cols="12" md="4"` | List management pane |
-| Main | `cols="12" md="8"` | Placeholder for Sprint 3 todo items |
+| Main | `cols="12" md="8"` | Placeholder for Feature 3 todo items |
 
 **Sidebar**
 *   Heading: **My Lists**
@@ -113,14 +113,14 @@ Replaces the Sprint 1 placeholder home page.
 *   Each list row has a **rename** icon (opens a `<v-dialog>` pre-filled with the current name; **Save** / **Cancel**) and a **delete** icon (opens a confirmation `<v-dialog>`).
 *   **Empty state:** **"No lists yet. Create your first list."** when the user has zero lists.
 
-**Main panel (placeholder — Sprint 2)**
-*   When a list is selected: heading shows the list name and message **"Todo items will appear here in the next sprint."**
+**Main panel (placeholder — Feature 2)**
+*   When a list is selected: heading shows the list name and message **"Todo items will appear here in a later feature."**
 *   When no list is selected: **"Select a list"**
 *   **Loading state:** skeleton or progress indicator while lists are fetching.
 *   **Error state:** `<v-alert type="error">` for API failures.
 
 **App chrome**
-*   Introduce `MenuBar` in this sprint (not present in Sprint 1): signed-in user's name and **Sign out**.
+*   Introduce `MenuBar` in this feature (not present in Feature 1): signed-in user's name and **Sign out**.
 *   `MenuBar` is hidden on login and register routes.
 
 ---
@@ -144,7 +144,7 @@ Replaces the Sprint 1 placeholder home page.
 
 ## Acceptance Criteria (Gherkin)
 
-### Lists
+### US-2.1 — Create todo lists
 
 #### Scenario: User creates a new list
 *   **Given** I am signed in on the dashboard
@@ -172,6 +172,10 @@ Replaces the Sprint 1 placeholder home page.
 *   **Then** the API returns `400` with `{ "message": "List name must be 100 characters or fewer." }`
 *   **And** the error is displayed in a `<v-alert type="error">`
 
+---
+
+### US-2.2 — View my lists
+
 #### Scenario: Dashboard loads with existing lists
 *   **Given** I am signed in
 *   **And** I own lists `Work` and `Personal`
@@ -187,12 +191,28 @@ Replaces the Sprint 1 placeholder home page.
 *   **Then** I see **"No lists yet. Create your first list."**
 *   **And** the main panel shows **"Select a list"**
 
+#### Scenario: User cannot see another user's lists
+*   **Given** user B owns list `Secret Project`
+*   **And** I am signed in as user A
+*   **When** I request `GET /todo/lists`
+*   **Then** the response contains only lists owned by user A
+*   **And** `Secret Project` is not in the response
+*   **And** my sidebar does not show `Secret Project`
+
+---
+
+### US-2.3 — Select a list
+
 #### Scenario: User selects a different list
 *   **Given** I am signed in
 *   **And** I own lists `Work` and `Personal`
 *   **When** I click `Personal` in the sidebar
 *   **Then** `Personal` is highlighted as the active list
 *   **And** the main panel heading shows `Personal`
+
+---
+
+### US-2.4 — Rename and delete lists
 
 #### Scenario: User renames a list
 *   **Given** I am signed in
@@ -209,13 +229,9 @@ Replaces the Sprint 1 placeholder home page.
 *   **And** the list is removed from the sidebar
 *   **And** another owned list is selected if one exists
 
-#### Scenario: User cannot see another user's lists
-*   **Given** user B owns list `Secret Project`
-*   **And** I am signed in as user A
-*   **When** I request `GET /todo/lists`
-*   **Then** the response contains only lists owned by user A
-*   **And** `Secret Project` is not in the response
-*   **And** my sidebar does not show `Secret Project`
+---
+
+### US-2.5 — Private lists only
 
 #### Scenario: User attempts to rename another user's list
 *   **Given** I am signed in as user A
@@ -237,10 +253,6 @@ Replaces the Sprint 1 placeholder home page.
 *   **Then** the API returns `201` with a list owned by user A
 *   **And** the saved `userId` is user A's ID, not `999`
 
----
-
-### Authentication (integration with Sprint 1)
-
 #### Scenario: Unauthenticated user accesses the dashboard
 *   **Given** I have no session in `localStorage`
 *   **When** I navigate to the dashboard
@@ -255,27 +267,34 @@ Replaces the Sprint 1 placeholder home page.
 
 ## Test Coverage Map
 
-| Area | Tool | Scenarios |
-|------|------|-----------|
-| `GET /todo/lists` | Jest + supertest | Returns only caller's lists; excludes other users' lists; `401` without token |
-| `POST /todo/lists` | Jest + supertest | Happy path, empty name, name too long; ignores spoofed `userId` in body |
-| `PUT /todo/lists/:listId` | Jest + supertest | Rename owned list; `404` for another user's list; no mutation of other user's row |
-| `DELETE /todo/lists/:listId` | Jest + supertest | Delete owned list; `404` for another user's list; other user's row preserved |
-| `Dashboard.vue` (sidebar) | Vitest | Empty list state, list selection, create/rename/delete UI |
-| List create dialog | Vitest | Empty name validation |
+| Story | Scenario | Test file | Test name |
+|-------|----------|-----------|-----------|
+| US-2.1 | User creates a new list | `backend/tests/lists.test.js`, `frontend/tests/Dashboard.test.js` | `User creates a new list` |
+| US-2.1 | User creates a list with an empty name | `backend/tests/lists.test.js`, `frontend/tests/Dashboard.test.js` | `User creates a list with an empty name` |
+| US-2.1 | User creates a list with a name that is too long | `backend/tests/lists.test.js` | `User creates a list with a name that is too long` |
+| US-2.2 | Dashboard loads with existing lists | `backend/tests/lists.test.js`, `frontend/tests/Dashboard.test.js` | `Dashboard loads with existing lists` |
+| US-2.2 | User has no lists | `frontend/tests/Dashboard.test.js` | `User has no lists` |
+| US-2.2 | User cannot see another user's lists | `backend/tests/lists.test.js` | `User cannot see another user's lists` |
+| US-2.3 | User selects a different list | `backend/tests/lists.test.js`, `frontend/tests/Dashboard.test.js` | `User selects a different list` |
+| US-2.4 | User renames a list | `backend/tests/lists.test.js`, `frontend/tests/Dashboard.test.js` | `User renames a list` |
+| US-2.4 | User deletes a list | `backend/tests/lists.test.js`, `frontend/tests/Dashboard.test.js` | `User deletes a list` |
+| US-2.5 | User attempts to rename another user's list | `backend/tests/lists.test.js` | `User attempts to rename another user's list` |
+| US-2.5 | User attempts to delete another user's list | `backend/tests/lists.test.js` | `User attempts to delete another user's list` |
+| US-2.5 | Client cannot assign a list to another user on create | `backend/tests/lists.test.js` | `Client cannot assign a list to another user on create` |
+| US-2.5 | Unauthenticated API request to lists | `backend/tests/lists.test.js` | `Unauthenticated API request to lists` |
 
 ---
 
-## Out of Scope (Sprint 2)
+## Out of Scope
 
-*   Todo items (see `features/sprint-3-todo-list-item-management.md`)
+*   Todo items (see `features/feature-3-todo-list-item-management.md`)
 *   `MenuBar` beyond basic sign-out (full nav deferred if not needed)
 *   Drag-and-drop list reordering
 *   Sharing lists with other users
 
 ---
 
-## Delivered to Sprint 3
+## Delivered to Feature 3
 
 The following are intentionally deferred to the next feature spec:
 

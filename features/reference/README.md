@@ -1,17 +1,17 @@
 # Reference Specifications
 
-**Living snapshot** of the integrated product on `dev` after all merged sprints.
+**Living snapshot** of the integrated product on `dev` after merged features.
 
 These files answer: *"What does the app look like right now?"*  
-They do **not** authorize new scope by themselves — implement changes only from sprint specs in `features/sprint-*.md`.
+They do **not** authorize new scope by themselves — implement changes only from feature specs in `features/feature-*.md`.
 
 ## Maintenance
 
 | When | Action |
 |------|--------|
-| Sprint merges to `dev` | Update `data-model.md` and `api.md` if tables or endpoints changed |
-| New sprint in progress | Sprint spec owns the **delta**; reference updates at **merge** |
-| Drift suspected | Compare reference to code and sprint specs; fix reference or code |
+| Feature merges to `dev` | Update `data-model.md` and `api.md` if tables or endpoints changed |
+| New feature in progress | Feature spec owns the **delta**; reference updates at **merge** |
+| Drift suspected | Compare reference to code and feature specs; fix reference or code |
 
 ## Files
 
@@ -20,12 +20,12 @@ They do **not** authorize new scope by themselves — implement changes only fro
 | [data-model.md](./data-model.md) | Current database tables, columns, associations |
 | [api.md](./api.md) | Current REST API under `/todo/` |
 
-## Sprint provenance
+## Feature provenance
 
 | Area | Introduced |
 |------|------------|
-| Users, sessions, auth | Sprint 1 |
-| Lists | Sprint 2 |
-| Todos | Sprint 3 |
-| User profile | Sprint 4 |
-| Todo `dueDate` | Sprint 5 |
+| Users, sessions, auth | Feature 1 |
+| Lists | Feature 2 |
+| Todos | Feature 3 |
+| User profile | Feature 4 |
+| Todo `dueDate` | Feature 5 |

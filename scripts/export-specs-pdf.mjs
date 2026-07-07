@@ -58,11 +58,12 @@ const RULE_FILES = [
 
 const SPEC_FILES = [
   "features/README.md",
-  "features/sprint-1-user-auth.md",
-  "features/sprint-2-todo-list-management.md",
-  "features/sprint-3-todo-list-item-management.md",
-  "features/sprint-4-todo-user-profile-management.md",
-  "features/sprint-5-todo-due-date.md",
+  "features/framework.md",
+  "features/feature-1-user-auth.md",
+  "features/feature-2-todo-list-management.md",
+  "features/feature-3-todo-list-item-management.md",
+  "features/feature-4-user-profile-management.md",
+  "features/feature-5-todo-due-date.md",
   "features/reference/README.md",
   "features/reference/data-model.md",
   "features/reference/api.md",

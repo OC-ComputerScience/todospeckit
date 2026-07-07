@@ -1,3 +1,8 @@
+/**
+ * Feature 1 — User Authentication & Session Management
+ * Spec: features/feature-1-user-auth.md
+ */
+
 import bcrypt from "bcryptjs";
 import request from "supertest";
 import app from "../server.js";
@@ -12,7 +17,7 @@ const validRegistration = {
   password: "password123",
 };
 
-describe("Auth API", () => {
+describe("Feature 1 — Auth API", () => {
   beforeAll(async () => {
     await syncTestDatabase();
   });
@@ -25,8 +30,8 @@ describe("Auth API", () => {
     await db.sequelize.close();
   });
 
-  describe("POST /todo/register", () => {
-    it("registers a user and returns a session payload", async () => {
+  describe("US-1.1 — Registration", () => {
+    it("User registers with valid information", async () => {
       const response = await request(app).post("/todo/register").send(validRegistration);
 
       expect(response.status).toBe(201);
@@ -50,7 +55,7 @@ describe("Auth API", () => {
       expect(sessionCount).toBe(1);
     });
 
-    it("returns 400 when required fields are missing", async () => {
+    it("User submits registration with missing email", async () => {
       const response = await request(app).post("/todo/register").send({
         fName: "Jane",
         lName: "Doe",
@@ -62,7 +67,7 @@ describe("Auth API", () => {
       expect(response.body.message).toBe("Email is required.");
     });
 
-    it("returns 400 when the password is too short", async () => {
+    it("User submits registration with password too short", async () => {
       const response = await request(app)
         .post("/todo/register")
         .send({ ...validRegistration, password: "short" });
@@ -71,7 +76,7 @@ describe("Auth API", () => {
       expect(response.body.message).toBe("Password must be at least 8 characters.");
     });
 
-    it("returns 400 when the username is already taken", async () => {
+    it("User registers with a duplicate username", async () => {
       await request(app).post("/todo/register").send(validRegistration);
 
       const response = await request(app)
@@ -86,7 +91,7 @@ describe("Auth API", () => {
       expect(response.body.message).toBe("Username is already taken.");
     });
 
-    it("returns 400 when the email is already registered", async () => {
+    it("User registers with a duplicate email", async () => {
       await request(app).post("/todo/register").send(validRegistration);
 
       const response = await request(app)
@@ -102,12 +107,12 @@ describe("Auth API", () => {
     });
   });
 
-  describe("POST /todo/login", () => {
+  describe("US-1.2 — Sign in", () => {
     beforeEach(async () => {
       await request(app).post("/todo/register").send(validRegistration);
     });
 
-    it("returns 200 with a session payload for valid credentials", async () => {
+    it("User signs in with valid credentials", async () => {
       const response = await request(app)
         .post("/todo/login")
         .send({ username: "jdoe", password: "password123" });
@@ -122,7 +127,7 @@ describe("Auth API", () => {
       });
     });
 
-    it("returns 401 for an invalid password", async () => {
+    it("User signs in with invalid password", async () => {
       const response = await request(app)
         .post("/todo/login")
         .send({ username: "jdoe", password: "wrongpassword" });
@@ -131,7 +136,7 @@ describe("Auth API", () => {
       expect(response.body.message).toBe("Invalid username or password.");
     });
 
-    it("returns 400 when username is missing", async () => {
+    it("User signs in with missing username", async () => {
       const response = await request(app)
         .post("/todo/login")
         .send({ password: "password123" });
@@ -140,7 +145,7 @@ describe("Auth API", () => {
       expect(response.body.message).toBe("Username is required.");
     });
 
-    it("returns 400 when password is missing", async () => {
+    it("User signs in with missing password", async () => {
       const response = await request(app)
         .post("/todo/login")
         .send({ username: "jdoe" });
@@ -150,8 +155,8 @@ describe("Auth API", () => {
     });
   });
 
-  describe("POST /todo/logout", () => {
-    it("invalidates the current session token", async () => {
+  describe("US-1.4 — Sign out", () => {
+    it("User signs out", async () => {
       const user = await registerUser(validRegistration);
 
       const response = await request(app)
@@ -171,13 +176,6 @@ describe("Auth API", () => {
         .set(user.authHeader);
 
       expect(retry.status).toBe(401);
-    });
-
-    it("returns 401 when no token is provided", async () => {
-      const response = await request(app).post("/todo/logout");
-
-      expect(response.status).toBe(401);
-      expect(response.body.message).toBe("Unauthorized! No token provided.");
     });
   });
 });

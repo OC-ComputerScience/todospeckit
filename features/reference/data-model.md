@@ -1,7 +1,7 @@
 # Data Model Reference
 
-**Status:** Integrated schema through **Sprint 5** (includes `todos.dueDate`).  
-**Authority for new work:** sprint specs in `features/` — update this file when a sprint merges to `dev`.
+**Status:** Integrated schema through **Feature 5** (includes `todos.dueDate`).  
+**Authority for new work:** feature specs in `features/` — update this file when a feature merges to `dev`.
 
 All application data is **scoped per user**. Cross-user resource access returns `404` at the API layer.
 
@@ -21,7 +21,7 @@ All application data is **scoped per user**. Cross-user resource access returns 
 | `createdAt` | DATE | Sequelize timestamps |
 | `updatedAt` | DATE | Sequelize timestamps |
 
-**Sprint:** 1 · **Profile edit:** Sprint 4
+**Feature:** 1 · **Profile edit:** Feature 4
 
 ---
 
@@ -37,7 +37,7 @@ All application data is **scoped per user**. Cross-user resource access returns 
 | `createdAt` | DATE | Sequelize timestamps |
 | `updatedAt` | DATE | Sequelize timestamps |
 
-**Sprint:** 1
+**Feature:** 1
 
 ---
 
@@ -51,7 +51,7 @@ All application data is **scoped per user**. Cross-user resource access returns 
 | `createdAt` | DATE | Sequelize timestamps |
 | `updatedAt` | DATE | Sequelize timestamps |
 
-**Sprint:** 2
+**Feature:** 2
 
 ---
 
@@ -63,12 +63,12 @@ All application data is **scoped per user**. Cross-user resource access returns 
 | `listId` | INTEGER FK | Required → `lists.id`; cascade on list delete |
 | `title` | STRING(255) | Required; trimmed; max 255 chars |
 | `completed` | BOOLEAN | Default `false` |
-| `dueDate` | DATEONLY | Nullable; optional; `YYYY-MM-DD` in API **(Sprint 5)** |
+| `dueDate` | DATEONLY | Nullable; optional; `YYYY-MM-DD` in API **(Feature 5)** |
 | `userId` | INTEGER FK | Required → `users.id`; set from session on create |
 | `createdAt` | DATE | Sequelize timestamps |
 | `updatedAt` | DATE | Sequelize timestamps |
 
-**Sprint:** 3 (base) · **`dueDate`:** Sprint 5
+**Feature:** 3 (base) · **`dueDate`:** Feature 5
 
 ---
 

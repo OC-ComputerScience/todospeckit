@@ -1,8 +1,8 @@
 # API Reference
 
 **Base path:** `/todo/`  
-**Status:** Integrated API through **Sprint 5** (todo `dueDate`).  
-**Authority for new work:** sprint specs in `features/` — update this file when a sprint merges to `dev`.
+**Status:** Integrated API through **Feature 5** (todo `dueDate`).  
+**Authority for new work:** feature specs in `features/` — update this file when a feature merges to `dev`.
 
 **Auth:** Send `Authorization: Bearer <token>` on protected routes.  
 **Errors:** `{ "message": "Human-readable explanation." }` unless noted.  
@@ -10,7 +10,7 @@
 
 ---
 
-## Authentication (Sprint 1)
+## Authentication (Feature 1)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
@@ -33,7 +33,7 @@
 
 ---
 
-## Lists (Sprint 2)
+## Lists (Feature 2)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
@@ -57,7 +57,7 @@
 
 ---
 
-## Todos (Sprint 3; `dueDate` Sprint 5)
+## Todos (Feature 3; `dueDate` Feature 5)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
@@ -107,7 +107,7 @@ Clear due date: `{ "dueDate": null }`. Omit `dueDate` to leave unchanged.
 
 ---
 
-## User profile (Sprint 4)
+## User profile (Feature 4)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|

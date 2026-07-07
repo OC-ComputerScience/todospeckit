@@ -1,30 +1,30 @@
 # Feature: Todo Due Date
 
-**Sprint:** 5  
-**Branch pattern:** `feature/sprint-5-todo-due-date`  
-**Depends on:** Sprints 1–3 (`features/sprint-1-user-auth.md`, `features/sprint-2-todo-list-management.md`, `features/sprint-3-todo-list-item-management.md`)  
+**Feature ID:** 5
+**Branch pattern:** `feature/5-todo-due-date`
+**Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md), [Feature 2 — Todo List Management](feature-2-todo-list-management.md), [Feature 3 — Todo List Item Management](feature-3-todo-list-item-management.md)
 **Related:** `features/reference/data-model.md`, `features/reference/api.md` (update on merge to `dev`)
 
 ---
 
 ## User Stories
 
-### US-1: Set a due date when creating a todo
+### US-5.1: Set a due date when creating a todo
 **As a** signed-in user  
 **I want to** optionally set a due date when I add a todo  
 **So that** I can plan when work should be finished
 
-### US-2: View due dates on todos
+### US-5.2: View due dates on todos
 **As a** signed-in user  
 **I want to** see each todo's due date in the list  
 **So that** I know what is due and when
 
-### US-3: Edit or clear a due date
+### US-5.3: Edit or clear a due date
 **As a** signed-in user  
 **I want to** change or remove a due date when editing a todo  
 **So that** I can keep deadlines accurate
 
-### US-4: Spot overdue todos
+### US-5.4: Spot overdue todos
 **As a** signed-in user  
 **I want** incomplete todos past their due date to stand out visually  
 **So that** I can prioritize overdue work
@@ -33,13 +33,13 @@
 
 ## System Requirements
 
-*   All behavior builds on Sprint 3 todo CRUD; list sidebar and ownership rules are unchanged.
+*   All behavior builds on Feature 3 todo CRUD; list sidebar and ownership rules are unchanged.
 *   `dueDate` is **optional** on create and update; `null` means no due date.
 *   Store dates as **calendar dates only** (no time-of-day): API uses `YYYY-MM-DD`; database uses `DATEONLY`.
 *   Reject invalid date strings with `400` and `{ "message": "..." }`.
 *   Sending `dueDate: null` on `PUT` clears the due date.
 *   Omitting `dueDate` on `PUT` leaves the existing value unchanged.
-*   Todo sort order is unchanged from Sprint 3 (incomplete first, then `createdAt` ascending).
+*   Todo sort order is unchanged from Feature 3 (incomplete first, then `createdAt` ascending).
 *   **Overdue:** an incomplete todo is overdue when `dueDate` is before today's date in the **browser's local calendar** (frontend display only; API returns the stored date).
 *   On merge to `dev`, update `features/reference/data-model.md` and `features/reference/api.md` to include `dueDate`.
 
@@ -47,7 +47,7 @@
 
 ## Data Ownership & Isolation
 
-Due date changes follow the same scope rules as Sprint 3 todos.
+Due date changes follow the same scope rules as Feature 3 todos.
 
 | Rule | Requirement |
 |------|-------------|
@@ -59,7 +59,7 @@ Due date changes follow the same scope rules as Sprint 3 todos.
 
 ## API Requirements
 
-Extends Sprint 3 todo endpoints. Auth and ownership behavior are unchanged.
+Extends Feature 3 todo endpoints. Auth and ownership behavior are unchanged.
 
 | Method | Endpoint | Change |
 |--------|----------|--------|
@@ -109,7 +109,7 @@ Clear due date:
 
 **Validation errors:** `400` with `{ "message": "..." }` for invalid `dueDate` format.
 
-**Error response:** unchanged from Sprint 3.  
+**Error response:** unchanged from Feature 3.  
 **Not found / not owned:** `404` (do not use `403`).
 
 ---
@@ -117,7 +117,7 @@ Clear due date:
 ## Screen Requirements
 
 ### [View: Application Dashboard] — route name `home`
-Extends Sprint 3 main panel only.
+Extends Feature 3 main panel only.
 
 **Add todo**
 *   Optional `<v-text-field type="date">` (or equivalent) beside the title field for due date.
@@ -147,13 +147,13 @@ Extends Sprint 3 main panel only.
 |-------|------|-------|
 | `dueDate` | DATEONLY | Nullable; optional on create/update |
 
-Existing Sprint 3 columns are unchanged. Existing rows default to `dueDate: null`.
+Existing Feature 3 columns are unchanged. Existing rows default to `dueDate: null`.
 
 ---
 
 ## Acceptance Criteria (Gherkin)
 
-### Due date on create
+### US-5.1 — Set a due date when creating a todo
 
 #### Scenario: User adds a todo with a due date
 *   **Given** I am signed in on the dashboard
@@ -172,7 +172,14 @@ Existing Sprint 3 columns are unchanged. Existing rows default to `dueDate: null
 *   **Then** the API returns `201` with `dueDate` null
 *   **And** no due date is shown on the row
 
-### Due date on update
+#### Scenario: API rejects an invalid due date on create
+*   **Given** I am signed in as user A
+*   **And** I own a list
+*   **When** I send `POST /todo/lists/:listId/todos` with body `{ "title": "Task", "dueDate": "not-a-date" }`
+*   **Then** the API returns `400` with `{ "message": "..." }`
+*   **And** no todo is created
+
+### US-5.3 — Edit or clear a due date
 
 #### Scenario: User sets a due date when editing a todo
 *   **Given** I am signed in
@@ -192,29 +199,6 @@ Existing Sprint 3 columns are unchanged. Existing rows default to `dueDate: null
 *   **Then** the API returns `200` with `dueDate` null
 *   **And** the row no longer shows a due date
 
-### Overdue display
-
-#### Scenario: Incomplete todo past due date is styled as overdue
-*   **Given** I am signed in
-*   **And** I have an incomplete todo with `dueDate` yesterday
-*   **When** I view the todo list
-*   **Then** the due date is displayed with overdue styling
-
-#### Scenario: Completed todo past due date is not styled as overdue
-*   **Given** I am signed in
-*   **And** I have a completed todo with `dueDate` yesterday
-*   **When** I view the todo list
-*   **Then** the due date does not use overdue styling
-
-### API validation
-
-#### Scenario: API rejects an invalid due date on create
-*   **Given** I am signed in as user A
-*   **And** I own a list
-*   **When** I send `POST /todo/lists/:listId/todos` with body `{ "title": "Task", "dueDate": "not-a-date" }`
-*   **Then** the API returns `400` with `{ "message": "..." }`
-*   **And** no todo is created
-
 #### Scenario: API rejects an invalid due date on update
 *   **Given** I am signed in as user A
 *   **And** I own todo `Buy milk`
@@ -229,22 +213,41 @@ Existing Sprint 3 columns are unchanged. Existing rows default to `dueDate: null
 *   **Then** the API returns `404` with `{ "message": "Todo with id=<id> not found." }`
 *   **And** user B's todo is unchanged
 
+### US-5.4 — Spot overdue todos
+
+#### Scenario: Incomplete todo past due date is styled as overdue
+*   **Given** I am signed in
+*   **And** I have an incomplete todo with `dueDate` yesterday
+*   **When** I view the todo list
+*   **Then** the due date is displayed with overdue styling
+
+#### Scenario: Completed todo past due date is not styled as overdue
+*   **Given** I am signed in
+*   **And** I have a completed todo with `dueDate` yesterday
+*   **When** I view the todo list
+*   **Then** the due date does not use overdue styling
+
 ---
 
 ## Test Coverage Map
 
 Each scenario above must map to at least one automated test.
 
-| Area | Tool | Scenarios |
-|------|------|-----------|
-| `POST /todo/lists/:listId/todos` | Jest + supertest (`todos.test.js`) | Create with `dueDate`; create without `dueDate`; invalid `dueDate` `400`; ownership unchanged from Sprint 3 |
-| `PUT /todo/todos/:id` | Jest + supertest (`todos.test.js`) | Set `dueDate`; clear `dueDate` with `null`; invalid `dueDate` `400`; `404` for another user's todo |
-| `GET /todo/lists/:listId/todos` | Jest + supertest (`todos.test.js`) | Response includes `dueDate` (set and `null`) |
-| `Dashboard.vue` (main panel) | Vitest (`Dashboard.test.js`) | Add todo with due date; edit set/clear due date; overdue styling for incomplete past-due todo; no overdue styling when completed |
+| Story | Scenario | Test file | Test name |
+|-------|----------|-----------|-----------|
+| US-5.1 | User adds a todo with a due date | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User adds a todo with a due date` |
+| US-5.1 | User adds a todo without a due date | `backend/tests/todos.test.js` | `User adds a todo without a due date` |
+| US-5.1 | API rejects an invalid due date on create | `backend/tests/todos.test.js` | `API rejects an invalid due date on create` |
+| US-5.3 | User sets a due date when editing a todo | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User sets a due date when editing a todo` |
+| US-5.3 | User clears a due date when editing a todo | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User clears a due date when editing a todo` |
+| US-5.3 | API rejects an invalid due date on update | `backend/tests/todos.test.js` | `API rejects an invalid due date on update` |
+| US-5.3 | User cannot set due date on another user's todo | `backend/tests/todos.test.js` | `User cannot set due date on another user's todo` |
+| US-5.4 | Incomplete todo past due date is styled as overdue | `frontend/tests/Dashboard.test.js` | `Incomplete todo past due date is styled as overdue` |
+| US-5.4 | Completed todo past due date is not styled as overdue | `frontend/tests/Dashboard.test.js` | `Completed todo past due date is not styled as overdue` |
 
 ---
 
-## Definition of Done (Sprint 5)
+## Definition of Done
 
 *   [ ] Backend model migration / sync includes nullable `dueDate`
 *   [ ] API and frontend implemented per this spec
@@ -254,7 +257,7 @@ Each scenario above must map to at least one automated test.
 
 ---
 
-## Out of Scope (Sprint 5)
+## Out of Scope
 
 *   Sorting or filtering todos by due date
 *   Due date on quick-add without opening edit dialog (optional field on add row is in scope; separate due-date-only modal is not)
@@ -262,4 +265,4 @@ Each scenario above must map to at least one automated test.
 *   Recurring todos
 *   Time-of-day or timezone handling (date-only)
 *   Calendar or agenda views
-*   Changes to lists, profile, or auth (Sprints 2, 4)
+*   Changes to lists, profile, or auth (Features 2, 4)

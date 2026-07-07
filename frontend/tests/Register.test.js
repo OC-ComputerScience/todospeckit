@@ -1,3 +1,8 @@
+/**
+ * Feature 1 — User Authentication & Session Management
+ * Spec: features/feature-1-user-auth.md
+ */
+
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { flushPromises } from "@vue/test-utils";
 import Register from "../src/views/Register.vue";
@@ -45,81 +50,83 @@ async function submitRegisterForm(wrapper) {
   await flushPromises();
 }
 
-describe("Register.vue", () => {
+describe("Feature 1 — Register", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("shows validation when email format is invalid", async () => {
-    const { wrapper } = await mountWithPlugins(Register, {
-      router: await createTestRouter("/register"),
+  describe("US-1.1 — Registration", () => {
+    it("User submits registration with invalid email format", async () => {
+      const { wrapper } = await mountWithPlugins(Register, {
+        router: await createTestRouter("/register"),
+      });
+      const form = await getForm(wrapper);
+
+      await fillValidRegisterForm(wrapper, { email: "notanemail" });
+      await submitRegisterForm(wrapper);
+      const validation = await form.vm.validate();
+
+      expect(validation.valid).toBe(false);
+      expect(authServices.registerUser).not.toHaveBeenCalled();
     });
-    const form = await getForm(wrapper);
 
-    await fillValidRegisterForm(wrapper, { email: "notanemail" });
-    await submitRegisterForm(wrapper);
-    const validation = await form.vm.validate();
+    it("User submits registration with missing email", async () => {
+      const { wrapper } = await mountWithPlugins(Register, {
+        router: await createTestRouter("/register"),
+      });
+      const form = await getForm(wrapper);
 
-    expect(validation.valid).toBe(false);
-    expect(authServices.registerUser).not.toHaveBeenCalled();
-  });
+      await fillValidRegisterForm(wrapper, { email: "" });
+      await submitRegisterForm(wrapper);
+      const validation = await form.vm.validate();
 
-  it("shows validation when email is missing", async () => {
-    const { wrapper } = await mountWithPlugins(Register, {
-      router: await createTestRouter("/register"),
+      expect(validation.valid).toBe(false);
+      expect(authServices.registerUser).not.toHaveBeenCalled();
     });
-    const form = await getForm(wrapper);
 
-    await fillValidRegisterForm(wrapper, { email: "" });
-    await submitRegisterForm(wrapper);
-    const validation = await form.vm.validate();
+    it("User submits registration with missing username", async () => {
+      const { wrapper } = await mountWithPlugins(Register, {
+        router: await createTestRouter("/register"),
+      });
+      const form = await getForm(wrapper);
 
-    expect(validation.valid).toBe(false);
-    expect(authServices.registerUser).not.toHaveBeenCalled();
-  });
+      await fillValidRegisterForm(wrapper, { username: "" });
+      await submitRegisterForm(wrapper);
+      const validation = await form.vm.validate();
 
-  it("shows validation when username is missing", async () => {
-    const { wrapper } = await mountWithPlugins(Register, {
-      router: await createTestRouter("/register"),
+      expect(validation.valid).toBe(false);
+      expect(authServices.registerUser).not.toHaveBeenCalled();
     });
-    const form = await getForm(wrapper);
 
-    await fillValidRegisterForm(wrapper, { username: "" });
-    await submitRegisterForm(wrapper);
-    const validation = await form.vm.validate();
+    it("User submits registration with password too short", async () => {
+      const { wrapper } = await mountWithPlugins(Register, {
+        router: await createTestRouter("/register"),
+      });
+      const form = await getForm(wrapper);
 
-    expect(validation.valid).toBe(false);
-    expect(authServices.registerUser).not.toHaveBeenCalled();
-  });
+      await fillValidRegisterForm(wrapper, {
+        password: "short",
+        confirmPassword: "short",
+      });
+      await submitRegisterForm(wrapper);
+      const validation = await form.vm.validate();
 
-  it("shows validation when password is too short", async () => {
-    const { wrapper } = await mountWithPlugins(Register, {
-      router: await createTestRouter("/register"),
+      expect(validation.valid).toBe(false);
+      expect(authServices.registerUser).not.toHaveBeenCalled();
     });
-    const form = await getForm(wrapper);
 
-    await fillValidRegisterForm(wrapper, {
-      password: "short",
-      confirmPassword: "short",
+    it("User submits registration with mismatched passwords", async () => {
+      const { wrapper } = await mountWithPlugins(Register, {
+        router: await createTestRouter("/register"),
+      });
+      const form = await getForm(wrapper);
+
+      await fillValidRegisterForm(wrapper, { confirmPassword: "differentpassword" });
+      await submitRegisterForm(wrapper);
+      const validation = await form.vm.validate();
+
+      expect(validation.valid).toBe(false);
+      expect(authServices.registerUser).not.toHaveBeenCalled();
     });
-    await submitRegisterForm(wrapper);
-    const validation = await form.vm.validate();
-
-    expect(validation.valid).toBe(false);
-    expect(authServices.registerUser).not.toHaveBeenCalled();
-  });
-
-  it("shows validation when passwords do not match", async () => {
-    const { wrapper } = await mountWithPlugins(Register, {
-      router: await createTestRouter("/register"),
-    });
-    const form = await getForm(wrapper);
-
-    await fillValidRegisterForm(wrapper, { confirmPassword: "differentpassword" });
-    await submitRegisterForm(wrapper);
-    const validation = await form.vm.validate();
-
-    expect(validation.valid).toBe(false);
-    expect(authServices.registerUser).not.toHaveBeenCalled();
   });
 });

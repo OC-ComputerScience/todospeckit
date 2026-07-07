@@ -12,7 +12,7 @@ This document establishes the absolute operational guardrails for this engineeri
 
 ## 🌿 Principle 2: Branching & Git Discipline
 *   **The Law:** You are strictly forbidden from writing or pushing feature implementation directly to the `main` or `master` branches. `main` must remain the scaffold-only starter kit (specs, rules, empty app shell, test harness).
-*   **The Guardrail:** Create a `dev` branch from `main` for integration. All feature development takes place on dedicated branches named `feature/sprint-[X]-[feature-name]` (e.g., `feature/sprint-1-user-auth`), branched from `dev` and merged back into `dev` when complete. Never merge feature branches into `main`.
+*   **The Guardrail:** Create a `dev` branch from `main` for integration. All feature development takes place on dedicated branches named `feature/[N]-[feature-name]` (e.g., `feature/1-user-auth`), branched from `dev` and merged back into `dev` when complete. Never merge feature branches into `main`.
 
 ## 🧪 Principle 3: No Ghost Testing / Strict Verification
 *   **The Law:** Code cannot be considered "Done" until a matching automated test suite passes. 
