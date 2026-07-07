@@ -56,6 +56,13 @@ const RULE_FILES = [
   ".cursor/rules/ui-style-system.mdc",
 ];
 
+const ADR_FILES = [
+  "docs/adr/README.md",
+  "docs/adr/0001-client-server-multi-user-architecture.md",
+  "docs/adr/0002-security-architecture.md",
+  "docs/adr/0003-mysql-relational-database.md",
+];
+
 const SPEC_FILES = [
   "features/README.md",
   "features/framework.md",
@@ -95,12 +102,13 @@ function readSection(relativePath) {
 
 function buildCombinedMarkdown() {
   const ruleSections = RULE_FILES.map(readSection);
+  const adrSections = ADR_FILES.map(readSection);
   const specSections = SPEC_FILES.map(readSection);
 
   return [
     "# Todo Speckit — Rules & Specifications",
     "",
-    "Generated from `.cursor/rules/` and `features/`.",
+    "Generated from `.cursor/rules/`, `docs/adr/`, and `features/`.",
     "",
     "---",
     "",
@@ -108,11 +116,15 @@ function buildCombinedMarkdown() {
     "",
     ruleSections.join(PAGE_BREAK),
     PAGE_BREAK,
-    "# Part 2: Feature Specifications",
+    "# Part 2: Architecture Decision Records",
+    "",
+    adrSections.join(PAGE_BREAK),
+    PAGE_BREAK,
+    "# Part 3: Feature Specifications",
     "",
     specSections.slice(0, 6).join(PAGE_BREAK),
     PAGE_BREAK,
-    "# Part 3: Reference (current integrated state)",
+    "# Part 4: Reference (current integrated state)",
     "",
     specSections.slice(6).join(PAGE_BREAK),
   ].join("\n");

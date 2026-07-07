@@ -46,6 +46,7 @@ Feature specs define **changes**; reference files describe **what exists now**.
 ## Related project docs
 
 - Cursor rules: `.cursor/rules/`
+- Architecture decisions: `docs/adr/` — [index](../docs/adr/README.md)
 - Living reference: `features/reference/` (data model + API snapshot on `dev`)
 - Backend env: `backend/.env` (copy from `backend/.env.example`)
 - Test env: `backend/.env.test` (copy from `backend/.env.test.example`)
@@ -61,7 +62,7 @@ npm run test:frontend    # Vitest
 
 ## Export rules & specs to PDF
 
-Combine all Cursor rules (first) and feature specs (second) into one PDF:
+Combine Cursor rules, ADRs, and feature specs into one PDF:
 
 ```bash
 npm install              # once — installs md-to-pdf at repo root
@@ -77,7 +78,7 @@ npm run specs:pdf
 
 Output:
 
-- `docs/todo-speckit-specs.md` — combined Markdown (rules, then specs)
+- `docs/todo-speckit-specs.md` — combined Markdown (rules, ADRs, specs, reference)
 - `docs/todo-speckit-specs.pdf` — PDF export
 
 **Included files (in order):**
@@ -90,10 +91,14 @@ Output:
 6. `.cursor/rules/security.mdc`
 7. `.cursor/rules/testing-standards.mdc`
 8. `.cursor/rules/ui-style-system.mdc`
-9. `features/README.md`
-10. `features/framework.md`
-11. `features/feature-1-user-auth.md` through `feature-5-todo-due-date.md`
-12. `features/reference/README.md`, `data-model.md`, `api.md`
+9. `docs/adr/README.md`
+10. `docs/adr/0001-client-server-multi-user-architecture.md`
+11. `docs/adr/0002-security-architecture.md`
+12. `docs/adr/0003-mysql-relational-database.md`
+13. `features/README.md`
+14. `features/framework.md`
+15. `features/feature-1-user-auth.md` through `feature-5-todo-due-date.md`
+16. `features/reference/README.md`, `data-model.md`, `api.md`
 
 Manual alternative (no npm script):
 
@@ -106,6 +111,10 @@ cat .cursor/rules/constitution.mdc \
     .cursor/rules/security.mdc \
     .cursor/rules/testing-standards.mdc \
     .cursor/rules/ui-style-system.mdc \
+    docs/adr/README.md \
+    docs/adr/0001-client-server-multi-user-architecture.md \
+    docs/adr/0002-security-architecture.md \
+    docs/adr/0003-mysql-relational-database.md \
     features/README.md \
     features/framework.md \
     features/feature-1-user-auth.md \

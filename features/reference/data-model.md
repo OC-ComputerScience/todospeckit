@@ -1,7 +1,8 @@
 # Data Model Reference
 
 **Status:** Integrated schema through **Feature 5** (includes `todos.dueDate`).  
-**Authority for new work:** feature specs in `features/` — update this file when a feature merges to `dev`.
+**Authority for new work:** feature specs in `features/` — update this file when a feature merges to `dev`.  
+**Architecture:** [ADR-0003 — MySQL relational database](../../docs/adr/0003-mysql-relational-database.md)
 
 All application data is **scoped per user**. Cross-user resource access returns `404` at the API layer.
 

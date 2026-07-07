@@ -20,6 +20,8 @@ They do **not** authorize new scope by themselves — implement changes only fro
 | [data-model.md](./data-model.md) | Current database tables, columns, associations |
 | [api.md](./api.md) | Current REST API under `/todo/` |
 
+**Related:** [ADR-0003 — MySQL relational database](../../docs/adr/0003-mysql-relational-database.md)
+
 ## Feature provenance
 
 | Area | Introduced |
