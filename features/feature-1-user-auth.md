@@ -2,6 +2,7 @@
 
 **Feature ID:** 1
 **Branch pattern:** `feature/1-user-auth`
+**Related:** [ADR-0001 — Client–server multi-user architecture](../docs/adr/0001-client-server-multi-user-architecture.md), [ADR-0002 — Security architecture](../docs/adr/0002-security-architecture.md)
 
 ---
 

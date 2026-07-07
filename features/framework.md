@@ -3,7 +3,7 @@
 How Todo Speckit writes, traces, and ships **feature specifications**.  
 This document is the methodology handbook; individual feature files are the requirements.
 
-**Related:** [Feature catalog](./README.md) · [Living reference](./reference/README.md) · [Constitution](../.cursor/rules/constitution.mdc)
+**Related:** [Feature catalog](./README.md) · [ADRs](../docs/adr/README.md) · [Living reference](./reference/README.md) · [Constitution](../.cursor/rules/constitution.mdc)
 
 ---
 
@@ -17,6 +17,7 @@ Spec-Driven Development (SDD) inverts the usual order: **spec first, code second
 | **Cursor rules** (`.cursor/rules/`) | Constrain *how* to build |
 | **Tests** (Jest, Vitest) | Verify spec + implementation match |
 | **Reference docs** (`features/reference/`) | Snapshot *what exists now* on `dev` |
+| **ADRs** (`docs/adr/`) | Record *why* cross-cutting architecture choices were made |
 | **Sprints / timeboxes** (Agility, Jira, etc.) | Plan *when* work happens — **outside** these specs |
 
 No application code may be written unless it maps to an explicit requirement in a feature file (see constitution Principle 1).
@@ -27,6 +28,7 @@ No application code may be written unless it maps to an explicit requirement in 
 
 ```text
 .cursor/rules/          ← stack conventions (how)
+docs/adr/               ← architecture decisions (why)
 features/framework.md   ← this file (process)
 features/feature-N-*.md ← product requirements (what)
         ↓
@@ -40,6 +42,7 @@ features/reference/     ← integrated snapshot after merge to dev
 ```mermaid
 flowchart TD
   rules[".cursor/rules/"]
+  adr["docs/adr/"]
   framework["features/framework.md"]
   spec["features/feature-N-*.md"]
   code["frontend/ + backend/"]
@@ -48,6 +51,7 @@ flowchart TD
   agile["Agility / sprint planning"]
 
   rules --> spec
+  adr --> spec
   framework --> spec
   spec --> code
   spec --> tests
@@ -72,7 +76,7 @@ Every new feature uses `features/feature-N-short-name.md` with these sections **
 **Feature ID:** N
 **Branch pattern:** `feature/N-short-name`
 **Depends on:** [Feature X — …](feature-X-….md), …   ← omit if none
-**Related:** `features/reference/…`                 ← optional; for deltas that update reference on merge
+**Related:** `features/reference/…`, [ADR-NNNN](../docs/adr/NNNN-title.md)   ← optional
 ```
 
 - **Feature ID** — sequential integer; never reuse a retired ID.
@@ -200,6 +204,22 @@ Every `#### Scenario` in the spec must have ≥1 matching `it`. Every feature `i
 
 ---
 
+## Architecture Decision Records (ADRs)
+
+ADRs live in [`docs/adr/`](../docs/adr/) and answer **why** — not **what** (feature specs) or **how** (Cursor rules).
+
+| Write an ADR when… | Use instead… |
+|--------------------|--------------|
+| Choosing client vs server, auth model, DB strategy | Feature spec for product behavior |
+| Documenting tradeoffs and rejected alternatives | Cursor rule for ongoing patterns |
+| A decision spans multiple features | Reference doc for current API/schema snapshot |
+
+**Workflow:** propose ADR → set status `Accepted` → link from affected feature headers → encode outcome in `.cursor/rules/` if it becomes a pattern.
+
+See [docs/adr/README.md](../docs/adr/README.md) for the template and index.
+
+---
+
 ## Workflow per feature
 
 ### 1. Write or update the spec first
@@ -248,6 +268,7 @@ If tables or API endpoints changed, update [reference/data-model.md](./reference
 | Situation | Action |
 |-----------|--------|
 | New capability | New `feature-(N+1)-….md` + row in [README](./README.md) catalog |
+| Cross-cutting architecture choice | New `docs/adr/NNNN-….md` + link from feature specs |
 | Clarify unmerged spec | Edit the feature file in place |
 | Change already on `dev` | New feature file for the delta, or amend spec only if team agrees to treat spec as living |
 | “What exists now?” | Update `features/reference/` — not the feature spec alone |
@@ -307,7 +328,7 @@ Example: Feature 2 (lists) and Feature 4 (profile) can ship in the same sprint, 
 
 | Command | Output |
 |---------|--------|
-| `npm run specs:pdf` | Rules + specs + reference → `docs/todo-speckit-specs.pdf` |
+| `npm run specs:pdf` | Rules + ADRs + specs + reference → `docs/todo-speckit-specs.pdf` |
 | `npm run agility:export` | CSV backlog for Agility Excel import |
 | `npm run agility:push` | Push epics, stories, tests via Agility API |
 
