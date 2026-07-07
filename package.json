@@ -11,7 +11,11 @@
     "test:backend": "npm run test --prefix backend",
     "test:frontend": "npm run test --prefix frontend",
     "specs:pdf": "node scripts/export-specs-pdf.mjs",
-    "specs:pdf:setup": "npx puppeteer browsers install chrome"
+    "specs:pdf:setup": "npx puppeteer browsers install chrome",
+    "agility:export": "node scripts/export-agility-import.mjs --project \"Todo Speckit\"",
+    "agility:push": "node scripts/push-agility-api.mjs",
+    "agility:push:dry-run": "node scripts/push-agility-api.mjs --dry-run",
+    "agility:verify": "node scripts/push-agility-api.mjs --verify"
   },
   "devDependencies": {
     "md-to-pdf": "^5.2.4"

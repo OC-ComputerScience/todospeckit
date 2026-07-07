@@ -3,21 +3,27 @@
 Spec-driven development (SDD) source of truth for the Todo Speckit project.  
 No application code may be written unless it maps to a requirement in one of these files.
 
-## Sprint order
+**Methodology:** [framework.md](./framework.md) — how to write, trace, and ship feature specs.
 
-| Sprint | File                                                                             | Branch                                       | Merge into | Depends on           |
-| ------ | -------------------------------------------------------------------------------- | -------------------------------------------- | ---------- | -------------------- |
-| 1      | [sprint-1-user-auth.md](./sprint-1-user-auth.md)                                 | `feature/sprint-1-user-auth`                 | `dev`      | —                    |
-| 2      | [sprint-2-todo-list-management.md](./sprint-2-todo-list-management.md)           | `feature/sprint-2-todo-list-management`      | `dev`      | Sprint 1 on `dev`    |
-| 3      | [sprint-3-todo-list-item-management.md](./sprint-3-todo-list-item-management.md) | `feature/sprint-3-todo-list-item-management` | `dev`      | Sprints 1–2 on `dev` |
-| 4      | [sprint-4-todo-user-profile-management.md](./sprint-4-todo-user-profile-management.md) | `feature/sprint-4-user-profile-management`   | `dev`      | Sprints 1–3 on `dev` |
-| 5      | [sprint-5-todo-due-date.md](./sprint-5-todo-due-date.md)                               | `feature/sprint-5-todo-due-date`             | `dev`      | Sprints 1–3 on `dev` |
+**Sprints** (timeboxes, iterations, team planning) live in your agile tool — they are **not** part of these specs. One sprint may contain multiple features; one feature may span sprints. Specs describe **what** to build; sprints describe **when** the team works on it.
 
-**Branch roles:** `main` = scaffold-only starter kit · `dev` = integration (branch from `main`, merge sprints here) · `feature/sprint-*` = sprint implementation (branch from `dev`).
+## Feature catalog
+
+| ID | File | Branch | Depends on |
+|----|------|--------|------------|
+| 1 | [feature-1-user-auth.md](./feature-1-user-auth.md) | `feature/1-user-auth` | — |
+| 2 | [feature-2-todo-list-management.md](./feature-2-todo-list-management.md) | `feature/2-todo-list-management` | Feature 1 |
+| 3 | [feature-3-todo-list-item-management.md](./feature-3-todo-list-item-management.md) | `feature/3-todo-list-item-management` | Features 1–2 |
+| 4 | [feature-4-user-profile-management.md](./feature-4-user-profile-management.md) | `feature/4-user-profile-management` | Features 1–3 |
+| 5 | [feature-5-todo-due-date.md](./feature-5-todo-due-date.md) | `feature/5-todo-due-date` | Features 1–3 |
+
+**Branch roles:** `main` = scaffold-only starter kit · `dev` = integration (branch from `main`, merge features here) · `feature/N-*` = feature implementation (branch from `dev`).
+
+Implement features in dependency order (1 → 2 → 3; 4 and 5 after 3). Features 4 and 5 do not depend on each other.
 
 ## Living reference (current integrated state)
 
-After sprints merge to `dev`, keep these snapshots in sync with the codebase:
+After features merge to `dev`, keep these snapshots in sync with the codebase:
 
 | File | Purpose |
 |------|---------|
@@ -25,9 +31,9 @@ After sprints merge to `dev`, keep these snapshots in sync with the codebase:
 | [reference/data-model.md](./reference/data-model.md) | Current database tables and associations |
 | [reference/api.md](./reference/api.md) | Current REST API under `/todo/` |
 
-Sprint specs define **changes**; reference files describe **what exists now**.
+Feature specs define **changes**; reference files describe **what exists now**.
 
-## Implementation order (each sprint)
+## Implementation order (each feature)
 
 1. Backend models and associations
 2. Backend routes, controllers, authorization helpers
@@ -43,7 +49,7 @@ Sprint specs define **changes**; reference files describe **what exists now**.
 - Living reference: `features/reference/` (data model + API snapshot on `dev`)
 - Backend env: `backend/.env` (copy from `backend/.env.example`)
 - Test env: `backend/.env.test` (copy from `backend/.env.test.example`)
-- UI references (optional): `docs/ui/` — link Figma exports from each sprint spec
+- UI references (optional): `docs/ui/` — link Figma exports from each feature spec
 
 ## Running tests
 
@@ -85,8 +91,9 @@ Output:
 7. `.cursor/rules/testing-standards.mdc`
 8. `.cursor/rules/ui-style-system.mdc`
 9. `features/README.md`
-10. `features/sprint-1-user-auth.md` through `sprint-5-todo-due-date.md`
-11. `features/reference/README.md`, `data-model.md`, `api.md`
+10. `features/framework.md`
+11. `features/feature-1-user-auth.md` through `feature-5-todo-due-date.md`
+12. `features/reference/README.md`, `data-model.md`, `api.md`
 
 Manual alternative (no npm script):
 
@@ -100,11 +107,12 @@ cat .cursor/rules/constitution.mdc \
     .cursor/rules/testing-standards.mdc \
     .cursor/rules/ui-style-system.mdc \
     features/README.md \
-    features/sprint-1-user-auth.md \
-    features/sprint-2-todo-list-management.md \
-    features/sprint-3-todo-list-item-management.md \
-    features/sprint-4-todo-user-profile-management.md \
-    features/sprint-5-todo-due-date.md \
+    features/framework.md \
+    features/feature-1-user-auth.md \
+    features/feature-2-todo-list-management.md \
+    features/feature-3-todo-list-item-management.md \
+    features/feature-4-user-profile-management.md \
+    features/feature-5-todo-due-date.md \
     features/reference/README.md \
     features/reference/data-model.md \
     features/reference/api.md \

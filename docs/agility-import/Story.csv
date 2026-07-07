@@ -1,0 +1,169 @@
+AssetType,Name,Scope,Description,Reference,Super,Parent
+Story,US-1.1: Register an account,Todo Speckit,"As a/the new user
+I want create an account with my name, email, username, and password
+So that I can sign in and manage my own private todo lists
+
+Spec: features/feature-1-user-auth.md
+Story ID: TS-F1-US1.1
+Branch: feature/1-*",TS-F1-US1.1,TS-F1-EPIC,User Authentication
+Story,US-1.2: Sign in,Todo Speckit,"As a/the registered user
+I want sign in with my username and password
+So that I can access the application dashboard securely
+
+Spec: features/feature-1-user-auth.md
+Story ID: TS-F1-US1.2
+Branch: feature/1-*",TS-F1-US1.2,TS-F1-EPIC,User Authentication
+Story,US-1.3: Stay signed in across page loads,Todo Speckit,"As a/the signed-in user
+I want my session to persist in the browser
+So that I do not have to sign in again every time I refresh the page
+
+Spec: features/feature-1-user-auth.md
+Story ID: TS-F1-US1.3
+Branch: feature/1-*",TS-F1-US1.3,TS-F1-EPIC,User Authentication
+Story,US-1.4: Sign out,Todo Speckit,"As a/the signed-in user
+I want sign out
+So that no one else can use my account on a shared device
+
+Spec: features/feature-1-user-auth.md
+Story ID: TS-F1-US1.4
+Branch: feature/1-*",TS-F1-US1.4,TS-F1-EPIC,User Authentication
+Story,US-1.5: Block unauthenticated access,Todo Speckit,"As a/the application
+I want require a valid session for all non-auth screens
+So that users can only see and modify their own data
+
+Spec: features/feature-1-user-auth.md
+Story ID: TS-F1-US1.5
+Branch: feature/1-*",TS-F1-US1.5,TS-F1-EPIC,User Authentication
+Story,US-2.1: Create todo lists,Todo Speckit,"As a/the signed-in user
+I want create named todo lists (e.g. ""Work"", ""Groceries"")
+So that I can organize tasks into separate groups
+
+Spec: features/feature-2-todo-list-management.md
+Story ID: TS-F2-US2.1
+Branch: feature/2-*",TS-F2-US2.1,TS-F2-EPIC,Todo List Management
+Story,US-2.2: View my lists,Todo Speckit,"As a/the signed-in user
+I want see all of my todo lists in a sidebar
+So that I can see what groups I have created
+
+Spec: features/feature-2-todo-list-management.md
+Story ID: TS-F2-US2.2
+Branch: feature/2-*",TS-F2-US2.2,TS-F2-EPIC,Todo List Management
+Story,US-2.3: Select a list,Todo Speckit,"As a/the signed-in user
+I want select a list from the sidebar
+So that I can focus on one group at a time (todo items added in Feature 3)
+
+Spec: features/feature-2-todo-list-management.md
+Story ID: TS-F2-US2.3
+Branch: feature/2-*",TS-F2-US2.3,TS-F2-EPIC,Todo List Management
+Story,US-2.4: Rename and delete lists,Todo Speckit,"As a/the signed-in user
+I want rename or delete a todo list
+So that I can keep my workspace organized
+
+Spec: features/feature-2-todo-list-management.md
+Story ID: TS-F2-US2.4
+Branch: feature/2-*",TS-F2-US2.4,TS-F2-EPIC,Todo List Management
+Story,US-2.5: Private lists only,Todo Speckit,"As a/the signed-in user
+I want my lists visible only to me
+So that other users cannot read or modify my list names
+
+Spec: features/feature-2-todo-list-management.md
+Story ID: TS-F2-US2.5
+Branch: feature/2-*",TS-F2-US2.5,TS-F2-EPIC,Todo List Management
+Story,US-3.1: Add tasks to a list,Todo Speckit,"As a/the signed-in user
+I want add todo items to the currently selected list
+So that I can track what needs to be done in that context
+
+Spec: features/feature-3-todo-list-item-management.md
+Story ID: TS-F3-US3.1
+Branch: feature/3-*",TS-F3-US3.1,TS-F3-EPIC,Todo Item Management
+Story,US-3.2: View tasks in a list,Todo Speckit,"As a/the signed-in user
+I want see all items in the selected list
+So that I know what work belongs to that group
+
+Spec: features/feature-3-todo-list-item-management.md
+Story ID: TS-F3-US3.2
+Branch: feature/3-*",TS-F3-US3.2,TS-F3-EPIC,Todo Item Management
+Story,US-3.3: Complete tasks,Todo Speckit,"As a/the signed-in user
+I want mark todos as complete or incomplete
+So that I can track my progress
+
+Spec: features/feature-3-todo-list-item-management.md
+Story ID: TS-F3-US3.3
+Branch: feature/3-*",TS-F3-US3.3,TS-F3-EPIC,Todo Item Management
+Story,US-3.4: Edit and remove tasks,Todo Speckit,"As a/the signed-in user
+I want edit or delete individual todos
+So that I can keep my lists accurate
+
+Spec: features/feature-3-todo-list-item-management.md
+Story ID: TS-F3-US3.4
+Branch: feature/3-*",TS-F3-US3.4,TS-F3-EPIC,Todo Item Management
+Story,US-3.5: Private items only,Todo Speckit,"As a/the signed-in user
+I want my todo items visible only to me
+So that other users cannot read or modify my tasks
+
+Spec: features/feature-3-todo-list-item-management.md
+Story ID: TS-F3-US3.5
+Branch: feature/3-*",TS-F3-US3.5,TS-F3-EPIC,Todo Item Management
+Story,US-3.6: Lists carry their items,Todo Speckit,"As a/the signed-in user
+I want deleting a list to remove its todo items
+So that I do not leave orphaned tasks in the database
+
+Spec: features/feature-3-todo-list-item-management.md
+Story ID: TS-F3-US3.6
+Branch: feature/3-*",TS-F3-US3.6,TS-F3-EPIC,Todo Item Management
+Story,US-4.1: View profile from the menu bar,Todo Speckit,"As a/the signed-in user
+I want open a profile dropdown from a user icon on the menu bar
+So that I can see my name, username, and email at a glance
+
+Spec: features/feature-4-user-profile-management.md
+Story ID: TS-F4-US4.1
+Branch: feature/4-*",TS-F4-US4.1,TS-F4-EPIC,User Profile Management
+Story,US-4.2: Edit profile,Todo Speckit,"As a/the signed-in user
+I want edit my profile
+So that I can change my name, username, email, and password
+
+Spec: features/feature-4-user-profile-management.md
+Story ID: TS-F4-US4.2
+Branch: feature/4-*",TS-F4-US4.2,TS-F4-EPIC,User Profile Management
+Story,US-4.3: Log out from profile,Todo Speckit,"As a/the signed-in user
+I want see a **Log out** action in the profile dropdown
+So that I can end my session
+
+Spec: features/feature-4-user-profile-management.md
+Story ID: TS-F4-US4.3
+Branch: feature/4-*",TS-F4-US4.3,TS-F4-EPIC,User Profile Management
+Story,US-4.4: Single logout entry point,Todo Speckit,"As a/the signed-in user
+I want the menu bar **Sign out** button removed
+So that logout lives in one consistent place (the profile dropdown)
+
+Spec: features/feature-4-user-profile-management.md
+Story ID: TS-F4-US4.4
+Branch: feature/4-*",TS-F4-US4.4,TS-F4-EPIC,User Profile Management
+Story,US-5.1: Set a due date when creating a todo,Todo Speckit,"As a/the signed-in user
+I want optionally set a due date when I add a todo
+So that I can plan when work should be finished
+
+Spec: features/feature-5-todo-due-date.md
+Story ID: TS-F5-US5.1
+Branch: feature/5-*",TS-F5-US5.1,TS-F5-EPIC,Todo Due Date
+Story,US-5.2: View due dates on todos,Todo Speckit,"As a/the signed-in user
+I want see each todo's due date in the list
+So that I know what is due and when
+
+Spec: features/feature-5-todo-due-date.md
+Story ID: TS-F5-US5.2
+Branch: feature/5-*",TS-F5-US5.2,TS-F5-EPIC,Todo Due Date
+Story,US-5.3: Edit or clear a due date,Todo Speckit,"As a/the signed-in user
+I want change or remove a due date when editing a todo
+So that I can keep deadlines accurate
+
+Spec: features/feature-5-todo-due-date.md
+Story ID: TS-F5-US5.3
+Branch: feature/5-*",TS-F5-US5.3,TS-F5-EPIC,Todo Due Date
+Story,US-5.4: Spot overdue todos,Todo Speckit,"As a/the signed-in user
+I want incomplete todos past their due date to stand out visually
+So that I can prioritize overdue work
+
+Spec: features/feature-5-todo-due-date.md
+Story ID: TS-F5-US5.4
+Branch: feature/5-*",TS-F5-US5.4,TS-F5-EPIC,Todo Due Date

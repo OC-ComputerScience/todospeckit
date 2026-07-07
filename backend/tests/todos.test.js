@@ -1,3 +1,9 @@
+/**
+ * Feature 3 — Todo List Item Management
+ * Feature 5 — Todo Due Date
+ * Specs: features/feature-3-todo-list-item-management.md, features/feature-5-todo-due-date.md
+ */
+
 import request from "supertest";
 import app from "../server.js";
 import db from "../app/models/index.js";
@@ -9,7 +15,7 @@ import {
   createTodo,
 } from "./helpers.js";
 
-describe("Todo API", () => {
+describe("Feature 3 & 5 — Todo API", () => {
   beforeAll(async () => {
     await syncTestDatabase();
   });
@@ -22,8 +28,9 @@ describe("Todo API", () => {
     await db.sequelize.close();
   });
 
-  describe("GET /todo/lists/:listId/todos", () => {
-    it("returns only the caller's todos for an owned list", async () => {
+  describe("Feature 3 — Todo API", () => {
+  describe("US-3.2 — View tasks in a list", () => {
+    it("User only sees their own todos when switching lists", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",
@@ -62,8 +69,10 @@ describe("Todo API", () => {
       expect(response.body.filter((todo) => !todo.completed)).toHaveLength(2);
       expect(response.body.every((todo) => "dueDate" in todo)).toBe(true);
     });
+  });
 
-    it("returns 404 for another user's list", async () => {
+  describe("US-3.5 — Private items only", () => {
+    it("User cannot read todos in another user's list", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",
@@ -83,7 +92,7 @@ describe("Todo API", () => {
       expect(response.body.message).toBe(`List with id=${secretList.body.id} not found.`);
     });
 
-    it("returns 401 without a token", async () => {
+    it("Unauthenticated API request for todos", async () => {
       const user = await registerUser();
       const list = await createList(user.authHeader, "Groceries");
 
@@ -94,8 +103,8 @@ describe("Todo API", () => {
     });
   });
 
-  describe("POST /todo/lists/:listId/todos", () => {
-    it("creates a todo in an owned list", async () => {
+  describe("US-3.1 — Add tasks to a list", () => {
+    it("User adds a todo to the selected list", async () => {
       const user = await registerUser();
       const list = await createList(user.authHeader, "Groceries");
 
@@ -111,51 +120,7 @@ describe("Todo API", () => {
       expect(response.body.id).toBeDefined();
     });
 
-    it("creates a todo with a due date", async () => {
-      const user = await registerUser();
-      const list = await createList(user.authHeader, "Groceries");
-
-      const response = await createTodo(
-        user.authHeader,
-        list.body.id,
-        "Buy milk",
-        "2026-07-15"
-      );
-
-      expect(response.status).toBe(201);
-      expect(response.body).toMatchObject({
-        title: "Buy milk",
-        dueDate: "2026-07-15",
-      });
-    });
-
-    it("creates a todo without a due date", async () => {
-      const user = await registerUser();
-      const list = await createList(user.authHeader, "Groceries");
-
-      const response = await createTodo(user.authHeader, list.body.id, "Buy milk");
-
-      expect(response.status).toBe(201);
-      expect(response.body.dueDate).toBeNull();
-    });
-
-    it("returns 400 when due date is invalid on create", async () => {
-      const user = await registerUser();
-      const list = await createList(user.authHeader, "Groceries");
-
-      const response = await request(app)
-        .post(`/todo/lists/${list.body.id}/todos`)
-        .set(user.authHeader)
-        .send({ title: "Task", dueDate: "not-a-date" });
-
-      expect(response.status).toBe(400);
-      expect(response.body.message).toMatch(/Due date/i);
-
-      const todos = await db.todo.findAll({ where: { listId: list.body.id } });
-      expect(todos).toHaveLength(0);
-    });
-
-    it("returns 400 when the todo title is empty", async () => {
+    it("User adds a todo with an empty title", async () => {
       const user = await registerUser();
       const list = await createList(user.authHeader, "Groceries");
 
@@ -164,8 +129,10 @@ describe("Todo API", () => {
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Todo title is required.");
     });
+  });
 
-    it("returns 404 when adding a todo to another user's list", async () => {
+  describe("US-3.5 — Private items only", () => {
+    it("User attempts to add a todo to another user's list", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",
@@ -185,7 +152,7 @@ describe("Todo API", () => {
       expect(todos).toHaveLength(0);
     });
 
-    it("ignores a spoofed userId in the request body", async () => {
+    it("Client cannot assign a todo to another user on create", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",
@@ -207,8 +174,8 @@ describe("Todo API", () => {
     });
   });
 
-  describe("PUT /todo/todos/:id", () => {
-    it("updates a todo title", async () => {
+  describe("US-3.4 — Edit and remove tasks", () => {
+    it("User edits a todo title", async () => {
       const user = await registerUser();
       const list = await createList(user.authHeader, "Groceries");
       const created = await createTodo(user.authHeader, list.body.id, "Buy milk");
@@ -222,109 +189,45 @@ describe("Todo API", () => {
       expect(response.body.title).toBe("Buy oat milk");
       expect(response.body.userId).toBe(user.user.userId);
     });
+  });
 
-    it("toggles a todo completed state", async () => {
+  describe("US-3.3 — Complete tasks", () => {
+    it("User marks a todo as complete", async () => {
       const user = await registerUser();
       const list = await createList(user.authHeader, "Groceries");
       const created = await createTodo(user.authHeader, list.body.id, "Buy milk");
 
-      const completeResponse = await request(app)
+      const response = await request(app)
         .put(`/todo/todos/${created.body.id}`)
         .set(user.authHeader)
         .send({ completed: true });
 
-      expect(completeResponse.status).toBe(200);
-      expect(completeResponse.body.completed).toBe(true);
-
-      const incompleteResponse = await request(app)
-        .put(`/todo/todos/${created.body.id}`)
-        .set(user.authHeader)
-        .send({ completed: false });
-
-      expect(incompleteResponse.status).toBe(200);
-      expect(incompleteResponse.body.completed).toBe(false);
+      expect(response.status).toBe(200);
+      expect(response.body.completed).toBe(true);
     });
 
-    it("sets a due date on update", async () => {
+    it("User marks a completed todo as incomplete", async () => {
       const user = await registerUser();
       const list = await createList(user.authHeader, "Groceries");
       const created = await createTodo(user.authHeader, list.body.id, "Buy milk");
 
+      await request(app)
+        .put(`/todo/todos/${created.body.id}`)
+        .set(user.authHeader)
+        .send({ completed: true });
+
       const response = await request(app)
         .put(`/todo/todos/${created.body.id}`)
         .set(user.authHeader)
-        .send({ dueDate: "2026-07-20" });
+        .send({ completed: false });
 
       expect(response.status).toBe(200);
-      expect(response.body.dueDate).toBe("2026-07-20");
+      expect(response.body.completed).toBe(false);
     });
+  });
 
-    it("clears a due date on update", async () => {
-      const user = await registerUser();
-      const list = await createList(user.authHeader, "Groceries");
-      const created = await createTodo(
-        user.authHeader,
-        list.body.id,
-        "Buy milk",
-        "2026-07-20"
-      );
-
-      const response = await request(app)
-        .put(`/todo/todos/${created.body.id}`)
-        .set(user.authHeader)
-        .send({ dueDate: null });
-
-      expect(response.status).toBe(200);
-      expect(response.body.dueDate).toBeNull();
-    });
-
-    it("returns 400 when due date is invalid on update", async () => {
-      const user = await registerUser();
-      const list = await createList(user.authHeader, "Groceries");
-      const created = await createTodo(
-        user.authHeader,
-        list.body.id,
-        "Buy milk",
-        "2026-07-20"
-      );
-
-      const response = await request(app)
-        .put(`/todo/todos/${created.body.id}`)
-        .set(user.authHeader)
-        .send({ dueDate: "2026-99-99" });
-
-      expect(response.status).toBe(400);
-      expect(response.body.message).toMatch(/Due date/i);
-
-      const unchanged = await db.todo.findByPk(created.body.id);
-      expect(unchanged.dueDate).toBe("2026-07-20");
-    });
-
-    it("returns 404 when setting due date on another user's todo", async () => {
-      const userA = await registerUser({
-        email: "a@example.com",
-        username: "usera",
-      });
-      const userB = await registerUser({
-        email: "b@example.com",
-        username: "userb",
-      });
-      const list = await createList(userB.authHeader, "Secret");
-      const secretTodo = await createTodo(userB.authHeader, list.body.id, "Hidden task");
-
-      const response = await request(app)
-        .put(`/todo/todos/${secretTodo.body.id}`)
-        .set(userA.authHeader)
-        .send({ dueDate: "2026-07-15" });
-
-      expect(response.status).toBe(404);
-      expect(response.body.message).toBe(`Todo with id=${secretTodo.body.id} not found.`);
-
-      const unchanged = await db.todo.findByPk(secretTodo.body.id);
-      expect(unchanged.dueDate).toBeNull();
-    });
-
-    it("returns 404 when updating another user's todo and preserves the row", async () => {
+  describe("US-3.5 — Private items only", () => {
+    it("User attempts to rename another user's todo", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",
@@ -347,26 +250,8 @@ describe("Todo API", () => {
       const unchanged = await db.todo.findByPk(secretTodo.body.id);
       expect(unchanged.title).toBe("Hidden task");
     });
-  });
 
-  describe("DELETE /todo/todos/:id", () => {
-    it("deletes a todo owned by the authenticated user", async () => {
-      const user = await registerUser();
-      const list = await createList(user.authHeader, "Groceries");
-      const created = await createTodo(user.authHeader, list.body.id, "Buy milk");
-
-      const response = await request(app)
-        .delete(`/todo/todos/${created.body.id}`)
-        .set(user.authHeader);
-
-      expect(response.status).toBe(200);
-      expect(response.body.message).toBe("Todo deleted successfully.");
-
-      const deleted = await db.todo.findByPk(created.body.id);
-      expect(deleted).toBeNull();
-    });
-
-    it("returns 404 when deleting another user's todo and preserves the row", async () => {
+    it("User attempts to delete another user's todo", async () => {
       const userA = await registerUser({
         email: "a@example.com",
         username: "usera",
@@ -391,8 +276,26 @@ describe("Todo API", () => {
     });
   });
 
-  describe("List delete cascade", () => {
-    it("deletes child todos when a list is removed", async () => {
+  describe("US-3.4 — Edit and remove tasks", () => {
+    it("User deletes a todo", async () => {
+      const user = await registerUser();
+      const list = await createList(user.authHeader, "Groceries");
+      const created = await createTodo(user.authHeader, list.body.id, "Buy milk");
+
+      const response = await request(app)
+        .delete(`/todo/todos/${created.body.id}`)
+        .set(user.authHeader);
+
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe("Todo deleted successfully.");
+
+      const deleted = await db.todo.findByPk(created.body.id);
+      expect(deleted).toBeNull();
+    });
+  });
+
+  describe("US-3.6 — Lists carry their items", () => {
+    it("Deleting a list removes its todos", async () => {
       const user = await registerUser();
       const list = await createList(user.authHeader, "Groceries");
       const milk = await createTodo(user.authHeader, list.body.id, "Buy milk");
@@ -412,5 +315,135 @@ describe("Todo API", () => {
       expect(deletedMilk).toBeNull();
       expect(deletedEggs).toBeNull();
     });
+  });
+  });
+
+  describe("Feature 5 — Todo Due Date API", () => {
+    describe("US-5.1 — Set a due date when creating a todo", () => {
+    it("User adds a todo with a due date", async () => {
+      const user = await registerUser();
+      const list = await createList(user.authHeader, "Groceries");
+
+      const response = await createTodo(
+        user.authHeader,
+        list.body.id,
+        "Buy milk",
+        "2026-07-15"
+      );
+
+      expect(response.status).toBe(201);
+      expect(response.body).toMatchObject({
+        title: "Buy milk",
+        dueDate: "2026-07-15",
+      });
+    });
+
+    it("User adds a todo without a due date", async () => {
+      const user = await registerUser();
+      const list = await createList(user.authHeader, "Groceries");
+
+      const response = await createTodo(user.authHeader, list.body.id, "Buy milk");
+
+      expect(response.status).toBe(201);
+      expect(response.body.dueDate).toBeNull();
+    });
+
+    it("API rejects an invalid due date on create", async () => {
+      const user = await registerUser();
+      const list = await createList(user.authHeader, "Groceries");
+
+      const response = await request(app)
+        .post(`/todo/lists/${list.body.id}/todos`)
+        .set(user.authHeader)
+        .send({ title: "Task", dueDate: "not-a-date" });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toMatch(/Due date/i);
+
+      const todos = await db.todo.findAll({ where: { listId: list.body.id } });
+      expect(todos).toHaveLength(0);
+    });
+  });
+
+  describe("US-5.3 — Edit or clear a due date", () => {
+    it("User sets a due date when editing a todo", async () => {
+      const user = await registerUser();
+      const list = await createList(user.authHeader, "Groceries");
+      const created = await createTodo(user.authHeader, list.body.id, "Buy milk");
+
+      const response = await request(app)
+        .put(`/todo/todos/${created.body.id}`)
+        .set(user.authHeader)
+        .send({ dueDate: "2026-07-20" });
+
+      expect(response.status).toBe(200);
+      expect(response.body.dueDate).toBe("2026-07-20");
+    });
+
+    it("User clears a due date when editing a todo", async () => {
+      const user = await registerUser();
+      const list = await createList(user.authHeader, "Groceries");
+      const created = await createTodo(
+        user.authHeader,
+        list.body.id,
+        "Buy milk",
+        "2026-07-20"
+      );
+
+      const response = await request(app)
+        .put(`/todo/todos/${created.body.id}`)
+        .set(user.authHeader)
+        .send({ dueDate: null });
+
+      expect(response.status).toBe(200);
+      expect(response.body.dueDate).toBeNull();
+    });
+
+    it("API rejects an invalid due date on update", async () => {
+      const user = await registerUser();
+      const list = await createList(user.authHeader, "Groceries");
+      const created = await createTodo(
+        user.authHeader,
+        list.body.id,
+        "Buy milk",
+        "2026-07-20"
+      );
+
+      const response = await request(app)
+        .put(`/todo/todos/${created.body.id}`)
+        .set(user.authHeader)
+        .send({ dueDate: "2026-99-99" });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toMatch(/Due date/i);
+
+      const unchanged = await db.todo.findByPk(created.body.id);
+      expect(unchanged.dueDate).toBe("2026-07-20");
+    });
+
+    it("User cannot set due date on another user's todo", async () => {
+      const userA = await registerUser({
+        email: "a@example.com",
+        username: "usera",
+      });
+      const userB = await registerUser({
+        email: "b@example.com",
+        username: "userb",
+      });
+      const list = await createList(userB.authHeader, "Secret");
+      const secretTodo = await createTodo(userB.authHeader, list.body.id, "Hidden task");
+
+      const response = await request(app)
+        .put(`/todo/todos/${secretTodo.body.id}`)
+        .set(userA.authHeader)
+        .send({ dueDate: "2026-07-15" });
+
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe(`Todo with id=${secretTodo.body.id} not found.`);
+
+      const unchanged = await db.todo.findByPk(secretTodo.body.id);
+      expect(unchanged.dueDate).toBeNull();
+    });
+  });
   });
 });

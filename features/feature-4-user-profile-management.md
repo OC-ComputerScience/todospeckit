@@ -1,29 +1,29 @@
 # Feature: User Profile Management
 
-**Sprint:** 4  
-**Branch pattern:** `feature/sprint-4-user-profile-management`  
-**Depends on:** Sprint 1 (`features/sprint-1-user-auth.md`), Sprint 2 (`features/sprint-2-todo-list-management.md`), Sprint 3 (`features/sprint-3-todo-list-item-management.md`)
+**Feature ID:** 4
+**Branch pattern:** `feature/4-user-profile-management`
+**Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md), [Feature 2 — Todo List Management](feature-2-todo-list-management.md), [Feature 3 — Todo List Item Management](feature-3-todo-list-item-management.md)
 
 ---
 
 ## User Stories
 
-### US-1: View profile from the menu bar
+### US-4.1: View profile from the menu bar
 **As a** signed-in user  
 **I want to** open a profile dropdown from a user icon on the menu bar  
 **So that** I can see my name, username, and email at a glance
 
-### US-2: Edit profile
+### US-4.2: Edit profile
 **As a** signed-in user  
 **I want to** edit my profile  
 **So that** I can change my name, username, email, and password
 
-### US-3: Log out from profile
+### US-4.3: Log out from profile
 **As a** signed-in user  
 **I want to** see a **Log out** action in the profile dropdown  
 **So that** I can end my session
 
-### US-4: Single logout entry point
+### US-4.4: Single logout entry point
 **As a** signed-in user  
 **I want** the menu bar **Sign out** button removed  
 **So that** logout lives in one consistent place (the profile dropdown)
@@ -41,7 +41,7 @@
 *   Responses never include the password hash.
 *   After a successful profile update, the frontend refreshes `localStorage` key `user` and dispatches `user-logged-in` so `MenuBar` reflects the new display name.
 *   **Frontend email validation:** Edit Profile uses the same shared `emailRules` from `frontend/src/config/validation.js` as registration (required + regex format check).
-*   Dashboard list and todo behavior is unchanged (Sprints 2–3).
+*   Dashboard list and todo behavior is unchanged (Features 2–3).
 
 ---
 
@@ -102,9 +102,9 @@ All endpoints enforce **self-access only**. Cross-user access attempts return `4
 ## Screen Requirements
 
 ### [Component: MenuBar] — all authenticated routes
-Extends the Sprint 2 `MenuBar`. Dashboard sidebar and main panel are unchanged.
+Extends the Feature 2 `MenuBar`. Dashboard sidebar and main panel are unchanged.
 
-**Menu bar changes (this sprint)**
+**Menu bar changes (this feature)**
 *   Replace the inline display name + **Sign out** button with a **user icon** (`mdi-account-circle` or similar).
 *   Clicking the user icon opens a `<v-menu>` profile dropdown.
 *   **Remove** the standalone **Sign out** button from the app bar.
@@ -128,25 +128,25 @@ Extends the Sprint 2 `MenuBar`. Dashboard sidebar and main panel are unchanged.
 *   **Error state:** `<v-alert type="error">` for API failures.
 
 **Logout**
-*   **Log out** in the profile dropdown replaces menu-bar **Sign out** (same API and redirect behavior as Sprint 1).
+*   **Log out** in the profile dropdown replaces menu-bar **Sign out** (same API and redirect behavior as Feature 1).
 
 ---
 
 ## Data Model Requirements
 
-No new tables. This sprint uses the existing `users` table from Sprint 1.
+No new tables. This feature uses the existing `users` table from Feature 1.
 
-| Field | Notes for this sprint |
+| Field | Notes for this feature |
 |-------|------------------------|
 | `fName`, `lName`, `email`, `username` | Editable via `PUT /todo/users/:id` |
 | `password` | Optional on update; hashed when provided |
-| `role` | Read-only in API responses; not editable in this sprint |
+| `role` | Read-only in API responses; not editable in this feature |
 
 ---
 
 ## Acceptance Criteria (Gherkin)
 
-### Profile dropdown
+### US-4.1 — View profile from the menu bar
 
 #### Scenario: User opens the profile dropdown from the menu bar
 *   **Given** I am signed in on the dashboard
@@ -158,20 +158,9 @@ No new tables. This sprint uses the existing `users` table from Sprint 1.
 *   **And** an **Edit Profile** button is displayed
 *   **And** a **Log out** action is displayed
 
-#### Scenario: Menu bar does not show Sign out
-*   **Given** I am signed in on the dashboard
-*   **When** I view the menu bar
-*   **Then** I do not see a **Sign out** button on the menu bar
+---
 
-#### Scenario: User logs out from the profile dropdown
-*   **Given** I am signed in on the dashboard
-*   **And** the profile dropdown is open
-*   **When** I click **Log out**
-*   **Then** the API invalidates my session token on the server
-*   **And** `localStorage` key `user` is removed
-*   **And** I am redirected to the login page
-
-### Profile edit dialog
+### US-4.2 — Edit profile
 
 #### Scenario: User opens the edit profile dialog
 *   **Given** I am signed in
@@ -234,8 +223,6 @@ No new tables. This sprint uses the existing `users` table from Sprint 1.
 *   **Then** the error is displayed in a `<v-alert type="error">`
 *   **And** the Edit Profile dialog remains open
 
-### Profile API ownership
-
 #### Scenario: User fetches their own profile
 *   **Given** I am signed in as user A
 *   **When** I request `GET /todo/users/:id` with my user ID
@@ -262,9 +249,54 @@ No new tables. This sprint uses the existing `users` table from Sprint 1.
 
 #### Scenario: Profile update rejects a password that is too short
 *   **Given** I am signed in as user A
-*   **When** I send `PUT /todo/users/:id` with my user ID and a password shorter than 8 characters
-*   **Then** the API returns `400` with `{ "message": "..." }`
-*   **And** my stored password is unchanged in the database
+*   **When** I send `PUT /todo/users/:id` with body `{ "password": "short" }`
+*   **Then** the API returns `400` with `{ "message": "Password must be at least 8 characters." }`
+
+#### Scenario: Profile update rejects missing required fields
+*   **Given** I am signed in as user A
+*   **When** I send `PUT /todo/users/:id` with a body that omits a required field (e.g. first name)
+*   **Then** the API returns `400` with `{ "message": "First name is required." }`
+*   **And** my stored profile is unchanged
+
+#### Scenario: Profile update rejects a duplicate username
+*   **Given** I am signed in as user A
+*   **And** user B exists with username `userb`
+*   **When** I send `PUT /todo/users/:id` with body `{ "username": "userb" }` (and other valid fields)
+*   **Then** the API returns `400` with `{ "message": "Username is already taken." }`
+*   **And** user B's username remains `userb`
+
+#### Scenario: Profile update rejects a duplicate email
+*   **Given** I am signed in as user A
+*   **And** user B exists with email `b@example.com`
+*   **When** I send `PUT /todo/users/:id` with body `{ "email": "b@example.com" }` (and other valid fields)
+*   **Then** the API returns `400` with `{ "message": "Email is already registered." }`
+*   **And** user B's email remains `b@example.com`
+
+#### Scenario: Unauthenticated profile update API request
+*   **Given** I have no valid session token
+*   **When** I send `PUT /todo/users/1` with a valid profile body
+*   **Then** the API returns `401` with an unauthorized message
+
+---
+
+### US-4.3 — Log out from profile
+
+#### Scenario: User logs out from the profile dropdown
+*   **Given** I am signed in on the dashboard
+*   **And** the profile dropdown is open
+*   **When** I click **Log out**
+*   **Then** the API invalidates my session token on the server
+*   **And** `localStorage` key `user` is removed
+*   **And** I am redirected to the login page
+
+---
+
+### US-4.4 — Single logout entry point
+
+#### Scenario: Menu bar does not show Sign out
+*   **Given** I am signed in on the dashboard
+*   **When** I view the menu bar
+*   **Then** I do not see a **Sign out** button on the menu bar
 
 ---
 
@@ -272,20 +304,34 @@ No new tables. This sprint uses the existing `users` table from Sprint 1.
 
 Each scenario above must map to at least one automated test.
 
-| Area | Tool | Scenarios |
-|------|------|-----------|
-| `GET /todo/users/:id` | Jest + supertest (`users.test.js`) | Returns caller's profile without password hash; `401` without token; `404` when `:id` belongs to another user |
-| `PUT /todo/users/:id` | Jest + supertest (`users.test.js`) | Update first name, last name, email, username, and password; `401` without token; `404` for another user's ID (no mutation); duplicate email/username `400`; short password `400`; missing required fields `400` |
-| `MenuBar.vue` | Vitest (`MenuBar.test.js`) | User icon opens profile dropdown with full name, username, and email; **Sign out** button removed from app bar |
-| Profile dropdown | Vitest (`MenuBar.test.js`) | **Edit Profile** opens edit dialog; **Log out** calls logout API |
-| Profile edit dialog | Vitest (`MenuBar.test.js`) | Cancel closes without API call; Save updates `localStorage` and refreshes dropdown display name; invalid email format blocks submit; password mismatch blocks submit; short password blocks submit; API error shown in `<v-alert>` |
+| Story | Scenario | Test file | Test name |
+|-------|----------|-----------|-----------|
+| US-4.1 | User opens the profile dropdown from the menu bar | `frontend/tests/MenuBar.test.js` | `User opens the profile dropdown from the menu bar` |
+| US-4.2 | User opens the edit profile dialog | `frontend/tests/MenuBar.test.js` | `User opens the edit profile dialog` |
+| US-4.2 | User cancels the edit profile dialog | `frontend/tests/MenuBar.test.js` | `User cancels the edit profile dialog` |
+| US-4.2 | User saves profile changes | `backend/tests/users.test.js`, `frontend/tests/MenuBar.test.js` | `User saves profile changes` |
+| US-4.2 | User saves profile with invalid email format | `frontend/tests/MenuBar.test.js` | `User saves profile with invalid email format` |
+| US-4.2 | User saves profile with mismatched passwords | `frontend/tests/MenuBar.test.js` | `User saves profile with mismatched passwords` |
+| US-4.2 | User saves profile with a password that is too short | `frontend/tests/MenuBar.test.js` | `User saves profile with a password that is too short` |
+| US-4.2 | Profile update API returns an error | `frontend/tests/MenuBar.test.js` | `Profile update API returns an error` |
+| US-4.2 | User fetches their own profile | `backend/tests/users.test.js` | `User fetches their own profile` |
+| US-4.2 | User attempts to fetch another user's profile | `backend/tests/users.test.js` | `User attempts to fetch another user's profile` |
+| US-4.2 | User attempts to update another user's profile | `backend/tests/users.test.js` | `User attempts to update another user's profile` |
+| US-4.2 | Unauthenticated profile API request | `backend/tests/users.test.js` | `Unauthenticated profile API request` |
+| US-4.2 | Profile update rejects a password that is too short | `backend/tests/users.test.js` | `Profile update rejects a password that is too short` |
+| US-4.2 | Profile update rejects missing required fields | `backend/tests/users.test.js` | `Profile update rejects missing required fields` |
+| US-4.2 | Profile update rejects a duplicate username | `backend/tests/users.test.js` | `Profile update rejects a duplicate username` |
+| US-4.2 | Profile update rejects a duplicate email | `backend/tests/users.test.js` | `Profile update rejects a duplicate email` |
+| US-4.2 | Unauthenticated profile update API request | `backend/tests/users.test.js` | `Unauthenticated profile update API request` |
+| US-4.3 | User logs out from the profile dropdown | `frontend/tests/MenuBar.test.js` | `User logs out from the profile dropdown` |
+| US-4.4 | Menu bar does not show Sign out | `frontend/tests/MenuBar.test.js` | `Menu bar does not show Sign out` |
 
 ---
 
-## Out of Scope (Sprint 4)
+## Out of Scope
 
 *   Admin user management or role changes
 *   Avatar or profile photo upload
 *   Email verification workflow
-*   Changes to list or todo CRUD (Sprints 2–3)
+*   Changes to list or todo CRUD (Features 2–3)
 *   Password reset / forgot-password flow

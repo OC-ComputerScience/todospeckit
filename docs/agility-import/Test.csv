@@ -1,0 +1,589 @@
+AssetType,Name,Parent,Description,ExpectedResults,Reference
+Test,User registers with valid information,TS-F1-US1.1,"Given I am on the registration page
+When I enter valid first name, last name, email, username, password, and matching confirm password
+And I submit the form
+Then the API returns `201` with a user payload including `userId`, `username`, `email`, `token`, and `role`
+And my user record is stored in the database with a bcrypt password hash
+And I am redirected to the home page
+And my session is stored in `localStorage` under the key `user`","And I submit the form
+Then the API returns `201` with a user payload including `userId`, `username`, `email`, `token`, and `role`
+And my user record is stored in the database with a bcrypt password hash
+And I am redirected to the home page
+And my session is stored in `localStorage` under the key `user`",TS-F1-AC001
+Test,User submits registration with missing email,TS-F1-US1.1,"Given I am on the registration page
+When I leave the email field empty
+And I submit the form
+Then inline validation blocks the request
+And I see the message ""Email is required.""
+And no API request is sent","And I submit the form
+Then inline validation blocks the request
+And I see the message ""Email is required.""
+And no API request is sent",TS-F1-AC002
+Test,User submits registration with invalid email format,TS-F1-US1.1,"Given I am on the registration page
+When I enter a value that is not a valid email address (e.g. `notanemail`)
+And I submit the form
+Then inline validation blocks the request
+And I see the message ""Enter a valid email address.""
+And no API request is sent","And I submit the form
+Then inline validation blocks the request
+And I see the message ""Enter a valid email address.""
+And no API request is sent",TS-F1-AC003
+Test,User submits registration with missing username,TS-F1-US1.1,"Given I am on the registration page
+When I leave the username field empty
+And I submit the form
+Then inline validation blocks the request
+And I see the message ""Username is required.""
+And no API request is sent","And I submit the form
+Then inline validation blocks the request
+And I see the message ""Username is required.""
+And no API request is sent",TS-F1-AC004
+Test,User submits registration with password too short,TS-F1-US1.1,"Given I am on the registration page
+When I enter a password with fewer than 8 characters
+And I submit the form
+Then inline validation blocks the request
+And I see the message ""Password must be at least 8 characters.""","And I submit the form
+Then inline validation blocks the request
+And I see the message ""Password must be at least 8 characters.""",TS-F1-AC005
+Test,User submits registration with mismatched passwords,TS-F1-US1.1,"Given I am on the registration page
+When password and confirm password do not match
+And I submit the form
+Then inline validation blocks the request
+And I see the message ""Passwords do not match.""","And I submit the form
+Then inline validation blocks the request
+And I see the message ""Passwords do not match.""",TS-F1-AC006
+Test,User registers with a duplicate username,TS-F1-US1.1,"Given a user with username `jdoe` already exists
+When I submit registration with username `jdoe`
+Then the API returns `400` with `{ ""message"": ""Username is already taken."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""Username is already taken."" }`
+And the error is displayed in a `<v-alert type=""error"">`",TS-F1-AC007
+Test,User registers with a duplicate email,TS-F1-US1.1,"Given a user with email `jane@example.com` already exists
+When I submit registration with email `jane@example.com`
+Then the API returns `400` with `{ ""message"": ""Email is already registered."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""Email is already registered."" }`
+And the error is displayed in a `<v-alert type=""error"">`",TS-F1-AC008
+Test,User signs in with valid credentials,TS-F1-US1.1,"Given I am on the login page
+And a registered user exists with username `jdoe` and a known password
+When I enter username `jdoe` and the correct password
+And I click Sign in
+Then the API returns `200` with a payload containing `userId`, `username`, `token`, and `role`
+And a session row is created or reused in the database
+And I am redirected to the home page
+And my session is stored in `localStorage` under the key `user`","And a registered user exists with username `jdoe` and a known password
+And I click Sign in
+Then the API returns `200` with a payload containing `userId`, `username`, `token`, and `role`
+And a session row is created or reused in the database
+And I am redirected to the home page
+And my session is stored in `localStorage` under the key `user`",TS-F1-AC009
+Test,User signs in with invalid password,TS-F1-US1.1,"Given I am on the login page
+And a registered user exists with username `jdoe`
+When I enter username `jdoe` and an incorrect password
+And I click Sign in
+Then the API returns `401` with `{ ""message"": ""Invalid username or password."" }`
+And I remain on the login page
+And the error is displayed in a `<v-alert type=""error"">`","And a registered user exists with username `jdoe`
+And I click Sign in
+Then the API returns `401` with `{ ""message"": ""Invalid username or password."" }`
+And I remain on the login page
+And the error is displayed in a `<v-alert type=""error"">`",TS-F1-AC010
+Test,User signs in with missing username,TS-F1-US1.1,"Given I am on the login page
+When I leave the username field empty
+And I click Sign in
+Then inline validation blocks the request
+And I see the message ""Username is required.""
+And no API request is sent","And I click Sign in
+Then inline validation blocks the request
+And I see the message ""Username is required.""
+And no API request is sent",TS-F1-AC011
+Test,User signs in with missing password,TS-F1-US1.1,"Given I am on the login page
+When I leave the password field empty
+And I click Sign in
+Then inline validation blocks the request
+And I see the message ""Password is required.""
+And no API request is sent","And I click Sign in
+Then inline validation blocks the request
+And I see the message ""Password is required.""
+And no API request is sent",TS-F1-AC012
+Test,Signed-in user visits login page,TS-F1-US1.1,"Given I have a valid session in `localStorage`
+When I navigate to the login page
+Then I am redirected to the home page",Then I am redirected to the home page,TS-F1-AC013
+Test,User signs out,TS-F1-US1.1,"Given I am signed in on the home page
+When I click Sign out
+Then the API invalidates my session token on the server
+And `localStorage` key `user` is removed
+And I am redirected to the login page","Then the API invalidates my session token on the server
+And `localStorage` key `user` is removed
+And I am redirected to the login page",TS-F1-AC016
+Test,Unauthenticated user accesses a protected route,TS-F1-US1.1,"Given I have no session in `localStorage`
+When I navigate directly to the home page
+Then I am redirected to the login page
+Password reset (`POST /todo/reset-password`)
+Email verification
+OAuth / social login
+Admin user management
+Full todo dashboard (Feature 2)",Then I am redirected to the login page,TS-F1-AC017
+Test,API request includes session token,TS-F1-US1.3,"Given I am signed in
+When the frontend makes an authenticated API request
+Then the request includes header `Authorization: Bearer <token>`",Then the request includes header `Authorization: Bearer <token>`,TS-F1-AC014
+Test,Expired or invalid session token,TS-F1-US1.3,"Given I am signed in with an expired or revoked token
+When the frontend makes an authenticated API request
+Then the API returns `401` with an unauthorized message
+And `localStorage` key `user` is cleared
+And I am redirected to the login page","Then the API returns `401` with an unauthorized message
+And `localStorage` key `user` is cleared
+And I am redirected to the login page",TS-F1-AC015
+Test,User creates a new list,TS-F2-US2.1,"Given I am signed in on the dashboard
+When I click + New List
+And I enter list name `Groceries`
+And I confirm the dialog
+Then the API returns `201` with a list object containing `id`, `name`, and `userId`
+And the returned `userId` matches my authenticated user ID
+And `Groceries` appears in the sidebar
+And `Groceries` becomes the selected list
+And the main panel heading shows `Groceries`","And I enter list name `Groceries`
+And I confirm the dialog
+Then the API returns `201` with a list object containing `id`, `name`, and `userId`
+And the returned `userId` matches my authenticated user ID
+And `Groceries` appears in the sidebar
+And `Groceries` becomes the selected list
+And the main panel heading shows `Groceries`",TS-F2-AC001
+Test,User creates a list with an empty name,TS-F2-US2.1,"Given I am signed in on the dashboard
+When I open the new list dialog
+And I leave the name field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""List name is required.""
+And no API request is sent","And I leave the name field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""List name is required.""
+And no API request is sent",TS-F2-AC002
+Test,User creates a list with a name that is too long,TS-F2-US2.1,"Given I am signed in on the dashboard
+When I submit a list name longer than 100 characters
+Then the API returns `400` with `{ ""message"": ""List name must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""List name must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",TS-F2-AC003
+Test,Dashboard loads with existing lists,TS-F2-US2.2,"Given I am signed in
+And I own lists `Work` and `Personal`
+When I navigate to the dashboard
+Then both lists appear in the sidebar
+And the first list is selected by default
+And the main panel shows that list's name","And I own lists `Work` and `Personal`
+Then both lists appear in the sidebar
+And the first list is selected by default
+And the main panel shows that list's name",TS-F2-AC004
+Test,User has no lists,TS-F2-US2.2,"Given I am signed in
+And I have no lists
+When I navigate to the dashboard
+Then I see ""No lists yet. Create your first list.""
+And the main panel shows ""Select a list""","And I have no lists
+Then I see ""No lists yet. Create your first list.""
+And the main panel shows ""Select a list""",TS-F2-AC005
+Test,User cannot see another user's lists,TS-F2-US2.2,"Given user B owns list `Secret Project`
+And I am signed in as user A
+When I request `GET /todo/lists`
+Then the response contains only lists owned by user A
+And `Secret Project` is not in the response
+And my sidebar does not show `Secret Project`","And I am signed in as user A
+Then the response contains only lists owned by user A
+And `Secret Project` is not in the response
+And my sidebar does not show `Secret Project`",TS-F2-AC006
+Test,User selects a different list,TS-F2-US2.3,"Given I am signed in
+And I own lists `Work` and `Personal`
+When I click `Personal` in the sidebar
+Then `Personal` is highlighted as the active list
+And the main panel heading shows `Personal`","And I own lists `Work` and `Personal`
+Then `Personal` is highlighted as the active list
+And the main panel heading shows `Personal`",TS-F2-AC007
+Test,User renames a list,TS-F2-US2.4,"Given I am signed in
+And I own a list named `Groceries`
+When I rename it to `Shopping`
+Then the API returns `200` with the updated list object
+And the sidebar shows `Shopping` instead of `Groceries`","And I own a list named `Groceries`
+Then the API returns `200` with the updated list object
+And the sidebar shows `Shopping` instead of `Groceries`",TS-F2-AC008
+Test,User deletes a list,TS-F2-US2.4,"Given I am signed in
+And I own a list named `Groceries`
+When I delete the list and confirm the dialog
+Then the API returns `200` or `204`
+And the list is removed from the sidebar
+And another owned list is selected if one exists","And I own a list named `Groceries`
+Then the API returns `200` or `204`
+And the list is removed from the sidebar
+And another owned list is selected if one exists",TS-F2-AC009
+Test,User attempts to rename another user's list,TS-F2-US2.5,"Given I am signed in as user A
+And a list exists that belongs to user B
+When I send `PUT /todo/lists/:listId` with user B's list ID and body `{ ""name"": ""Hijacked"" }`
+Then the API returns `404` with `{ ""message"": ""List with id=<id> not found."" }`
+And user B's list name is unchanged in the database","And a list exists that belongs to user B
+Then the API returns `404` with `{ ""message"": ""List with id=<id> not found."" }`
+And user B's list name is unchanged in the database",TS-F2-AC010
+Test,User attempts to delete another user's list,TS-F2-US2.5,"Given I am signed in as user A
+And a list exists that belongs to user B
+When I send `DELETE /todo/lists/:listId` with user B's list ID
+Then the API returns `404` with `{ ""message"": ""List with id=<id> not found."" }`
+And user B's list still exists","And a list exists that belongs to user B
+Then the API returns `404` with `{ ""message"": ""List with id=<id> not found."" }`
+And user B's list still exists",TS-F2-AC011
+Test,Client cannot assign a list to another user on create,TS-F2-US2.5,"Given I am signed in as user A
+When I send `POST /todo/lists` with body `{ ""name"": ""Groceries"", ""userId"": 999 }` where user `999` is a different user
+Then the API returns `201` with a list owned by user A
+And the saved `userId` is user A's ID, not `999`","Then the API returns `201` with a list owned by user A
+And the saved `userId` is user A's ID, not `999`",TS-F2-AC012
+Test,Unauthenticated user accesses the dashboard,TS-F2-US2.5,"Given I have no session in `localStorage`
+When I navigate to the dashboard
+Then I am redirected to the login page",Then I am redirected to the login page,TS-F2-AC013
+Test,Unauthenticated API request to lists,TS-F2-US2.5,"Given I have no valid session token
+When I request `GET /todo/lists`
+Then the API returns `401` with an unauthorized message
+Todo items (see `features/feature-3-todo-list-item-management.md`)
+`MenuBar` beyond basic sign-out (full nav deferred if not needed)
+Drag-and-drop list reordering
+Sharing lists with other users
+`todos` table and associations
+Main-panel todo list UI (add, complete, edit, delete items)
+`GET/POST /todo/lists/:listId/todos` and `PUT/DELETE /todo/todos/:id`",Then the API returns `401` with an unauthorized message,TS-F2-AC014
+Test,User adds a todo to the selected list,TS-F3-US3.1,"Given I am signed in on the dashboard
+And I have selected list `Groceries`
+When I enter todo title `Buy milk`
+And I click Add
+Then the API returns `201` with a todo object where `completed` is `false`
+And the returned `userId` matches my authenticated user ID
+And the returned `listId` matches `Groceries`
+And `Buy milk` appears in the main panel","And I have selected list `Groceries`
+And I click Add
+Then the API returns `201` with a todo object where `completed` is `false`
+And the returned `userId` matches my authenticated user ID
+And the returned `listId` matches `Groceries`
+And `Buy milk` appears in the main panel",TS-F3-AC001
+Test,User adds a todo with an empty title,TS-F3-US3.1,"Given I am signed in
+And I have a list selected
+When I leave the todo title empty
+And I click Add
+Then inline validation blocks the request
+And I see the message ""Todo title is required.""
+And no API request is sent","And I have a list selected
+And I click Add
+Then inline validation blocks the request
+And I see the message ""Todo title is required.""
+And no API request is sent",TS-F3-AC002
+Test,User adds a todo when no list is selected,TS-F3-US3.1,"Given I am signed in
+And I have no list selected
+When I view the main panel
+Then the add-todo input and Add button are disabled","And I have no list selected
+Then the add-todo input and Add button are disabled",TS-F3-AC003
+Test,Selected list has no todos,TS-F3-US3.2,"Given I am signed in
+And I have selected an empty list
+When the todos finish loading
+Then I see ""No todos in this list yet.""","And I have selected an empty list
+Then I see ""No todos in this list yet.""",TS-F3-AC004
+Test,User switches lists,TS-F3-US3.2,"Given I am signed in
+And list `Work` has todos `Email client` and `Write report`
+And list `Personal` has todo `Call mom`
+When I select `Personal` in the sidebar
+Then the main panel shows only `Call mom`
+When I select `Work` in the sidebar
+Then the main panel shows `Email client` and `Write report`","And list `Work` has todos `Email client` and `Write report`
+And list `Personal` has todo `Call mom`
+Then the main panel shows only `Call mom`
+Then the main panel shows `Email client` and `Write report`",TS-F3-AC005
+Test,User only sees their own todos when switching lists,TS-F3-US3.2,"Given I am signed in as user A
+And I own list `Work` with todo `My task`
+And user B owns list `Work` with todo `Their task` (same list name, different owner)
+When I select my `Work` list
+Then I see only `My task`
+And I do not see `Their task`","And I own list `Work` with todo `My task`
+And user B owns list `Work` with todo `Their task` (same list name, different owner)
+Then I see only `My task`
+And I do not see `Their task`",TS-F3-AC006
+Test,User marks a todo as complete,TS-F3-US3.3,"Given I am signed in
+And I have todo `Buy milk` with `completed: false`
+When I check the todo's checkbox
+Then the API returns `200` with `completed: true`
+And the todo displays as completed (struck-through or muted)","And I have todo `Buy milk` with `completed: false`
+Then the API returns `200` with `completed: true`
+And the todo displays as completed (struck-through or muted)",TS-F3-AC007
+Test,User marks a completed todo as incomplete,TS-F3-US3.3,"Given I am signed in
+And I have todo `Buy milk` with `completed: true`
+When I uncheck the todo's checkbox
+Then the API returns `200` with `completed: false`
+And the todo displays as active again","And I have todo `Buy milk` with `completed: true`
+Then the API returns `200` with `completed: false`
+And the todo displays as active again",TS-F3-AC008
+Test,User edits a todo title,TS-F3-US3.4,"Given I am signed in
+And I have todo `Buy milk`
+When I edit the title to `Buy oat milk`
+Then the API returns `200` with the updated title
+And the UI shows `Buy oat milk`","And I have todo `Buy milk`
+Then the API returns `200` with the updated title
+And the UI shows `Buy oat milk`",TS-F3-AC009
+Test,User deletes a todo,TS-F3-US3.4,"Given I am signed in
+And I have todo `Buy milk`
+When I delete the todo
+Then the API returns `200` or `204`
+And the todo is removed from the main panel","And I have todo `Buy milk`
+Then the API returns `200` or `204`
+And the todo is removed from the main panel",TS-F3-AC010
+Test,User cannot read todos in another user's list,TS-F3-US3.5,"Given I am signed in as user A
+And user B owns list `Secret` with todo `Hidden task`
+When I request `GET /todo/lists/:listId/todos` with user B's list ID
+Then the API returns `404` with `{ ""message"": ""List with id=<id> not found."" }`
+And `Hidden task` is not returned to user A","And user B owns list `Secret` with todo `Hidden task`
+Then the API returns `404` with `{ ""message"": ""List with id=<id> not found."" }`
+And `Hidden task` is not returned to user A",TS-F3-AC011
+Test,User attempts to add a todo to another user's list,TS-F3-US3.5,"Given I am signed in as user A
+And a list exists that belongs to user B
+When I send `POST /todo/lists/:listId/todos` with user B's list ID and body `{ ""title"": ""Intruder task"" }`
+Then the API returns `404` with `{ ""message"": ""List with id=<id> not found."" }`
+And no todo is created in user B's list","And a list exists that belongs to user B
+Then the API returns `404` with `{ ""message"": ""List with id=<id> not found."" }`
+And no todo is created in user B's list",TS-F3-AC012
+Test,User attempts to rename another user's todo,TS-F3-US3.5,"Given I am signed in as user A
+And a todo exists that belongs to user B
+When I send `PUT /todo/todos/:id` with body `{ ""title"": ""Hijacked"" }`
+Then the API returns `404` with `{ ""message"": ""Todo with id=<id> not found."" }`
+And user B's todo title is unchanged in the database","And a todo exists that belongs to user B
+Then the API returns `404` with `{ ""message"": ""Todo with id=<id> not found."" }`
+And user B's todo title is unchanged in the database",TS-F3-AC013
+Test,User attempts to delete another user's todo,TS-F3-US3.5,"Given I am signed in as user A
+And a todo exists that belongs to user B
+When I send `DELETE /todo/todos/:id`
+Then the API returns `404` with `{ ""message"": ""Todo with id=<id> not found."" }`
+And user B's todo still exists","And a todo exists that belongs to user B
+Then the API returns `404` with `{ ""message"": ""Todo with id=<id> not found."" }`
+And user B's todo still exists",TS-F3-AC014
+Test,Client cannot assign a todo to another user on create,TS-F3-US3.5,"Given I am signed in as user A
+And I own list `Groceries`
+When I send `POST /todo/lists/:listId/todos` with body `{ ""title"": ""Buy milk"", ""userId"": 999 }` where user `999` is a different user
+Then the API returns `201` with a todo owned by user A
+And the saved `userId` is user A's ID, not `999`","And I own list `Groceries`
+Then the API returns `201` with a todo owned by user A
+And the saved `userId` is user A's ID, not `999`",TS-F3-AC015
+Test,Unauthenticated API request for todos,TS-F3-US3.5,"Given I have no valid session token
+When I request `GET /todo/lists/1/todos`
+Then the API returns `401` with an unauthorized message",Then the API returns `401` with an unauthorized message,TS-F3-AC016
+Test,Deleting a list removes its todos,TS-F3-US3.6,"Given I am signed in
+And I own list `Groceries` with todos `Buy milk` and `Buy eggs`
+When I delete list `Groceries` and confirm
+Then both todos are removed from the database
+And they no longer appear if the list ID were still queried
+New list CRUD features (owned by Feature 2)
+Drag-and-drop reordering of todos
+Due dates → [feature-5-todo-due-date.md](./feature-5-todo-due-date.md) (Feature 5)
+Priorities, labels, or notes on todos
+Sharing lists or todos with other users
+Search or filter across todos
+Bulk complete / bulk delete
+Archive completed todos","And I own list `Groceries` with todos `Buy milk` and `Buy eggs`
+Then both todos are removed from the database
+And they no longer appear if the list ID were still queried",TS-F3-AC017
+Test,User opens the profile dropdown from the menu bar,TS-F4-US4.1,"Given I am signed in on the dashboard
+When I click the user icon on the menu bar
+Then the profile dropdown is displayed
+And the dropdown shows my full name (`fName` + `lName`)
+And the dropdown shows my username
+And the dropdown shows my email
+And an Edit Profile button is displayed
+And a Log out action is displayed","Then the profile dropdown is displayed
+And the dropdown shows my full name (`fName` + `lName`)
+And the dropdown shows my username
+And the dropdown shows my email
+And an Edit Profile button is displayed
+And a Log out action is displayed",TS-F4-AC001
+Test,User opens the edit profile dialog,TS-F4-US4.1,"Given I am signed in
+And the profile dropdown is displayed
+When I click Edit Profile
+Then the Edit Profile dialog is displayed
+And fields are pre-filled with my current first name, last name, email, and username","And the profile dropdown is displayed
+Then the Edit Profile dialog is displayed
+And fields are pre-filled with my current first name, last name, email, and username",TS-F4-AC002
+Test,User cancels the edit profile dialog,TS-F4-US4.1,"Given I am signed in
+And the Edit Profile dialog is displayed
+When I change one or more fields
+And I click Cancel
+Then the Edit Profile dialog closes
+And no profile update API request is sent
+And my stored profile data is unchanged","And the Edit Profile dialog is displayed
+And I click Cancel
+Then the Edit Profile dialog closes
+And no profile update API request is sent
+And my stored profile data is unchanged",TS-F4-AC003
+Test,User saves profile changes,TS-F4-US4.1,"Given I am signed in
+And the Edit Profile dialog is displayed
+When I update my first name, last name, email, or username with valid values
+And I click Save
+Then the API returns `200` with the updated user object (no password hash)
+And the Edit Profile dialog closes
+And `localStorage` key `user` is updated
+And reopening the profile dropdown shows my updated full name, username, and email","And the Edit Profile dialog is displayed
+And I click Save
+Then the API returns `200` with the updated user object (no password hash)
+And the Edit Profile dialog closes
+And `localStorage` key `user` is updated
+And reopening the profile dropdown shows my updated full name, username, and email",TS-F4-AC004
+Test,User saves profile with invalid email format,TS-F4-US4.1,"Given I am signed in
+And the Edit Profile dialog is displayed
+When I enter a value that is not a valid email address (e.g. `notanemail`)
+And I click Save
+Then inline validation blocks the request
+And I see the message ""Enter a valid email address.""
+And no profile update API request is sent","And the Edit Profile dialog is displayed
+And I click Save
+Then inline validation blocks the request
+And I see the message ""Enter a valid email address.""
+And no profile update API request is sent",TS-F4-AC005
+Test,User saves profile with mismatched passwords,TS-F4-US4.1,"Given I am signed in
+And the Edit Profile dialog is displayed
+When I enter a new password and a non-matching confirmation
+And I click Save
+Then inline validation blocks the request
+And I see the message ""Passwords do not match.""
+And no profile update API request is sent","And the Edit Profile dialog is displayed
+And I click Save
+Then inline validation blocks the request
+And I see the message ""Passwords do not match.""
+And no profile update API request is sent",TS-F4-AC006
+Test,User saves profile with a password that is too short,TS-F4-US4.1,"Given I am signed in
+And the Edit Profile dialog is displayed
+When I enter a new password shorter than 8 characters with a matching confirmation
+And I click Save
+Then inline validation blocks the request
+And I see the message ""Password must be at least 8 characters.""
+And no profile update API request is sent","And the Edit Profile dialog is displayed
+And I click Save
+Then inline validation blocks the request
+And I see the message ""Password must be at least 8 characters.""
+And no profile update API request is sent",TS-F4-AC007
+Test,Profile update API returns an error,TS-F4-US4.1,"Given I am signed in
+And the Edit Profile dialog is displayed
+When I click Save
+And the API returns `400` with `{ ""message"": ""..."" }`
+Then the error is displayed in a `<v-alert type=""error"">`
+And the Edit Profile dialog remains open","And the Edit Profile dialog is displayed
+And the API returns `400` with `{ ""message"": ""..."" }`
+Then the error is displayed in a `<v-alert type=""error"">`
+And the Edit Profile dialog remains open",TS-F4-AC008
+Test,User fetches their own profile,TS-F4-US4.1,"Given I am signed in as user A
+When I request `GET /todo/users/:id` with my user ID
+Then the API returns `200` with my profile fields
+And the response does not include a password hash","Then the API returns `200` with my profile fields
+And the response does not include a password hash",TS-F4-AC009
+Test,User attempts to fetch another user's profile,TS-F4-US4.1,"Given I am signed in as user A
+And user B exists
+When I request `GET /todo/users/:id` with user B's ID
+Then the API returns `404` with `{ ""message"": ""User with id=<id> not found."" }`","And user B exists
+Then the API returns `404` with `{ ""message"": ""User with id=<id> not found."" }`",TS-F4-AC010
+Test,User attempts to update another user's profile,TS-F4-US4.1,"Given I am signed in as user A
+And user B exists
+When I send `PUT /todo/users/:id` with user B's ID
+Then the API returns `404` with `{ ""message"": ""User with id=<id> not found."" }`
+And user B's profile is unchanged in the database","And user B exists
+Then the API returns `404` with `{ ""message"": ""User with id=<id> not found."" }`
+And user B's profile is unchanged in the database",TS-F4-AC011
+Test,Unauthenticated profile API request,TS-F4-US4.1,"Given I have no valid session token
+When I request `GET /todo/users/1`
+Then the API returns `401` with an unauthorized message",Then the API returns `401` with an unauthorized message,TS-F4-AC012
+Test,Profile update rejects a password that is too short,TS-F4-US4.1,"Given I am signed in as user A
+When I send `PUT /todo/users/:id` with body `{ ""password"": ""short"" }`
+Then the API returns `400` with `{ ""message"": ""Password must be at least 8 characters."" }`","Then the API returns `400` with `{ ""message"": ""Password must be at least 8 characters."" }`",TS-F4-AC013
+Test,User logs out from the profile dropdown,TS-F4-US4.1,"Given I am signed in on the dashboard
+And the profile dropdown is open
+When I click Log out
+Then the API invalidates my session token on the server
+And `localStorage` key `user` is removed
+And I am redirected to the login page","And the profile dropdown is open
+Then the API invalidates my session token on the server
+And `localStorage` key `user` is removed
+And I am redirected to the login page",TS-F4-AC014
+Test,Menu bar does not show Sign out,TS-F4-US4.1,"Given I am signed in on the dashboard
+When I view the menu bar
+Then I do not see a Sign out button on the menu bar
+Admin user management or role changes
+Avatar or profile photo upload
+Email verification workflow
+Changes to list or todo CRUD (Features 2–3)
+Password reset / forgot-password flow",Then I do not see a Sign out button on the menu bar,TS-F4-AC015
+Test,User adds a todo with a due date,TS-F5-US5.1,"Given I am signed in on the dashboard
+And I have selected a list
+When I enter todo title `Buy milk`
+And I set due date `2026-07-15`
+And I click Add
+Then the API returns `201` with `dueDate` `2026-07-15`
+And the todo row shows the due date","And I have selected a list
+And I set due date `2026-07-15`
+And I click Add
+Then the API returns `201` with `dueDate` `2026-07-15`
+And the todo row shows the due date",TS-F5-AC001
+Test,User adds a todo without a due date,TS-F5-US5.1,"Given I am signed in
+And I have selected a list
+When I enter a title and leave the due date empty
+And I click Add
+Then the API returns `201` with `dueDate` null
+And no due date is shown on the row","And I have selected a list
+And I click Add
+Then the API returns `201` with `dueDate` null
+And no due date is shown on the row",TS-F5-AC002
+Test,API rejects an invalid due date on create,TS-F5-US5.1,"Given I am signed in as user A
+And I own a list
+When I send `POST /todo/lists/:listId/todos` with body `{ ""title"": ""Task"", ""dueDate"": ""not-a-date"" }`
+Then the API returns `400` with `{ ""message"": ""..."" }`
+And no todo is created","And I own a list
+Then the API returns `400` with `{ ""message"": ""..."" }`
+And no todo is created",TS-F5-AC003
+Test,User sets a due date when editing a todo,TS-F5-US5.1,"Given I am signed in
+And I have todo `Buy milk` with no due date
+When I open the edit dialog
+And I set due date `2026-07-20`
+And I click Save
+Then the API returns `200` with `dueDate` `2026-07-20`
+And the row shows the new due date","And I have todo `Buy milk` with no due date
+And I set due date `2026-07-20`
+And I click Save
+Then the API returns `200` with `dueDate` `2026-07-20`
+And the row shows the new due date",TS-F5-AC004
+Test,User clears a due date when editing a todo,TS-F5-US5.1,"Given I am signed in
+And I have todo `Buy milk` with due date `2026-07-20`
+When I open the edit dialog
+And I clear the due date field
+And I click Save
+Then the API returns `200` with `dueDate` null
+And the row no longer shows a due date","And I have todo `Buy milk` with due date `2026-07-20`
+And I clear the due date field
+And I click Save
+Then the API returns `200` with `dueDate` null
+And the row no longer shows a due date",TS-F5-AC005
+Test,API rejects an invalid due date on update,TS-F5-US5.1,"Given I am signed in as user A
+And I own todo `Buy milk`
+When I send `PUT /todo/todos/:id` with body `{ ""dueDate"": ""2026-99-99"" }`
+Then the API returns `400` with `{ ""message"": ""..."" }`
+And the stored `dueDate` is unchanged","And I own todo `Buy milk`
+Then the API returns `400` with `{ ""message"": ""..."" }`
+And the stored `dueDate` is unchanged",TS-F5-AC006
+Test,User cannot set due date on another user's todo,TS-F5-US5.1,"Given I am signed in as user A
+And a todo exists that belongs to user B
+When I send `PUT /todo/todos/:id` with body `{ ""dueDate"": ""2026-07-15"" }`
+Then the API returns `404` with `{ ""message"": ""Todo with id=<id> not found."" }`
+And user B's todo is unchanged","And a todo exists that belongs to user B
+Then the API returns `404` with `{ ""message"": ""Todo with id=<id> not found."" }`
+And user B's todo is unchanged",TS-F5-AC007
+Test,Incomplete todo past due date is styled as overdue,TS-F5-US5.1,"Given I am signed in
+And I have an incomplete todo with `dueDate` yesterday
+When I view the todo list
+Then the due date is displayed with overdue styling","And I have an incomplete todo with `dueDate` yesterday
+Then the due date is displayed with overdue styling",TS-F5-AC008
+Test,Completed todo past due date is not styled as overdue,TS-F5-US5.1,"Given I am signed in
+And I have a completed todo with `dueDate` yesterday
+When I view the todo list
+Then the due date does not use overdue styling
+[ ] Backend model migration / sync includes nullable `dueDate`
+[ ] API and frontend implemented per this spec
+[ ] All mapped tests pass (`npm test`)
+[ ] `features/reference/data-model.md` updated
+[ ] `features/reference/api.md` updated
+Sorting or filtering todos by due date
+Due date on quick-add without opening edit dialog (optional field on add row is in scope; separate due-date-only modal is not)
+Reminders, notifications, or email alerts
+Recurring todos
+Time-of-day or timezone handling (date-only)
+Calendar or agenda views
+Changes to lists, profile, or auth (Features 2, 4)","And I have a completed todo with `dueDate` yesterday
+Then the due date does not use overdue styling",TS-F5-AC009

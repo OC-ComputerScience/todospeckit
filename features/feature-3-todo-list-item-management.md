@@ -1,39 +1,39 @@
 # Feature: Todo List Item Management
 
-**Sprint:** 3  
-**Branch pattern:** `feature/sprint-3-todo-list-item-management`  
-**Depends on:** Sprint 1 (`features/sprint-1-user-auth.md`), Sprint 2 (`features/sprint-2-todo-list-management.md`)
+**Feature ID:** 3
+**Branch pattern:** `feature/3-todo-list-item-management`
+**Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md), [Feature 2 — Todo List Management](feature-2-todo-list-management.md)
 
 ---
 
 ## User Stories
 
-### US-1: Add tasks to a list
+### US-3.1: Add tasks to a list
 **As a** signed-in user  
 **I want to** add todo items to the currently selected list  
 **So that** I can track what needs to be done in that context
 
-### US-2: View tasks in a list
+### US-3.2: View tasks in a list
 **As a** signed-in user  
 **I want to** see all items in the selected list  
 **So that** I know what work belongs to that group
 
-### US-3: Complete tasks
+### US-3.3: Complete tasks
 **As a** signed-in user  
 **I want to** mark todos as complete or incomplete  
 **So that** I can track my progress
 
-### US-4: Edit and remove tasks
+### US-3.4: Edit and remove tasks
 **As a** signed-in user  
 **I want to** edit or delete individual todos  
 **So that** I can keep my lists accurate
 
-### US-5: Private items only
+### US-3.5: Private items only
 **As a** signed-in user  
 **I want** my todo items visible only to me  
 **So that** other users cannot read or modify my tasks
 
-### US-6: Lists carry their items
+### US-3.6: Lists carry their items
 **As a** signed-in user  
 **I want** deleting a list to remove its todo items  
 **So that** I do not leave orphaned tasks in the database
@@ -51,7 +51,7 @@
 *   New todos default to `completed: false`.
 *   Deleting a list deletes all todos in that list (cascade).
 *   Todos are ordered with incomplete first, then by creation date ascending.
-*   This sprint extends the Sprint 2 dashboard main panel — sidebar list behavior is unchanged.
+*   This feature extends the Feature 2 dashboard main panel — sidebar list behavior is unchanged.
 
 ---
 
@@ -107,7 +107,7 @@ All endpoints enforce **list ownership** and **todo ownership** by the authentic
 ## Screen Requirements
 
 ### [View: Application Dashboard] — route name `home`
-Extends the Sprint 2 dashboard. Sidebar behavior is unchanged; **main panel** is fully implemented in this sprint.
+Extends the Feature 2 dashboard. Sidebar behavior is unchanged; **main panel** is fully implemented in this feature.
 
 **Main panel**
 *   Heading shows the selected list name, or **"Select a list"** when none is selected.
@@ -148,7 +148,7 @@ Extends the Sprint 2 dashboard. Sidebar behavior is unchanged; **main panel** is
 
 ## Acceptance Criteria (Gherkin)
 
-### Todo items
+### US-3.1 — Add tasks to a list
 
 #### Scenario: User adds a todo to the selected list
 *   **Given** I am signed in on the dashboard
@@ -175,11 +175,36 @@ Extends the Sprint 2 dashboard. Sidebar behavior is unchanged; **main panel** is
 *   **When** I view the main panel
 *   **Then** the add-todo input and **Add** button are disabled
 
+---
+
+### US-3.2 — View tasks in a list
+
 #### Scenario: Selected list has no todos
 *   **Given** I am signed in
 *   **And** I have selected an empty list
 *   **When** the todos finish loading
 *   **Then** I see **"No todos in this list yet."**
+
+#### Scenario: User switches lists
+*   **Given** I am signed in
+*   **And** list `Work` has todos `Email client` and `Write report`
+*   **And** list `Personal` has todo `Call mom`
+*   **When** I select `Personal` in the sidebar
+*   **Then** the main panel shows only `Call mom`
+*   **When** I select `Work` in the sidebar
+*   **Then** the main panel shows `Email client` and `Write report`
+
+#### Scenario: User only sees their own todos when switching lists
+*   **Given** I am signed in as user A
+*   **And** I own list `Work` with todo `My task`
+*   **And** user B owns list `Work` with todo `Their task` (same list name, different owner)
+*   **When** I select my `Work` list
+*   **Then** I see only `My task`
+*   **And** I do not see `Their task`
+
+---
+
+### US-3.3 — Complete tasks
 
 #### Scenario: User marks a todo as complete
 *   **Given** I am signed in
@@ -195,6 +220,10 @@ Extends the Sprint 2 dashboard. Sidebar behavior is unchanged; **main panel** is
 *   **Then** the API returns `200` with `completed: false`
 *   **And** the todo displays as active again
 
+---
+
+### US-3.4 — Edit and remove tasks
+
 #### Scenario: User edits a todo title
 *   **Given** I am signed in
 *   **And** I have todo `Buy milk`
@@ -209,14 +238,9 @@ Extends the Sprint 2 dashboard. Sidebar behavior is unchanged; **main panel** is
 *   **Then** the API returns `200` or `204`
 *   **And** the todo is removed from the main panel
 
-#### Scenario: User switches lists
-*   **Given** I am signed in
-*   **And** list `Work` has todos `Email client` and `Write report`
-*   **And** list `Personal` has todo `Call mom`
-*   **When** I select `Personal` in the sidebar
-*   **Then** the main panel shows only `Call mom`
-*   **When** I select `Work` in the sidebar
-*   **Then** the main panel shows `Email client` and `Write report`
+---
+
+### US-3.5 — Private items only
 
 #### Scenario: User cannot read todos in another user's list
 *   **Given** I am signed in as user A
@@ -253,13 +277,14 @@ Extends the Sprint 2 dashboard. Sidebar behavior is unchanged; **main panel** is
 *   **Then** the API returns `201` with a todo owned by user A
 *   **And** the saved `userId` is user A's ID, not `999`
 
-#### Scenario: User only sees their own todos when switching lists
-*   **Given** I am signed in as user A
-*   **And** I own list `Work` with todo `My task`
-*   **And** user B owns list `Work` with todo `Their task` (same list name, different owner)
-*   **When** I select my `Work` list
-*   **Then** I see only `My task`
-*   **And** I do not see `Their task`
+#### Scenario: Unauthenticated API request for todos
+*   **Given** I have no valid session token
+*   **When** I request `GET /todo/lists/1/todos`
+*   **Then** the API returns `401` with an unauthorized message
+
+---
+
+### US-3.6 — Lists carry their items
 
 #### Scenario: Deleting a list removes its todos
 *   **Given** I am signed in
@@ -270,35 +295,35 @@ Extends the Sprint 2 dashboard. Sidebar behavior is unchanged; **main panel** is
 
 ---
 
-### Authentication (integration with Sprint 1)
-
-#### Scenario: Unauthenticated API request for todos
-*   **Given** I have no valid session token
-*   **When** I request `GET /todo/lists/1/todos`
-*   **Then** the API returns `401` with an unauthorized message
-
----
-
 ## Test Coverage Map
 
-| Area | Tool | Scenarios |
-|------|------|-----------|
-| `GET /todo/lists/:listId/todos` | Jest + supertest | Returns only caller's todos for owned list; `404` for another user's list; `401` without token |
-| `POST /todo/lists/:listId/todos` | Jest + supertest | Happy path, empty title, `404` for another user's list; ignores spoofed `userId` |
-| `PUT /todo/todos/:id` | Jest + supertest | Update title, toggle `completed`; `404` for another user's todo; no mutation of other user's row |
-| `DELETE /todo/todos/:id` | Jest + supertest | Delete owned todo; `404` for another user's todo; other user's row preserved |
-| List delete cascade | Jest + supertest | Deleting list removes child todos |
-| `Dashboard.vue` (main panel) | Vitest | Empty todo state, list switch loads correct todos |
-| Todo input | Vitest | Empty title validation, disabled when no list selected |
-| Todo row | Vitest | Checkbox toggles `completed`; edit and delete actions |
+| Story | Scenario | Test file | Test name |
+|-------|----------|-----------|-----------|
+| US-3.1 | User adds a todo to the selected list | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User adds a todo to the selected list` |
+| US-3.1 | User adds a todo with an empty title | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User adds a todo with an empty title` |
+| US-3.1 | User adds a todo when no list is selected | `frontend/tests/Dashboard.test.js` | `User adds a todo when no list is selected` |
+| US-3.2 | Selected list has no todos | `frontend/tests/Dashboard.test.js` | `Selected list has no todos` |
+| US-3.2 | User switches lists | `frontend/tests/Dashboard.test.js` | `User switches lists` |
+| US-3.2 | User only sees their own todos when switching lists | `backend/tests/todos.test.js` | `User only sees their own todos when switching lists` |
+| US-3.3 | User marks a todo as complete | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User marks a todo as complete` |
+| US-3.3 | User marks a completed todo as incomplete | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User marks a completed todo as incomplete` |
+| US-3.4 | User edits a todo title | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User edits a todo title` |
+| US-3.4 | User deletes a todo | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User deletes a todo` |
+| US-3.5 | User cannot read todos in another user's list | `backend/tests/todos.test.js` | `User cannot read todos in another user's list` |
+| US-3.5 | User attempts to add a todo to another user's list | `backend/tests/todos.test.js` | `User attempts to add a todo to another user's list` |
+| US-3.5 | User attempts to rename another user's todo | `backend/tests/todos.test.js` | `User attempts to rename another user's todo` |
+| US-3.5 | User attempts to delete another user's todo | `backend/tests/todos.test.js` | `User attempts to delete another user's todo` |
+| US-3.5 | Client cannot assign a todo to another user on create | `backend/tests/todos.test.js` | `Client cannot assign a todo to another user on create` |
+| US-3.5 | Unauthenticated API request for todos | `backend/tests/todos.test.js` | `Unauthenticated API request for todos` |
+| US-3.6 | Deleting a list removes its todos | `backend/tests/todos.test.js` | `Deleting a list removes its todos` |
 
 ---
 
-## Out of Scope (Sprint 3)
+## Out of Scope
 
-*   New list CRUD features (owned by Sprint 2)
+*   New list CRUD features (owned by Feature 2)
 *   Drag-and-drop reordering of todos
-*   Due dates → [sprint-5-todo-due-date.md](./sprint-5-todo-due-date.md) (Sprint 5)
+*   Due dates → [feature-5-todo-due-date.md](./feature-5-todo-due-date.md) (Feature 5)
 *   Priorities, labels, or notes on todos
 *   Sharing lists or todos with other users
 *   Search or filter across todos

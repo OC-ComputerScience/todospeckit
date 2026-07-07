@@ -1,3 +1,8 @@
+/**
+ * Feature 1 — User Authentication & Session Management
+ * Spec: features/feature-1-user-auth.md
+ */
+
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { flushPromises } from "@vue/test-utils";
 import Login from "../src/views/Login.vue";
@@ -26,52 +31,54 @@ async function submitLoginForm(wrapper) {
   await flushPromises();
 }
 
-describe("Login.vue", () => {
+describe("Feature 1 — Login", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("shows validation when username is missing", async () => {
-    const { wrapper } = await mountWithPlugins(Login);
-    const form = await getForm(wrapper);
+  describe("US-1.2 — Sign in", () => {
+    it("User signs in with missing username", async () => {
+      const { wrapper } = await mountWithPlugins(Login);
+      const form = await getForm(wrapper);
 
-    await submitLoginForm(wrapper);
-    const validation = await form.vm.validate();
+      await submitLoginForm(wrapper);
+      const validation = await form.vm.validate();
 
-    expect(validation.valid).toBe(false);
-    expect(authServices.loginUser).not.toHaveBeenCalled();
-  });
-
-  it("shows validation when password is missing", async () => {
-    const { wrapper } = await mountWithPlugins(Login);
-    const fields = await getTextFields(wrapper);
-    const form = await getForm(wrapper);
-
-    await fields[0].setValue("jdoe");
-    await submitLoginForm(wrapper);
-    const validation = await form.vm.validate();
-
-    expect(validation.valid).toBe(false);
-    expect(authServices.loginUser).not.toHaveBeenCalled();
-  });
-
-  it("displays an API error when login fails", async () => {
-    authServices.loginUser.mockRejectedValue({
-      response: { data: { message: "Invalid username or password." } },
+      expect(validation.valid).toBe(false);
+      expect(authServices.loginUser).not.toHaveBeenCalled();
     });
 
-    const { wrapper } = await mountWithPlugins(Login);
-    const fields = await getTextFields(wrapper);
+    it("User signs in with missing password", async () => {
+      const { wrapper } = await mountWithPlugins(Login);
+      const fields = await getTextFields(wrapper);
+      const form = await getForm(wrapper);
 
-    await fields[0].vm.$emit("update:modelValue", "jdoe");
-    await fields[1].vm.$emit("update:modelValue", "wrongpassword");
-    await flushPromises();
-    await submitLoginForm(wrapper);
+      await fields[0].setValue("jdoe");
+      await submitLoginForm(wrapper);
+      const validation = await form.vm.validate();
 
-    expect(authServices.loginUser).toHaveBeenCalledWith({
-      username: "jdoe",
-      password: "wrongpassword",
+      expect(validation.valid).toBe(false);
+      expect(authServices.loginUser).not.toHaveBeenCalled();
     });
-    expect(wrapper.text()).toContain("Invalid username or password.");
+
+    it("User signs in with invalid password", async () => {
+      authServices.loginUser.mockRejectedValue({
+        response: { data: { message: "Invalid username or password." } },
+      });
+
+      const { wrapper } = await mountWithPlugins(Login);
+      const fields = await getTextFields(wrapper);
+
+      await fields[0].vm.$emit("update:modelValue", "jdoe");
+      await fields[1].vm.$emit("update:modelValue", "wrongpassword");
+      await flushPromises();
+      await submitLoginForm(wrapper);
+
+      expect(authServices.loginUser).toHaveBeenCalledWith({
+        username: "jdoe",
+        password: "wrongpassword",
+      });
+      expect(wrapper.text()).toContain("Invalid username or password.");
+    });
   });
 });

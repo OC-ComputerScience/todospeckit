@@ -1,3 +1,8 @@
+/**
+ * Feature 4 — User Profile Management
+ * Spec: features/feature-4-user-profile-management.md
+ */
+
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import { h, nextTick } from "vue";
@@ -96,7 +101,7 @@ async function openEditDialog(wrapper) {
   await nextTick();
 }
 
-describe("MenuBar.vue", () => {
+describe("Feature 4 — MenuBar", () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
@@ -116,51 +121,64 @@ describe("MenuBar.vue", () => {
     document.body.innerHTML = "";
   });
 
-  it("opens the profile dropdown with username and email from the user icon", async () => {
-    Utils.setStore("user", storedUser);
+  describe("US-4.4 — Single logout entry point", () => {
+    it("Menu bar does not show Sign out", async () => {
+      Utils.setStore("user", storedUser);
 
-    const wrapper = await mountMenuBar();
+      const wrapper = await mountMenuBar();
 
-    expect(wrapper.text()).not.toContain("Sign out");
-
-    await openProfileMenu(wrapper);
-
-    expect(document.body.textContent).toContain("Jane Doe");
-    expect(document.body.textContent).toContain("jdoe");
-    expect(document.body.textContent).toContain("jane@example.com");
-    expect(document.body.textContent).toContain("Edit Profile");
-    expect(document.body.textContent).toContain("Log out");
+      expect(wrapper.text()).not.toContain("Sign out");
+    });
   });
 
-  it("opens the edit profile dialog from the profile dropdown", async () => {
-    Utils.setStore("user", storedUser);
+  describe("US-4.1 — View profile from the menu bar", () => {
+    it("User opens the profile dropdown from the menu bar", async () => {
+      Utils.setStore("user", storedUser);
 
-    const wrapper = await mountMenuBar();
-    await openProfileMenu(wrapper);
+      const wrapper = await mountMenuBar();
+      await openProfileMenu(wrapper);
 
-    findBodyButton("Edit Profile").click();
-    await flushPromises();
-
-    expect(userServices.getUser).toHaveBeenCalledWith(1);
-    expect(document.body.textContent).toContain("Edit Profile");
-    expect(document.body.textContent).toContain("First name");
-    expect(document.body.textContent).toContain("Username");
+      expect(document.body.textContent).toContain("Jane Doe");
+      expect(document.body.textContent).toContain("jdoe");
+      expect(document.body.textContent).toContain("jane@example.com");
+      expect(document.body.textContent).toContain("Edit Profile");
+      expect(document.body.textContent).toContain("Log out");
+    });
   });
 
-  it("calls logout from the profile dropdown", async () => {
-    Utils.setStore("user", storedUser);
+  describe("US-4.2 — Edit profile", () => {
+    it("User opens the edit profile dialog", async () => {
+      Utils.setStore("user", storedUser);
 
-    const wrapper = await mountMenuBar();
-    await openProfileMenu(wrapper);
+      const wrapper = await mountMenuBar();
+      await openProfileMenu(wrapper);
 
-    findBodyListItem("Log out").click();
-    await flushPromises();
+      findBodyButton("Edit Profile").click();
+      await flushPromises();
 
-    expect(authServices.logoutUser).toHaveBeenCalled();
+      expect(userServices.getUser).toHaveBeenCalledWith(1);
+      expect(document.body.textContent).toContain("Edit Profile");
+      expect(document.body.textContent).toContain("First name");
+      expect(document.body.textContent).toContain("Username");
+    });
+  });
+
+  describe("US-4.3 — Log out from profile", () => {
+    it("User logs out from the profile dropdown", async () => {
+      Utils.setStore("user", storedUser);
+
+      const wrapper = await mountMenuBar();
+      await openProfileMenu(wrapper);
+
+      findBodyListItem("Log out").click();
+      await flushPromises();
+
+      expect(authServices.logoutUser).toHaveBeenCalled();
+    });
   });
 });
 
-describe("MenuBar.vue profile edit dialog", () => {
+describe("Feature 4 — MenuBar profile edit dialog", () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
@@ -181,116 +199,118 @@ describe("MenuBar.vue profile edit dialog", () => {
     document.body.innerHTML = "";
   });
 
-  it("updates the profile dropdown display name after save", async () => {
-    userServices.updateUser.mockResolvedValue({
-      data: {
-        id: 1,
+  describe("US-4.2 — Edit profile", () => {
+    it("User saves profile changes", async () => {
+      userServices.updateUser.mockResolvedValue({
+        data: {
+          id: 1,
+          fName: "Janet",
+          lName: "Smith",
+          username: "jdoe",
+          email: "jane@example.com",
+          role: "worker",
+        },
+      });
+
+      const wrapper = await mountMenuBar();
+      await openEditDialog(wrapper);
+
+      const inputs = getEditDialogInputs();
+      setNativeInputValue(inputs[0], "Janet");
+      setNativeInputValue(inputs[1], "Smith");
+      await nextTick();
+      clickLastBodyButton("Save");
+      await flushPromises();
+
+      expect(userServices.updateUser).toHaveBeenCalledWith(
+        1,
+        expect.objectContaining({
+          fName: "Janet",
+          lName: "Smith",
+        })
+      );
+      expect(Utils.getStore("user")).toMatchObject({
         fName: "Janet",
         lName: "Smith",
-        username: "jdoe",
-        email: "jane@example.com",
-        role: "worker",
-      },
+      });
+
+      await openProfileMenu(wrapper);
+
+      expect(document.body.textContent).toContain("Janet Smith");
+      expect(document.body.textContent).toContain("jdoe");
+      expect(document.body.textContent).toContain("jane@example.com");
     });
 
-    const wrapper = await mountMenuBar();
-    await openEditDialog(wrapper);
+    it("User cancels the edit profile dialog", async () => {
+      const wrapper = await mountMenuBar();
+      await openEditDialog(wrapper);
 
-    const inputs = getEditDialogInputs();
-    setNativeInputValue(inputs[0], "Janet");
-    setNativeInputValue(inputs[1], "Smith");
-    await nextTick();
-    clickLastBodyButton("Save");
-    await flushPromises();
+      const menuBar = getMenuBar(wrapper);
+      menuBar.vm.fName = "Changed";
+      menuBar.vm.closeEditDialog();
+      await flushPromises();
 
-    expect(userServices.updateUser).toHaveBeenCalledWith(
-      1,
-      expect.objectContaining({
-        fName: "Janet",
-        lName: "Smith",
-      })
-    );
-    expect(Utils.getStore("user")).toMatchObject({
-      fName: "Janet",
-      lName: "Smith",
+      expect(userServices.updateUser).not.toHaveBeenCalled();
+      expect(Utils.getStore("user").fName).toBe("Jane");
     });
 
-    await openProfileMenu(wrapper);
+    it("User saves profile with invalid email format", async () => {
+      const wrapper = await mountMenuBar();
+      await openEditDialog(wrapper);
 
-    expect(document.body.textContent).toContain("Janet Smith");
-    expect(document.body.textContent).toContain("jdoe");
-    expect(document.body.textContent).toContain("jane@example.com");
-  });
+      const inputs = getEditDialogInputs();
+      setNativeInputValue(inputs[2], "notanemail");
+      await nextTick();
+      clickLastBodyButton("Save");
+      await flushPromises();
 
-  it("closes without saving when Cancel is clicked", async () => {
-    const wrapper = await mountMenuBar();
-    await openEditDialog(wrapper);
-
-    const menuBar = getMenuBar(wrapper);
-    menuBar.vm.fName = "Changed";
-    menuBar.vm.closeEditDialog();
-    await flushPromises();
-
-    expect(userServices.updateUser).not.toHaveBeenCalled();
-    expect(Utils.getStore("user").fName).toBe("Jane");
-  });
-
-  it("blocks save when email format is invalid", async () => {
-    const wrapper = await mountMenuBar();
-    await openEditDialog(wrapper);
-
-    const inputs = getEditDialogInputs();
-    setNativeInputValue(inputs[2], "notanemail");
-    await nextTick();
-    clickLastBodyButton("Save");
-    await flushPromises();
-
-    expect(userServices.updateUser).not.toHaveBeenCalled();
-    expect(document.body.textContent).toContain("Enter a valid email address.");
-  });
-
-  it("blocks save when passwords do not match", async () => {
-    const wrapper = await mountMenuBar();
-    await openEditDialog(wrapper);
-
-    const inputs = getEditDialogInputs();
-    setNativeInputValue(inputs[4], "password123");
-    setNativeInputValue(inputs[5], "differentpassword");
-    await nextTick();
-    clickLastBodyButton("Save");
-    await flushPromises();
-
-    expect(userServices.updateUser).not.toHaveBeenCalled();
-    expect(document.body.textContent).toContain("Passwords do not match.");
-  });
-
-  it("blocks save when the password is too short", async () => {
-    const wrapper = await mountMenuBar();
-    await openEditDialog(wrapper);
-
-    const inputs = getEditDialogInputs();
-    setNativeInputValue(inputs[4], "short");
-    setNativeInputValue(inputs[5], "short");
-    await nextTick();
-    clickLastBodyButton("Save");
-    await flushPromises();
-
-    expect(document.body.textContent).toContain("Password must be at least 8 characters.");
-    expect(userServices.updateUser).not.toHaveBeenCalled();
-  });
-
-  it("displays an API error when profile update fails", async () => {
-    userServices.updateUser.mockRejectedValue({
-      response: { data: { message: "Password must be at least 8 characters." } },
+      expect(userServices.updateUser).not.toHaveBeenCalled();
+      expect(document.body.textContent).toContain("Enter a valid email address.");
     });
 
-    const wrapper = await mountMenuBar();
-    await openEditDialog(wrapper);
+    it("User saves profile with mismatched passwords", async () => {
+      const wrapper = await mountMenuBar();
+      await openEditDialog(wrapper);
 
-    clickLastBodyButton("Save");
-    await flushPromises();
+      const inputs = getEditDialogInputs();
+      setNativeInputValue(inputs[4], "password123");
+      setNativeInputValue(inputs[5], "differentpassword");
+      await nextTick();
+      clickLastBodyButton("Save");
+      await flushPromises();
 
-    expect(userServices.updateUser).toHaveBeenCalled();
-    expect(document.body.textContent).toContain("Password must be at least 8 characters.");
+      expect(userServices.updateUser).not.toHaveBeenCalled();
+      expect(document.body.textContent).toContain("Passwords do not match.");
+    });
+
+    it("User saves profile with a password that is too short", async () => {
+      const wrapper = await mountMenuBar();
+      await openEditDialog(wrapper);
+
+      const inputs = getEditDialogInputs();
+      setNativeInputValue(inputs[4], "short");
+      setNativeInputValue(inputs[5], "short");
+      await nextTick();
+      clickLastBodyButton("Save");
+      await flushPromises();
+
+      expect(document.body.textContent).toContain("Password must be at least 8 characters.");
+      expect(userServices.updateUser).not.toHaveBeenCalled();
+    });
+
+    it("Profile update API returns an error", async () => {
+      userServices.updateUser.mockRejectedValue({
+        response: { data: { message: "Password must be at least 8 characters." } },
+      });
+
+      const wrapper = await mountMenuBar();
+      await openEditDialog(wrapper);
+
+      clickLastBodyButton("Save");
+      await flushPromises();
+
+      expect(userServices.updateUser).toHaveBeenCalled();
+      expect(document.body.textContent).toContain("Password must be at least 8 characters.");
+    });
   });
 });
