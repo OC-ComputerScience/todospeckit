@@ -138,19 +138,44 @@ npm run agility:push:dry-run
 ### Push backlog
 
 ```bash
+# Full push — all epics, stories, and tests (features 1–5)
 npm run agility:push
+
+# Feature push — stories + tests for one feature only
+# (finds epic by name in Agility; creates that epic if missing)
+npm run agility:push -- --feature 3
+
+# Feature upsert — update existing stories/tests; create missing items
+npm run agility:push -- --feature 3 --upsert
+
+# Preview payloads without calling the API
+npm run agility:push:dry-run
+npm run agility:push:dry-run -- --feature 2
+npm run agility:push:dry-run -- --feature 3 --upsert
+```
+
+| Mode | Command | Creates epics? | Creates stories + tests? | Updates existing? |
+|------|---------|----------------|--------------------------|-------------------|
+| **Full** | `npm run agility:push` | All 5 features | All features | No |
+| **Feature** | `npm run agility:push -- --feature N` | Only if epic missing for N | Feature N only | No |
+| **Upsert** | `npm run agility:push -- --feature N --upsert` | No (epic must exist) | Missing items only | Yes (Description, ExpectedResults) |
+
+```bash
 # or with explicit project:
 node scripts/push-agility-api.mjs --project "Your Exact Project Name"
+node scripts/push-agility-api.mjs --feature 3 --project "Your Exact Project Name"
+node scripts/push-agility-api.mjs --feature 3 --upsert --project "Your Exact Project Name"
 ```
 
 The script:
 
-1. Creates **5 Epics** (one per feature spec).
-2. For each epic, creates **Stories** with nested **Tests** (Gherkin scenarios).
+1. **Full push:** creates **5 Epics** (one per feature spec), then for each epic creates **Stories** with nested **Tests** (Gherkin scenarios).
+2. **Feature push (`--feature N`):** looks up the epic by name for feature N; creates it if missing; then creates only that feature's stories and tests.
+3. **Feature upsert (`--feature N --upsert`):** looks up the epic by name (must already exist); for each story/test matches by **Reference** (`TS-F3-US3.1`) or **Name**; updates **Description** / **ExpectedResults** when found, creates when missing.
 
-Docs: [Access Token Authentication](https://docs.digital.ai/agility/docs/developerlibrary/access-token-authentication), [Asset Creation Examples](https://docs.digital.ai/agility/docs/asset-creation-examples-1).
+Docs: [Access Token Authentication](https://docs.digital.ai/agility/docs/developerlibrary/access-token-authentication), [Asset Creation Examples](https://docs.digital.ai/agility/docs/asset-creation-examples-1), [Asset Updation Examples](https://docs.digital.ai/agility/docs/asset-updation-examples).
 
-**Note:** Re-running the push creates **duplicate** assets (same as Excel import). Delete or archive old items before re-pushing, or extend the script to query by name and skip existing items.
+**Note:** Re-running a **create** push duplicates assets. Use **`--feature N --upsert`** after spec changes to refresh stories and acceptance tests in place.
 
 ---
 

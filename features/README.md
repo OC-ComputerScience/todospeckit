@@ -62,11 +62,18 @@ npm run test:frontend    # Vitest
 
 ## Export rules & specs to PDF
 
-Combine Cursor rules, ADRs, and feature specs into one PDF:
+Two PDF exports are available:
+
+| Command | Contents | Output |
+|---------|----------|--------|
+| `npm run specs:pdf` | **Full** — Cursor rules, ADRs, feature specs, reference | `docs/todo-speckit-specs.pdf` |
+| `npm run specs:pdf:features` | **Features only** — catalog, framework, five feature specs | `docs/todo-speckit-features.pdf` |
+| `npm run specs:pdf:all` | Both of the above | both PDFs |
 
 ```bash
 npm install              # once — installs md-to-pdf at repo root
-npm run specs:pdf
+npm run specs:pdf        # full bundle (~60 pages — course / audit)
+npm run specs:pdf:features   # requirements only (~25 pages — daily build work)
 ```
 
 If PDF generation fails with a missing Chrome error, either use installed Google Chrome automatically (macOS) or run the one-time browser download:
@@ -76,9 +83,9 @@ npm run specs:pdf:setup
 npm run specs:pdf
 ```
 
-Output:
+### Full export (`specs:pdf`)
 
-- `docs/todo-speckit-specs.md` — combined Markdown (rules, ADRs, specs, reference)
+- `docs/todo-speckit-specs.md` — combined Markdown
 - `docs/todo-speckit-specs.pdf` — PDF export
 
 **Included files (in order):**
@@ -99,6 +106,19 @@ Output:
 14. `features/framework.md`
 15. `features/feature-1-user-auth.md` through `feature-5-todo-due-date.md`
 16. `features/reference/README.md`, `data-model.md`, `api.md`
+
+### Features-only export (`specs:pdf:features`)
+
+- `docs/todo-speckit-features.md` — combined Markdown
+- `docs/todo-speckit-features.pdf` — PDF export
+
+**Included files (in order):**
+
+1. `features/README.md`
+2. `features/framework.md`
+3. `features/feature-1-user-auth.md` through `feature-5-todo-due-date.md`
+
+Excludes Cursor rules, ADRs, and reference docs — use when reviewing or implementing product requirements only.
 
 Manual alternative (no npm script):
 

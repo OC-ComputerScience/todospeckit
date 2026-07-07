@@ -324,12 +324,31 @@ Example: Feature 2 (lists) and Feature 4 (profile) can ship in the same sprint, 
 
 ---
 
+## Who should read what
+
+Documentation volume is intentional for SDD teaching, but not every artifact is needed for every task.
+
+| Role / task | Read |
+|-------------|------|
+| Implementing a feature slice | That feature's `feature-N-*.md` only |
+| Onboarding to the stack | `.cursor/rules/` + relevant ADR |
+| Understanding architecture choices | `docs/adr/` |
+| "What exists on `dev`?" | `features/reference/` |
+| Course lead / audit bundle | Full PDF (`npm run specs:pdf`) |
+| Product requirements review | Features PDF (`npm run specs:pdf:features`) |
+
+**Rule:** specs authorize *what*; rules constrain *how*; ADRs explain *why*; reference snapshots *current state*.
+
+---
+
 ## Exports
 
 | Command | Output |
 |---------|--------|
-| `npm run specs:pdf` | Rules + ADRs + specs + reference → `docs/todo-speckit-specs.pdf` |
+| `npm run specs:pdf` | **Full** — rules + ADRs + specs + reference → `docs/todo-speckit-specs.pdf` |
+| `npm run specs:pdf:features` | **Features only** — catalog + framework + feature specs → `docs/todo-speckit-features.pdf` |
+| `npm run specs:pdf:all` | Both PDFs above |
 | `npm run agility:export` | CSV backlog for Agility Excel import |
-| `npm run agility:push` | Push epics, stories, tests via Agility API |
+| `npm run agility:push` | Push epics + stories + tests (full) or `--feature N` (one feature) via Agility API |
 
-PDF include order lists all artifacts; see [README](./README.md#export-rules--specs-to-pdf).
+PDF include order: see [README](./README.md#export-rules--specs-to-pdf).

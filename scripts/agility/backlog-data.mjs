@@ -198,13 +198,25 @@ function storyDescription(story, feature, ref) {
 /**
  * Build structured backlog from feature spec files.
  * @param {string} project Agility Scope (project name)
+ * @param {{ featureNums?: number[] }} [options] Optional filter — e.g. `{ featureNums: [3] }`
  */
-export function buildBacklog(project = DEFAULT_PROJECT) {
+export function buildBacklog(project = DEFAULT_PROJECT, options = {}) {
+  const { featureNums } = options;
+  const selectedFeatures =
+    featureNums?.length > 0
+      ? FEATURE_FILES.filter((feature) => featureNums.includes(feature.num))
+      : FEATURE_FILES;
+
+  if (featureNums?.length > 0 && selectedFeatures.length === 0) {
+    const valid = FEATURE_FILES.map((feature) => feature.num).join(", ");
+    throw new Error(`Unknown feature number(s): ${featureNums.join(", ")}. Valid: ${valid}`);
+  }
+
   const features = [];
   let totalStories = 0;
   let totalTests = 0;
 
-  for (const feature of FEATURE_FILES) {
+  for (const feature of selectedFeatures) {
     const content = readFileSync(join(rootDir, feature.file), "utf8");
     const epicReference = epicRef(feature.num);
 

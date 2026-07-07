@@ -63,20 +63,43 @@ const ADR_FILES = [
   "docs/adr/0003-mysql-relational-database.md",
 ];
 
-const SPEC_FILES = [
+const FEATURE_CATALOG_FILES = [
   "features/README.md",
   "features/framework.md",
+];
+
+const FEATURE_SPEC_FILES = [
   "features/feature-1-user-auth.md",
   "features/feature-2-todo-list-management.md",
   "features/feature-3-todo-list-item-management.md",
   "features/feature-4-user-profile-management.md",
   "features/feature-5-todo-due-date.md",
+];
+
+const REFERENCE_FILES = [
   "features/reference/README.md",
   "features/reference/data-model.md",
   "features/reference/api.md",
 ];
 
 const PAGE_BREAK = '\n\n<div style="page-break-after: always;"></div>\n\n';
+
+const EXPORT_PROFILES = {
+  full: {
+    title: "Todo Speckit — Rules & Specifications",
+    subtitle: "Generated from `.cursor/rules/`, `docs/adr/`, and `features/`.",
+    markdownName: "todo-speckit-specs.md",
+    pdfName: "todo-speckit-specs.pdf",
+    build: buildFullMarkdown,
+  },
+  features: {
+    title: "Todo Speckit — Feature Specifications",
+    subtitle: "Product requirements only — `features/` catalog, framework, and feature specs.",
+    markdownName: "todo-speckit-features.md",
+    pdfName: "todo-speckit-features.pdf",
+    build: buildFeaturesMarkdown,
+  },
+};
 
 function stripFrontmatter(content) {
   if (!content.startsWith("---")) {
@@ -100,15 +123,21 @@ function readSection(relativePath) {
   return `<!-- source: ${relativePath} -->\n\n# ${title}\n\n${body.trim()}`;
 }
 
-function buildCombinedMarkdown() {
-  const ruleSections = RULE_FILES.map(readSection);
-  const adrSections = ADR_FILES.map(readSection);
-  const specSections = SPEC_FILES.map(readSection);
+function readSections(relativePaths) {
+  return relativePaths.map(readSection);
+}
+
+function buildFullMarkdown() {
+  const ruleSections = readSections(RULE_FILES);
+  const adrSections = readSections(ADR_FILES);
+  const catalogSections = readSections(FEATURE_CATALOG_FILES);
+  const featureSections = readSections(FEATURE_SPEC_FILES);
+  const referenceSections = readSections(REFERENCE_FILES);
 
   return [
-    "# Todo Speckit — Rules & Specifications",
+    `# ${EXPORT_PROFILES.full.title}`,
     "",
-    "Generated from `.cursor/rules/`, `docs/adr/`, and `features/`.",
+    EXPORT_PROFILES.full.subtitle,
     "",
     "---",
     "",
@@ -122,11 +151,32 @@ function buildCombinedMarkdown() {
     PAGE_BREAK,
     "# Part 3: Feature Specifications",
     "",
-    specSections.slice(0, 6).join(PAGE_BREAK),
+    [...catalogSections, ...featureSections].join(PAGE_BREAK),
     PAGE_BREAK,
     "# Part 4: Reference (current integrated state)",
     "",
-    specSections.slice(6).join(PAGE_BREAK),
+    referenceSections.join(PAGE_BREAK),
+  ].join("\n");
+}
+
+function buildFeaturesMarkdown() {
+  const catalogSections = readSections(FEATURE_CATALOG_FILES);
+  const featureSections = readSections(FEATURE_SPEC_FILES);
+
+  return [
+    `# ${EXPORT_PROFILES.features.title}`,
+    "",
+    EXPORT_PROFILES.features.subtitle,
+    "",
+    "---",
+    "",
+    "# Part 1: Catalog & methodology",
+    "",
+    catalogSections.join(PAGE_BREAK),
+    PAGE_BREAK,
+    "# Part 2: Feature requirements",
+    "",
+    featureSections.join(PAGE_BREAK),
   ].join("\n");
 }
 
@@ -160,11 +210,39 @@ async function renderPdf(combinedMarkdown, pdfPath) {
   }
 }
 
-async function main() {
-  const combinedMarkdown = buildCombinedMarkdown();
+function resolveModes(argv) {
+  const args = argv.slice(2);
+
+  if (args.includes("--help") || args.includes("-h")) {
+    return { help: true };
+  }
+
+  if (args.includes("all")) {
+    return { modes: ["full", "features"] };
+  }
+
+  if (args.includes("features")) {
+    return { modes: ["features"] };
+  }
+
+  if (args.includes("full")) {
+    return { modes: ["full"] };
+  }
+
+  return { modes: ["full"] };
+}
+
+async function exportProfile(mode) {
+  const profile = EXPORT_PROFILES[mode];
+
+  if (!profile) {
+    throw new Error(`Unknown export mode: ${mode}`);
+  }
+
+  const combinedMarkdown = profile.build();
   const outputDir = join(rootDir, "docs");
-  const markdownPath = join(outputDir, "todo-speckit-specs.md");
-  const pdfPath = join(outputDir, "todo-speckit-specs.pdf");
+  const markdownPath = join(outputDir, profile.markdownName);
+  const pdfPath = join(outputDir, profile.pdfName);
 
   mkdirSync(outputDir, { recursive: true });
   writeFileSync(markdownPath, combinedMarkdown, "utf8");
@@ -172,11 +250,39 @@ async function main() {
   const pdf = await renderPdf(combinedMarkdown, pdfPath);
 
   if (!pdf) {
-    throw new Error("PDF generation failed.");
+    throw new Error(`PDF generation failed for ${mode}.`);
   }
 
   console.log(`Wrote ${markdownPath}`);
   console.log(`Wrote ${pdfPath}`);
+}
+
+function printHelp() {
+  console.log(`Usage: node scripts/export-specs-pdf.mjs [mode]
+
+Modes:
+  full       Rules + ADRs + feature specs + reference (default)
+  features   Feature catalog, framework, and feature specs only
+  all        Generate both PDFs
+
+Examples:
+  npm run specs:pdf
+  npm run specs:pdf:features
+  npm run specs:pdf:all
+`);
+}
+
+async function main() {
+  const resolved = resolveModes(process.argv);
+
+  if (resolved.help) {
+    printHelp();
+    return;
+  }
+
+  for (const mode of resolved.modes) {
+    await exportProfile(mode);
+  }
 }
 
 main().catch((error) => {
