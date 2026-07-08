@@ -112,7 +112,7 @@ Extends the Feature 2 `MenuBar`. Dashboard sidebar and main panel are unchanged.
 **Profile dropdown (`<v-menu>`)**
 *   Read-only display of **full name** (`fName` + `lName`), **username**, and **email**.
 *   Use `<v-list-item>` with the full name as the title and username/email as subtitle lines.
-*   **Edit Profile** button opens the edit dialog.
+*   **Edit Profile** button opens the edit dialog. Use class `oc-cta` — this is the reference label size for peer CTAs (**+ New List**, **Add**).
 *   **Log out** list item or button — reuses existing logout flow (`authServices.logoutUser()`).
 
 **Frontend services**

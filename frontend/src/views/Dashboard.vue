@@ -377,18 +377,20 @@ onMounted(() => {
     <v-row>
       <v-col cols="12" md="4">
         <v-card elevation="2">
-          <v-card-title class="d-flex align-center justify-space-between">
-            <span>My Lists</span>
-            <v-btn
-              color="primary"
-              variant="elevated"
-              size="small"
-              :disabled="listsLoading"
-              @click="openCreateDialog"
-            >
-              + New List
-            </v-btn>
-          </v-card-title>
+          <v-card-item>
+            <v-card-title>My Lists</v-card-title>
+            <template #append>
+              <v-btn
+                color="primary"
+                variant="elevated"
+                class="oc-cta"
+                :disabled="listsLoading"
+                @click="openCreateDialog"
+              >
+                + New List
+              </v-btn>
+            </template>
+          </v-card-item>
 
           <v-card-text>
             <p v-if="!listsLoading && lists.length === 0" class="text-body-2 text-medium-emphasis">
@@ -470,6 +472,7 @@ onMounted(() => {
                 <v-btn
                   color="primary"
                   variant="elevated"
+                  class="oc-cta"
                   type="submit"
                   :disabled="!selectedList || todosLoading"
                   :loading="addTodoLoading"

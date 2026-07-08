@@ -111,7 +111,7 @@ Extends the Feature 2 dashboard. Sidebar behavior is unchanged; **main panel** i
 
 **Main panel**
 *   Heading shows the selected list name, or **"Select a list"** when none is selected.
-*   Text field + **Add** button to create a new todo in the selected list (disabled when no list is selected).
+*   Text field + **Add** button to create a new todo in the selected list (disabled when no list is selected). **Add** uses class `oc-cta` (same label size as **+ New List** / **Edit Profile**).
 *   Todo rows: checkbox (`completed`), title text, **edit** icon, **delete** icon.
 *   **Edit:** clicking the edit icon opens a `<v-dialog>` with a `<v-text-field>` pre-filled with the current title; **Save** / **Cancel**.
 *   **Delete:** clicking delete opens a confirmation `<v-dialog>`.

@@ -179,6 +179,7 @@ const handleLogout = async () => {
           <v-btn
             color="primary"
             variant="elevated"
+            class="oc-cta"
             block
             @click="openEditDialog"
           >
