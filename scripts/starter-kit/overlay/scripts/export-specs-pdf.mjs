@@ -113,7 +113,6 @@ function discoverRuleFiles() {
   return ordered;
 }
 
-/** ADR index first, then numbered ADRs (`0001-….md`) in numeric order. */
 function discoverAdrFiles() {
   const adrDir = join(rootDir, "docs", "adr");
   const files = [];
@@ -130,10 +129,6 @@ function discoverAdrFiles() {
   return files;
 }
 
-/**
- * Catalog + framework, then `feature-N-*.md` (numeric), then reference docs.
- * New feature/ADR markdown is picked up automatically — no list edits required.
- */
 function discoverSpecFiles() {
   const featuresDir = join(rootDir, "features");
   const files = [];
@@ -165,129 +160,98 @@ function discoverSpecFiles() {
   return files;
 }
 
-function stripFrontmatter(content) {
-  if (!content.startsWith("---")) {
-    return content;
+function stripFrontmatter(text) {
+  if (!text.startsWith("---")) {
+    return text;
   }
-
-  const end = content.indexOf("---", 3);
+  const end = text.indexOf("\n---", 3);
   if (end === -1) {
-    return content;
+    return text;
+  }
+  return text.slice(end + 4).trimStart();
+}
+
+function combineMarkdown(files) {
+  return files
+    .map((relativePath) => {
+      const absolute = join(rootDir, relativePath);
+      if (!existsSync(absolute)) {
+        console.warn(`Skipping missing file: ${relativePath}`);
+        return null;
+      }
+      const raw = readFileSync(absolute, "utf8");
+      const body = relativePath.endsWith(".mdc") ? stripFrontmatter(raw) : raw;
+      return `<!-- source: ${relativePath} -->\n\n${body.trim()}`;
+    })
+    .filter(Boolean)
+    .join(PAGE_BREAK);
+}
+
+async function exportPdf(markdownPath, pdfPath, title) {
+  const launchOptions = getLaunchOptions();
+
+  try {
+    await mdToPdf(
+      { path: markdownPath },
+      {
+        dest: pdfPath,
+        pdf_options: {
+          format: "A4",
+          margin: { top: "20mm", right: "16mm", bottom: "20mm", left: "16mm" },
+          printBackground: true,
+        },
+        launch_options: launchOptions,
+      },
+    );
+  } catch (error) {
+    if (!resolveChromeExecutable()) {
+      installPuppeteerChrome();
+      await mdToPdf(
+        { path: markdownPath },
+        {
+          dest: pdfPath,
+          pdf_options: {
+            format: "A4",
+            margin: { top: "20mm", right: "16mm", bottom: "20mm", left: "16mm" },
+            printBackground: true,
+          },
+          launch_options: {},
+        },
+      );
+    } else {
+      throw error;
+    }
   }
 
-  return content.slice(end + 3).trimStart();
+  console.log(`Wrote ${pdfPath} (${title})`);
 }
 
-function readSection(relativePath) {
-  const absolutePath = join(rootDir, relativePath);
-  if (!existsSync(absolutePath)) {
-    console.warn(`Skipping missing file: ${relativePath}`);
-    return null;
-  }
+async function main() {
+  const outputDir = join(rootDir, "docs");
+  const markdownPath = join(outputDir, "speckit-specs.md");
+  const pdfPath = join(outputDir, "speckit-specs.pdf");
 
-  const raw = readFileSync(absolutePath, "utf8");
-  const body = relativePath.endsWith(".mdc") ? stripFrontmatter(raw) : raw;
-  const title = relativePath.split("/").pop();
-
-  return `<!-- source: ${relativePath} -->\n\n# ${title}\n\n${body.trim()}`;
-}
-
-function joinSections(paths) {
-  return paths.map(readSection).filter(Boolean).join(PAGE_BREAK);
-}
-
-function buildCombinedMarkdown() {
   const ruleFiles = discoverRuleFiles();
   const adrFiles = discoverAdrFiles();
   const specFiles = discoverSpecFiles();
 
-  const featureStart = specFiles.findIndex((path) => /\/feature-\d+-/.test(path));
-  const referenceStart = specFiles.findIndex((path) => path.includes("/reference/"));
-
-  const catalogAndFramework =
-    featureStart === -1 ? specFiles : specFiles.slice(0, featureStart);
-  const featureSpecs =
-    featureStart === -1
-      ? []
-      : referenceStart === -1
-        ? specFiles.slice(featureStart)
-        : specFiles.slice(featureStart, referenceStart);
-  const referenceSpecs = referenceStart === -1 ? [] : specFiles.slice(referenceStart);
-
-  console.log(`PDF sources — ${ruleFiles.length} rules, ${adrFiles.length} ADRs, ${specFiles.length} feature docs`);
-
-  return [
-    "# Todo Speckit — Rules & Specifications",
-    "",
-    "Generated from `.cursor/rules/`, `docs/adr/`, and `features/` (auto-discovered).",
-    "",
-    "---",
-    "",
-    "# Part 1: Cursor Rules",
-    "",
-    joinSections(ruleFiles),
-    PAGE_BREAK,
-    "# Part 2: Architecture Decision Records",
-    "",
-    joinSections(adrFiles),
-    PAGE_BREAK,
-    "# Part 3: Feature Specifications",
-    "",
-    joinSections([...catalogAndFramework, ...featureSpecs]),
-    PAGE_BREAK,
-    "# Part 4: Reference (current integrated state)",
-    "",
-    joinSections(referenceSpecs),
-  ].join("\n");
-}
-
-async function renderPdf(combinedMarkdown, pdfPath) {
-  const config = {
-    dest: pdfPath,
-    pdf_options: {
-      format: "Letter",
-      margin: "20mm",
-      printBackground: true,
-    },
-    launch_options: getLaunchOptions(),
-  };
-
-  try {
-    return await mdToPdf({ content: combinedMarkdown }, config);
-  } catch (error) {
-    const message = String(error?.message ?? error);
-    const chromeMissing = message.includes("Could not find Chrome");
-
-    if (!chromeMissing || resolveChromeExecutable()) {
-      throw error;
-    }
-
-    installPuppeteerChrome();
-
-    return mdToPdf(
-      { content: combinedMarkdown },
-      { ...config, launch_options: getLaunchOptions() }
-    );
-  }
-}
-
-async function main() {
-  const combinedMarkdown = buildCombinedMarkdown();
-  const outputDir = join(rootDir, "docs");
-  const markdownPath = join(outputDir, "todo-speckit-specs.md");
-  const pdfPath = join(outputDir, "todo-speckit-specs.pdf");
+  console.log(
+    `PDF sources — ${ruleFiles.length} rules, ${adrFiles.length} ADRs, ${specFiles.length} feature docs`,
+  );
 
   mkdirSync(outputDir, { recursive: true });
+
+  const combinedMarkdown = [
+    `# Speckit — Rules, ADRs & Specs\n\nGenerated by \`npm run specs:pdf\` (auto-discovered).`,
+    combineMarkdown(ruleFiles),
+    combineMarkdown(adrFiles),
+    combineMarkdown(specFiles),
+  ].join(PAGE_BREAK);
+
   writeFileSync(markdownPath, combinedMarkdown, "utf8");
-
-  const pdf = await renderPdf(combinedMarkdown, pdfPath);
-
-  if (!pdf) {
-    throw new Error("PDF generation failed.");
-  }
-
   console.log(`Wrote ${markdownPath}`);
-  console.log(`Wrote ${pdfPath}`);
+
+  await exportPdf(markdownPath, pdfPath, "full");
 }
 
 main().catch((error) => {

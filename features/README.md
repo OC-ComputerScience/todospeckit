@@ -23,7 +23,7 @@ Implement features in dependency order (1 → 2 → 3; 4 and 5 after 3). Feature
 
 ## Living reference (current integrated state)
 
-After features merge to `dev`, keep these snapshots in sync with the codebase:
+After features merge to `dev`, keep these snapshots in sync with the codebase (**required** when schema or API changed — see [Merge checklist + Agility sync](./framework.md#merge-checklist--agility-sync)):
 
 | File | Purpose |
 |------|---------|
@@ -31,7 +31,7 @@ After features merge to `dev`, keep these snapshots in sync with the codebase:
 | [reference/data-model.md](./reference/data-model.md) | Current database tables and associations |
 | [reference/api.md](./reference/api.md) | Current REST API under `/todo/` |
 
-Feature specs define **changes**; reference files describe **what exists now**.
+Feature specs define **changes**; reference files describe **what exists now**. Spec evolution after merge: prefer a new feature delta — [framework.md](./framework.md#spec-evolution-after-merge).
 
 ## Implementation order (each feature)
 
@@ -69,7 +69,7 @@ npm install              # once — installs md-to-pdf at repo root
 npm run specs:pdf
 ```
 
-If PDF generation fails with a missing Chrome error, either use installed Google Chrome automatically (macOS) or run the one-time browser download:
+If PDF generation fails with a missing Chrome error, either use installed Google Chrome / Edge (macOS, Windows, or Linux paths are detected) or run the one-time browser download:
 
 ```bash
 npm run specs:pdf:setup
@@ -81,53 +81,21 @@ Output:
 - `docs/todo-speckit-specs.md` — combined Markdown (rules, ADRs, specs, reference)
 - `docs/todo-speckit-specs.pdf` — PDF export
 
-**Included files (in order):**
+**Included (auto-discovered each run):**
 
-1. `.cursor/rules/constitution.mdc`
-2. `.cursor/rules/project-structure.mdc`
-3. `.cursor/rules/api-conventions.mdc`
-4. `.cursor/rules/auth-patterns.mdc`
-5. `.cursor/rules/frontend-services.mdc`
-6. `.cursor/rules/security.mdc`
-7. `.cursor/rules/testing-standards.mdc`
-8. `.cursor/rules/ui-style-system.mdc`
-9. `docs/adr/README.md`
-10. `docs/adr/0001-client-server-multi-user-architecture.md`
-11. `docs/adr/0002-security-architecture.md`
-12. `docs/adr/0003-mysql-relational-database.md`
-13. `features/README.md`
-14. `features/framework.md`
-15. `features/feature-1-user-auth.md` through `feature-5-todo-due-date.md`
-16. `features/reference/README.md`, `data-model.md`, `api.md`
+1. All `.cursor/rules/*.mdc` (preferred order, then any extras alphabetically)
+2. `docs/adr/README.md` + every `docs/adr/NNNN-*.md` (numeric order)
+3. `features/README.md`, `features/framework.md`
+4. Every `features/feature-N-*.md` (numeric order)
+5. `features/reference/*.md`
+
+Adding a new feature or ADR markdown file is enough — no edits to `scripts/export-specs-pdf.mjs`.
 
 Manual alternative (no npm script):
 
 ```bash
-cat .cursor/rules/constitution.mdc \
-    .cursor/rules/project-structure.mdc \
-    .cursor/rules/api-conventions.mdc \
-    .cursor/rules/auth-patterns.mdc \
-    .cursor/rules/frontend-services.mdc \
-    .cursor/rules/security.mdc \
-    .cursor/rules/testing-standards.mdc \
-    .cursor/rules/ui-style-system.mdc \
-    docs/adr/README.md \
-    docs/adr/0001-client-server-multi-user-architecture.md \
-    docs/adr/0002-security-architecture.md \
-    docs/adr/0003-mysql-relational-database.md \
-    features/README.md \
-    features/framework.md \
-    features/feature-1-user-auth.md \
-    features/feature-2-todo-list-management.md \
-    features/feature-3-todo-list-item-management.md \
-    features/feature-4-user-profile-management.md \
-    features/feature-5-todo-due-date.md \
-    features/reference/README.md \
-    features/reference/data-model.md \
-    features/reference/api.md \
-  > /tmp/todo-speckit-specs.md
-
-npx md-to-pdf /tmp/todo-speckit-specs.md
+# Prefer npm run specs:pdf — it strips .mdc frontmatter and discovers new files.
+npx md-to-pdf docs/todo-speckit-specs.md
 ```
 
-Note: the manual `cat` approach leaves YAML frontmatter in `.mdc` files; `npm run specs:pdf` strips it for cleaner PDF output.
+Note: the manual `cat` approach leaves YAML frontmatter in `.mdc` files and will miss new features unless you extend the file list; `npm run specs:pdf` strips frontmatter and auto-discovers.

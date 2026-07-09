@@ -119,6 +119,8 @@ CREATE DATABASE `todospeckit-db-test`;
 ```bash
 cp backend/.env.example backend/.env
 cp backend/.env.test.example backend/.env.test
+# Windows: copy backend\.env.example backend\.env
+#          copy backend\.env.test.example backend\.env.test
 ```
 
 Edit `backend/.env` with your MySQL credentials. Default database name: `todospeckit-db`.
@@ -216,6 +218,17 @@ The constitution rule requires the AI to **refuse code generation** that has no 
 
 Export Figma frames to `docs/ui/feature-N/` and link them from the feature spec. Specs remain the functional source of truth; designs are visual guidance.
 
+### Start a new SDD application (not this todo app)
+
+Works on **macOS, Windows, and Linux** (Node.js only).
+
+```bash
+npm run starter:zip
+# → dist/speckit-starter-kit.zip
+```
+
+See [docs/STARTER-KIT.md](docs/STARTER-KIT.md) for what is included, what is excluded, Windows `copy` equivalents, and the post-unzip checklist.
+
 ---
 
 ## Deployment
@@ -229,13 +242,15 @@ The monorepo deploys as **two independent artifacts** from one git repository:
 
 Pushes and merged PRs to `dev` run [.github/workflows/deploy.yml](.github/workflows/deploy.yml): backend and frontend tests must pass before either artifact is deployed. PRs targeting `main` or `dev` run [.github/workflows/test.yml](.github/workflows/test.yml) only (no deploy). Pushes to `main` run tests only — `main` stays scaffold-only and is never deployed.
 
-Local bundle scripts:
+Local bundle scripts (Node — works on macOS, Windows, and Linux):
 
 ```bash
-./scripts/bundle-frontend.zsh   # → frontend/dist/
-./scripts/bundle-backend.zsh    # → backend/deploy/  (requires backend/.env)
-./scripts/bundle-all.zsh        # both
+npm run bundle:frontend:full   # install + build + → frontend/dist/
+npm run bundle:backend:full    # install + → backend/deploy/  (requires backend/.env)
+npm run bundle:all             # both
 ```
+
+Or call the scripts directly: `node scripts/bundle-frontend.mjs`, etc.
 
 CI tests run on push to `main` and on pull requests to `main` or `dev` via [.github/workflows/test.yml](.github/workflows/test.yml).
 
