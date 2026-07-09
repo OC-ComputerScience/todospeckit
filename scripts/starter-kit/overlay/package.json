@@ -1,7 +1,7 @@
 {
-  "name": "todo-speckit",
+  "name": "speckit-app",
   "private": true,
-  "description": "Spec-driven todo app — monorepo root (deploy scripts orchestrate frontend/ and backend/)",
+  "description": "Spec-driven app — monorepo root (deploy scripts orchestrate frontend/ and backend/)",
   "scripts": {
     "build:frontend": "npm run build --prefix frontend",
     "bundle:frontend": "npm run bundle --prefix frontend",
@@ -15,11 +15,10 @@
     "test:frontend": "npm run test --prefix frontend",
     "specs:pdf": "node scripts/export-specs-pdf.mjs",
     "specs:pdf:setup": "npx puppeteer browsers install chrome",
-    "agility:export": "node scripts/export-agility-import.mjs --project \"Todo Speckit\"",
+    "agility:export": "node scripts/export-agility-import.mjs --project \"Speckit App\"",
     "agility:push": "node scripts/push-agility-api.mjs",
     "agility:push:dry-run": "node scripts/push-agility-api.mjs --dry-run",
-    "agility:verify": "node scripts/push-agility-api.mjs --verify",
-    "starter:zip": "node scripts/bundle-starter-kit.mjs"
+    "agility:verify": "node scripts/push-agility-api.mjs --verify"
   },
   "devDependencies": {
     "md-to-pdf": "^5.2.4"
