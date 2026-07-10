@@ -87,17 +87,18 @@ Output:
 1. All `.cursor/rules/*.mdc` (preferred order, then any extras alphabetically)
 2. `docs/adr/README.md` + every `docs/adr/NNNN-*.md` (numeric order)
 3. `docs/nfr/README.md` + `docs/nfr/*.md` (quality attributes)
-4. `features/README.md`, `features/framework.md`
-5. Every `features/feature-N-*.md` (numeric order)
-6. `features/reference/*.md`
+4. `docs/arch_diagrams/*.md` (C4 / architecture diagrams; Mermaid rendered in PDF)
+5. `features/README.md`, `features/framework.md`
+6. Every `features/feature-N-*.md` (numeric order)
+7. `features/reference/*.md`
 
-Adding a new feature, ADR, or NFR markdown file is enough — no edits to `scripts/export-specs-pdf.mjs`.
+Adding a new feature, ADR, NFR, or arch-diagram markdown file is enough — no edits to `scripts/export-specs-pdf.mjs`. Mermaid fences (including C4) render in the PDF via `md-mermaid-pdf`.
 
 Manual alternative (no npm script):
 
 ```bash
-# Prefer npm run specs:pdf — it strips .mdc frontmatter and discovers new files.
-npx md-to-pdf docs/todo-speckit-specs.md
+# Prefer npm run specs:pdf — it strips .mdc frontmatter, discovers new files, and renders Mermaid.
+npx md-mermaid-pdf docs/todo-speckit-specs.md
 ```
 
-Note: the manual `cat` approach leaves YAML frontmatter in `.mdc` files and will miss new features unless you extend the file list; `npm run specs:pdf` strips frontmatter and auto-discovers.
+Note: a plain `md-to-pdf` run leaves Mermaid as code blocks; `npm run specs:pdf` renders diagrams.

@@ -2,7 +2,7 @@ import { execSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import { mdToPdf } from "md-to-pdf";
+import { mdToPdf } from "md-mermaid-pdf";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, "..");
@@ -75,6 +75,16 @@ const RULE_ORDER = [
   "security.mdc",
   "testing-standards.mdc",
   "ui-style-system.mdc",
+];
+
+/** Preferred C4 diagram order under docs/arch_diagrams/. */
+const ARCH_DIAGRAM_ORDER = [
+  "README.md",
+  "c4-context.md",
+  "c4-container.md",
+  "c4-component-frontend.md",
+  "c4-component-backend.md",
+  "c4-deployment.md",
 ];
 
 const PAGE_BREAK = '\n\n<div style="page-break-after: always;"></div>\n\n';
@@ -153,6 +163,35 @@ function discoverNfrFiles() {
 }
 
 /**
+ * C4 / architecture diagrams under docs/arch_diagrams/.
+ * Preferred order first; any other `.md` files appended alphabetically.
+ */
+function discoverArchDiagramFiles() {
+  const archDir = join(rootDir, "docs", "arch_diagrams");
+  if (!existsSync(archDir)) {
+    return [];
+  }
+
+  const found = listFiles(archDir, (name) => name.endsWith(".md")).map(toRepoRelative);
+  const ordered = [];
+
+  for (const name of ARCH_DIAGRAM_ORDER) {
+    const path = `docs/arch_diagrams/${name}`;
+    if (found.includes(path)) {
+      ordered.push(path);
+    }
+  }
+
+  for (const path of found) {
+    if (!ordered.includes(path)) {
+      ordered.push(path);
+    }
+  }
+
+  return ordered;
+}
+
+/**
  * Catalog + framework, then `feature-N-*.md` (numeric), then reference docs.
  * New feature/ADR markdown is picked up automatically — no list edits required.
  */
@@ -214,14 +253,43 @@ function readSection(relativePath) {
   return `<!-- source: ${relativePath} -->\n\n# ${title}\n\n${body.trim()}`;
 }
 
+/**
+ * Arch diagrams: keep the file's own H1 + description with the Mermaid figure.
+ * Soft page break between files (not before the first). Print CSS keeps heading + figure together.
+ * Do not inject a redundant `# filename` heading (saves vertical space).
+ */
+function readArchSection(relativePath, { pageBreakBefore = false } = {}) {
+  const absolutePath = join(rootDir, relativePath);
+  if (!existsSync(absolutePath)) {
+    console.warn(`Skipping missing file: ${relativePath}`);
+    return null;
+  }
+
+  const body = readFileSync(absolutePath, "utf8").trim();
+  const parts = [`<!-- source: ${relativePath} -->`, "", body];
+  if (pageBreakBefore) {
+    return PAGE_BREAK + parts.join("\n");
+  }
+  return parts.join("\n");
+}
+
 function joinSections(paths) {
   return paths.map(readSection).filter(Boolean).join(PAGE_BREAK);
+}
+
+/** Soft join: page break between diagrams; CSS keeps each H1/description with its Mermaid figure. */
+function joinArchSections(paths) {
+  return paths
+    .map((path, index) => readArchSection(path, { pageBreakBefore: index > 0 }))
+    .filter(Boolean)
+    .join("\n\n");
 }
 
 function buildCombinedMarkdown() {
   const ruleFiles = discoverRuleFiles();
   const adrFiles = discoverAdrFiles();
   const nfrFiles = discoverNfrFiles();
+  const archFiles = discoverArchDiagramFiles();
   const specFiles = discoverSpecFiles();
 
   const featureStart = specFiles.findIndex((path) => /\/feature-\d+-/.test(path));
@@ -238,13 +306,15 @@ function buildCombinedMarkdown() {
   const referenceSpecs = referenceStart === -1 ? [] : specFiles.slice(referenceStart);
 
   console.log(
-    `PDF sources — ${ruleFiles.length} rules, ${adrFiles.length} ADRs, ${nfrFiles.length} NFRs, ${specFiles.length} feature docs`,
+    `PDF sources — ${ruleFiles.length} rules, ${adrFiles.length} ADRs, ${nfrFiles.length} NFRs, ` +
+      `${archFiles.length} arch diagrams, ${specFiles.length} feature docs`,
   );
 
   return [
     "# Todo Speckit — Rules & Specifications",
     "",
-    "Generated from `.cursor/rules/`, `docs/adr/`, `docs/nfr/`, and `features/` (auto-discovered).",
+    "Generated from `.cursor/rules/`, `docs/adr/`, `docs/nfr/`, `docs/arch_diagrams/`, and `features/` (auto-discovered).",
+    "Mermaid fences (including C4) are rendered in the PDF via `md-mermaid-pdf`.",
     "",
     "---",
     "",
@@ -260,11 +330,15 @@ function buildCombinedMarkdown() {
     "",
     joinSections(nfrFiles),
     PAGE_BREAK,
-    "# Part 4: Feature Specifications",
+    "# Part 4: Architecture Diagrams (C4)",
+    "",
+    joinArchSections(archFiles),
+    PAGE_BREAK,
+    "# Part 5: Feature Specifications",
     "",
     joinSections([...catalogAndFramework, ...featureSpecs]),
     PAGE_BREAK,
-    "# Part 5: Reference (current integrated state)",
+    "# Part 6: Reference (current integrated state)",
     "",
     joinSections(referenceSpecs),
   ].join("\n");
@@ -273,12 +347,48 @@ function buildCombinedMarkdown() {
 async function renderPdf(combinedMarkdown, pdfPath) {
   const config = {
     dest: pdfPath,
+    basedir: rootDir,
     pdf_options: {
       format: "Letter",
       margin: "20mm",
       printBackground: true,
     },
     launch_options: getLaunchOptions(),
+    // Offline-friendly: use Mermaid bundled with md-mermaid-pdf (includes C4).
+    mermaidSource: "bundled",
+    mermaidConfig: {
+      startOnLoad: false,
+      theme: "default",
+    },
+    // Keep diagram headings with their figures; scale SVGs so they fit under the intro text.
+    css: `
+      h1, h2, h3, h4 {
+        break-after: avoid-page;
+        page-break-after: avoid;
+      }
+      h1 + p, h2 + p, h3 + p {
+        break-after: avoid-page;
+        page-break-after: avoid;
+      }
+      p {
+        orphans: 3;
+        widows: 3;
+      }
+      /* Prefer keeping the Mermaid block on the same page as the preceding heading/paragraph. */
+      pre.mermaid, .mermaid {
+        break-before: avoid-page;
+        page-break-before: avoid;
+        max-width: 100%;
+        overflow: visible;
+      }
+      /* Cap height so the figure fits under title + short description on one Letter page. */
+      pre.mermaid svg, .mermaid svg {
+        max-width: 100% !important;
+        max-height: 7.2in !important;
+        height: auto !important;
+        display: block;
+      }
+    `,
   };
 
   try {
@@ -295,7 +405,7 @@ async function renderPdf(combinedMarkdown, pdfPath) {
 
     return mdToPdf(
       { content: combinedMarkdown },
-      { ...config, launch_options: getLaunchOptions() }
+      { ...config, launch_options: getLaunchOptions() },
     );
   }
 }
