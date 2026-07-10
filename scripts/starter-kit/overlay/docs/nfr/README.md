@@ -12,13 +12,15 @@ Living snapshot of **system characteristics** (“ilities”) for this product.
 
 NFRs here do **not** authorize new product behavior. Feature specs still authorize *what* to build.
 
+**Agent literacy:** [`.cursor/rules/quality-attributes.mdc`](../../.cursor/rules/quality-attributes.mdc) — honor **Accepted**; treat **Deferred** as guidance only; do not invent for **Out of scope**.
+
 ---
 
 ## Files
 
 | File | Contents |
 |------|----------|
-| [quality-attributes.md](./quality-attributes.md) | Attribute table: target, approach, verification, status |
+| [quality-attributes.md](./quality-attributes.md) | Attribute table + **Status** / **Links** documentation |
 
 ---
 

@@ -67,6 +67,7 @@ function getLaunchOptions() {
 const RULE_ORDER = [
   "constitution.mdc",
   "feature-branch.mdc",
+  "quality-attributes.mdc",
   "project-structure.mdc",
   "api-conventions.mdc",
   "auth-patterns.mdc",

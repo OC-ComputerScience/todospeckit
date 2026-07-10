@@ -17,7 +17,7 @@ Spec-Driven Development (SDD) inverts the usual order: **spec first, code second
 | **Cursor rules** (`.cursor/rules/`) | Constrain *how* to build |
 | **Tests** (Jest, Vitest) | Verify spec + implementation match |
 | **Reference docs** (`features/reference/`) | Snapshot *what exists now* on `dev` |
-| **Quality attributes** (`docs/nfr/`) | App-wide *ilities* / NFR bars (performance, reliability, …) |
+| **Quality attributes** (`docs/nfr/`) | App-wide *ilities* / NFR bars — see also [quality-attributes.mdc](../.cursor/rules/quality-attributes.mdc) (Accepted vs Deferred literacy) |
 | **ADRs** (`docs/adr/`) | Record *why* cross-cutting architecture choices were made |
 | **Sprints / timeboxes** (Agility, Jira, etc.) | Plan *when* work happens — **outside** these specs |
 

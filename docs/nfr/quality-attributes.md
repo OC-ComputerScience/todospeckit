@@ -1,16 +1,49 @@
 # Quality attributes
 
-App-wide non-functional targets for Todo Speckit. Status values: **Accepted** (in force) · **Deferred** (documented, not enforced yet) · **Out of scope** (explicit non-goal for this teaching app).
+App-wide non-functional targets for Todo Speckit.
+
+**Teaching policy:** Specs say *what* to build. This table says *how good* the system should be. Only **Accepted** rows (and feature **System Requirements**) constrain implementation. **Deferred** is the quality backlog / classroom example. **Out of scope** is what not to build. Cursor agents follow [`.cursor/rules/quality-attributes.mdc`](../../.cursor/rules/quality-attributes.mdc) for this literacy — they must **not** treat every Deferred number as always-on.
+
+## Column meanings
 
 | Column | Meaning |
 |--------|---------|
-| **Target** | Measure or bar for the attribute — prefer a **number** (latency, %, count, level). Figures below are **illustrative classroom examples**, not production SLOs unless Status is Accepted and tests enforce them. |
+| **Attribute** | Quality characteristic (“ility”) |
+| **Target** | Measure or bar — prefer a **number** (latency, %, count, level). Figures below are **illustrative classroom examples**, not production SLOs unless Status is **Accepted** and tests enforce them. |
 | **Approach** | How the target is realized or limited (stack choice, pattern, explicit non-goal) |
+| **How we verify** | Tests, manual checks, or N/A |
+| **Status** | Whether the bar constrains work today (see below) |
+| **Links** | Where Approach / enforcement lives (see below) |
 
-Update this table when the bar changes. Link ADRs for *why* an approach was chosen; link Cursor rules for *implementation* constraints. Feature-local bars stay in that feature’s **System Requirements** (+ Gherkin when testable).
+## Status values
+
+| Status | Meaning | Student / agent expectation |
+|--------|---------|------------------------------|
+| **Accepted** | In force for this product | Must not regress; covered by linked rules, ADRs, and/or tests |
+| **Accepted (minimal)** | Thin bar in force | Meet the stated Approach only; do not expand scope |
+| **Deferred** | Documented, not enforced yet | Example Target for learning; implement only if a feature spec or instructor requires it |
+| **Out of scope** | Explicit non-goal for this teaching app | Do not design or generate for this bar |
+
+## Links column
+
+Use **Links** to point at the durable artifacts that explain or enforce the row:
+
+| Link type | When to use |
+|-----------|-------------|
+| **ADR** (`docs/adr/…`) | *Why* this Approach was chosen |
+| **Cursor rule** (`.cursor/rules/…`) | *How* agents/code must behave day to day |
+| **Code path** (e.g. `logger.js`) | Concrete implementation of a minimal bar |
+| **Feature / framework** | Process or Screen Requirements that carry usability/maintainability |
+| **—** | No separate artifact yet (common for Deferred rows) |
+
+When Approach changes, update or add an ADR and refresh **Links**. When agents need a lasting coding constraint, add/update a Cursor rule and link it here.
+
+---
+
+Update this table when the bar changes. Feature-local bars stay in that feature’s **System Requirements** (+ Gherkin when testable).
 
 | Attribute | Target | Approach | How we verify | Status | Links |
-|-----------|--------|------------|---------------|--------|-------|
+|-----------|--------|----------|---------------|--------|-------|
 | **Security** | **100%** of protected routes require auth; **0** cross-user reads/writes in automated tests; other users’ resources → **404** (not 403) | Layered API enforcement; ownership isolation | Gherkin + Jest (supertest); Vitest for UX-only guards | Accepted | [ADR-0002](../adr/0002-security-architecture.md), [security.mdc](../../.cursor/rules/security.mdc), [auth-patterns.mdc](../../.cursor/rules/auth-patterns.mdc) |
 | **Data integrity** | **100%** of list/todo rows have a valid owning `userId`; **0** orphan associations after CRUD tests | Relational MySQL; foreign keys / Sequelize associations | Jest + schema in [data-model](../../features/reference/data-model.md) | Accepted | [ADR-0003](../adr/0003-mysql-relational-database.md) |
 | **Reliability** | Happy-path write success ≥ **99%** in local test runs; failed writes return HTTP **4xx/5xx** with a body (never empty **200**) | Single-process Express; no HA/retry layer | Jest on create/update/delete paths | Deferred | — |
@@ -21,7 +54,7 @@ Update this table when the bar changes. Link ADRs for *why* an approach was chos
 | **Usability** | New user completes register → create list → add todo in **≤ 3 minutes** without help; primary CTAs use labels from Screen Requirements (**100%** match); **≤ 2** clicks from dashboard to add a todo on an existing list | Vuetify + Screen Requirements; `oc-cta` for primary actions; empty states documented per feature | Manual walkthrough; Vitest for labeled CTAs / flows | Deferred | [ui-style-system.mdc](../../.cursor/rules/ui-style-system.mdc), feature **Screen Requirements** |
 | **Accessibility (a11y)** | Primary flows keyboard-reachable; aim **WCAG 2.2 AA** for auth + dashboard when audited; **0** unlabeled icon-only CTAs on primary actions | Prefer Vuetify semantic components | Manual / future Vitest a11y | Deferred | [ui-style-system.mdc](../../.cursor/rules/ui-style-system.mdc) |
 | **Internationalization (i18n)** | **1** locale (en-US); **0** translated string catalogs | No i18n framework | N/A | Out of scope | — |
-| **Maintainability** | **100%** of Gherkin scenarios mapped in Test Coverage Map before merge; `npm test` green; feature PRs typically **≤ 15** files of product code (guideline) | Cursor rules + feature specs as source of truth | Merge checklist; `npm test` | Accepted | [framework.md](../../features/framework.md), constitution |
+| **Maintainability** | **100%** of Gherkin scenarios mapped in Test Coverage Map before merge; `npm test` green; feature PRs typically **≤ 15** files of product code (guideline) | Cursor rules + feature specs as source of truth | Merge checklist; `npm test` | Accepted | [framework.md](../../features/framework.md), [constitution.mdc](../../.cursor/rules/constitution.mdc), [quality-attributes.mdc](../../.cursor/rules/quality-attributes.mdc) |
 
 ---
 
@@ -39,7 +72,8 @@ Do **not** invent a new feature file solely to “add performance.”
 
 ## Changing a bar
 
-1. Edit this table (**Target** and/or **Approach**, status, links). Prefer a number in **Target**.
-2. If the **Approach** changes → ADR.
-3. If agents must follow a new coding constraint → Cursor rule.
+1. Edit this table (**Target**, **Approach**, **Status**, **Links**). Prefer a number in **Target**.
+2. If the **Approach** changes → ADR; put the ADR in **Links**.
+3. If agents need a lasting coding constraint → Cursor rule; put the rule in **Links**.
 4. If API/schema changed as a result → `features/reference/` on merge.
+5. Promoting **Deferred** → **Accepted** requires verification (tests or documented manual gate) that matches **How we verify**.

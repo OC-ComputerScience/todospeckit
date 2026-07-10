@@ -12,13 +12,15 @@ Living snapshot of **system characteristics** (“ilities”) for this product �
 
 NFRs here do **not** authorize new product behavior by themselves. Feature specs still authorize *what* to build. Use this doc to record targets, deferrals, and links to ADRs/rules.
 
+**Agent literacy:** [`.cursor/rules/quality-attributes.mdc`](../../.cursor/rules/quality-attributes.mdc) (`alwaysApply`) — honor **Accepted**; treat **Deferred** as guidance only; do not invent for **Out of scope**.
+
 ---
 
 ## Files
 
 | File | Contents |
 |------|----------|
-| [quality-attributes.md](./quality-attributes.md) | Attribute table: target, approach, verification, status |
+| [quality-attributes.md](./quality-attributes.md) | Attribute table + **Status** / **Links** documentation |
 
 ---
 
@@ -37,4 +39,5 @@ NFRs here do **not** authorize new product behavior by themselves. Feature specs
 
 - [ADR index](../adr/README.md)
 - [SDD framework](../../features/framework.md)
+- [Quality attributes rule](../../.cursor/rules/quality-attributes.mdc)
 - [Security rule](../../.cursor/rules/security.mdc)
