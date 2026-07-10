@@ -66,6 +66,7 @@ function getLaunchOptions() {
 /** Preferred Cursor rule order; any other `.mdc` files are appended alphabetically. */
 const RULE_ORDER = [
   "constitution.mdc",
+  "feature-branch.mdc",
   "project-structure.mdc",
   "api-conventions.mdc",
   "auth-patterns.mdc",
