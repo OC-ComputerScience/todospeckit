@@ -3,7 +3,7 @@
 How Todo Speckit writes, traces, and ships **feature specifications**.  
 This document is the methodology handbook; individual feature files are the requirements.
 
-**Related:** [Feature catalog](./README.md) · [ADRs](../docs/adr/README.md) · [Living reference](./reference/README.md) · [Constitution](../.cursor/rules/constitution.mdc)
+**Related:** [Feature catalog](./README.md) · [ADRs](../docs/adr/README.md) · [Quality attributes (NFRs)](../docs/nfr/README.md) · [Living reference](./reference/README.md) · [Constitution](../.cursor/rules/constitution.mdc)
 
 ---
 
@@ -17,6 +17,7 @@ Spec-Driven Development (SDD) inverts the usual order: **spec first, code second
 | **Cursor rules** (`.cursor/rules/`) | Constrain *how* to build |
 | **Tests** (Jest, Vitest) | Verify spec + implementation match |
 | **Reference docs** (`features/reference/`) | Snapshot *what exists now* on `dev` |
+| **Quality attributes** (`docs/nfr/`) | App-wide *ilities* / NFR bars — see also [quality-attributes.mdc](../.cursor/rules/quality-attributes.mdc) (Accepted vs Deferred literacy) |
 | **ADRs** (`docs/adr/`) | Record *why* cross-cutting architecture choices were made |
 | **Sprints / timeboxes** (Agility, Jira, etc.) | Plan *when* work happens — **outside** these specs |
 
@@ -29,6 +30,7 @@ No application code may be written unless it maps to an explicit requirement in 
 ```text
 .cursor/rules/          ← stack conventions (how)
 docs/adr/               ← architecture decisions (why)
+docs/nfr/               ← quality attributes / ilities (bars)
 features/framework.md   ← this file (process)
 features/feature-N-*.md ← product requirements (what)
         ↓
@@ -43,6 +45,7 @@ features/reference/     ← integrated snapshot after merge to dev
 flowchart TD
   rules[".cursor/rules/"]
   adr["docs/adr/"]
+  nfr["docs/nfr/"]
   framework["features/framework.md"]
   spec["features/feature-N-*.md"]
   code["frontend/ + backend/"]
@@ -52,6 +55,7 @@ flowchart TD
 
   rules --> spec
   adr --> spec
+  nfr --> spec
   framework --> spec
   spec --> code
   spec --> tests
@@ -60,7 +64,7 @@ flowchart TD
   spec -.->|export stories + AC| agile
 ```
 
-**Specs define changes.** Reference files describe the current integrated product. **Sprints** assign stories to iterations in your agile tool; they are not fields in feature markdown.
+**Specs define changes.** Reference files describe the current integrated product. **NFRs** in `docs/nfr/` record app-wide quality bars; feature-local bars go in **System Requirements**. **Sprints** assign stories to iterations in your agile tool; they are not fields in feature markdown.
 
 ---
 
@@ -88,7 +92,7 @@ Every new feature uses `features/feature-N-short-name.md` with these sections **
 | Section | Purpose |
 |---------|---------|
 | **User Stories** | `US-N.n` backlog items (feature N, story n) |
-| **System Requirements** | Cross-cutting behavior, validation, security |
+| **System Requirements** | Cross-cutting behavior, validation, security; feature-local NFRs (link [docs/nfr/](../docs/nfr/README.md) for app-wide bars) |
 | **API Requirements** | Endpoints, payloads, status codes (if applicable) |
 | **Screen Requirements** | Routes, views, UX (if applicable) |
 | **Data Model Requirements** | Tables, columns, associations (if applicable) |
@@ -96,7 +100,7 @@ Every new feature uses `features/feature-N-short-name.md` with these sections **
 | **Test Coverage Map** | Each scenario → test file / area |
 | **Out of Scope** | Explicit deferrals with links to other feature files |
 
-Optional sections used in this repo when needed: **Data Ownership & Isolation**, **Definition of Done**, **Delivered to Feature X** (handoff notes).
+Optional sections used in this repo when needed: **Data Ownership & Isolation**, **Definition of Done**, **Delivered to Feature X** (handoff notes). App-wide ilities live in [docs/nfr/quality-attributes.md](../docs/nfr/quality-attributes.md) — do not duplicate the full table in every feature.
 
 ### User story format
 
@@ -302,6 +306,7 @@ Before merging `feature/N-*` → `dev`:
 - [ ] **Tests** — Every Gherkin scenario has a real `it`; Test Coverage Map complete; suites pass.
 - [ ] **Living reference** — If models, columns, routes, or payloads changed: update [reference/data-model.md](./reference/data-model.md) and/or [reference/api.md](./reference/api.md) in this PR (required DoD — not optional cleanup).
 - [ ] **Catalog** — [features/README.md](./README.md) row for new features; ADR links if architecture changed.
+- [ ] **NFRs** — If an app-wide quality bar changed: update [docs/nfr/quality-attributes.md](../docs/nfr/quality-attributes.md) (and ADR/rule if approach or coding constraint changed).
 - [ ] **Agility sync** — If stories or Gherkin changed (or this is a new feature):
   - `npm run agility:export` and/or `npm run agility:push -- --feature N --upsert`
   - New `feature-N-*.md` files are **auto-discovered** (epic title = `# Feature: …`) — no `FEATURE_FILES` edit
@@ -507,7 +512,7 @@ Example: Feature 2 (lists) and Feature 4 (profile) can ship in the same sprint, 
 
 | Command | Output |
 |---------|--------|
-| `npm run specs:pdf` | Rules + ADRs + specs + reference → `docs/todo-speckit-specs.pdf` (auto-discovers rules, ADRs, `feature-N-*.md`) |
+| `npm run specs:pdf` | Rules + ADRs + NFRs + specs + reference → `docs/todo-speckit-specs.pdf` (auto-discovers rules, ADRs, `docs/nfr/`, `feature-N-*.md`) |
 | `npm run agility:export` | CSV backlog for Agility Excel import (auto-discovers `feature-N-*.md`) |
 | `npm run agility:push` | Push epics, stories, tests via Agility API |
 | `npm run agility:push -- --feature N --upsert` | Update existing stories/tests for feature N; create missing |

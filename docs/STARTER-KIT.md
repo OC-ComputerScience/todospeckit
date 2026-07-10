@@ -27,6 +27,7 @@ This package is the **SDD factory**: methodology, Cursor rules, empty Vue + Expr
 | **Methodology** | `features/framework.md`, empty `features/README.md` catalog |
 | **Cursor rules** | All `.cursor/rules/*.mdc` (constitution, structure, API, auth, security, UI, testing, services) |
 | **ADRs** | `docs/adr/README.md` + template (no todo-specific ADRs) |
+| **NFRs** | `docs/nfr/` — quality-attributes stub (fill for your product) |
 | **Reference stubs** | Empty `features/reference/data-model.md` and `api.md` |
 | **Tooling** | PDF export, Agility CSV/API scripts, deploy bundle scripts, CI workflows |
 | **Frontend shell** | Vue 3 + Vuetify 4 + Vite + axios client + `App.vue` + placeholder home + harness tests |
@@ -122,7 +123,7 @@ Also update when relevant:
 - `AGILITY_SCOPE` in `.env.agility.example`
 - `scripts/agility/backlog-data.mjs` — `DEFAULT_PROJECT` (Agility Scope name)
 
-`npm run specs:pdf` and Agility export/push **auto-discover** `features/feature-N-*.md` (epic titles from `# Feature: …`). PDF also picks up `.cursor/rules/*.mdc` and `docs/adr/NNNN-*.md`. You do **not** edit file lists when adding features or ADRs.
+`npm run specs:pdf` and Agility export/push **auto-discover** `features/feature-N-*.md` (epic titles from `# Feature: …`). PDF also picks up `.cursor/rules/*.mdc`, `docs/adr/NNNN-*.md`, and `docs/nfr/*.md`. You do **not** edit file lists when adding features, ADRs, or NFR docs.
 
 ### 3. Install and configure
 

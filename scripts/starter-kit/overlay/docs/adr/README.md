@@ -8,6 +8,7 @@ Durable **why** decisions for cross-cutting concerns that outlive any single fea
 | [Cursor rules](../../.cursor/rules/) | How must we implement (patterns)? |
 | **ADRs** (`docs/adr/`) | Why did we choose this approach? |
 | [Feature specs](../../features/) | What must the product do? |
+| [Quality attributes](../nfr/README.md) | What app-wide NFR / ility bars apply? |
 | [Reference](../../features/reference/) | What exists on `dev` now? |
 
 ADRs do **not** replace feature specs or Cursor rules.
