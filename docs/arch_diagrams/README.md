@@ -18,6 +18,6 @@ C4 views for **Todo Speckit**, as Mermaid. Source of truth for *why* the shape e
 
 ## PDF
 
-`npm run specs:pdf` does **not** render Mermaid yet. For the PDF, export SVG/PNG and embed with `![…](./….svg)`, or extend the PDF script later.
+`npm run specs:pdf` **includes** this folder (Part 4) and **renders Mermaid** (including C4) via `md-mermaid-pdf` with a bundled Mermaid build (works offline). Layout quality matches Mermaid C4 limits — same as preview.
 
-These files are under `docs/arch_diagrams/` and are **not** auto-included in the specs PDF until you add discovery or link them from an ADR/feature doc.
+Adding a new `docs/arch_diagrams/*.md` file is enough; preferred order is listed in `scripts/export-specs-pdf.mjs` (`ARCH_DIAGRAM_ORDER`).

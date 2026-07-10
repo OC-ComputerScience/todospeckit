@@ -512,7 +512,7 @@ Example: Feature 2 (lists) and Feature 4 (profile) can ship in the same sprint, 
 
 | Command | Output |
 |---------|--------|
-| `npm run specs:pdf` | Rules + ADRs + NFRs + specs + reference → `docs/todo-speckit-specs.pdf` (auto-discovers rules, ADRs, `docs/nfr/`, `feature-N-*.md`) |
+| `npm run specs:pdf` | Rules + ADRs + NFRs + C4 diagrams + specs + reference → `docs/todo-speckit-specs.pdf` (auto-discovers; Mermaid/C4 rendered) |
 | `npm run agility:export` | CSV backlog for Agility Excel import (auto-discovers `feature-N-*.md`) |
 | `npm run agility:push` | Push epics, stories, tests via Agility API |
 | `npm run agility:push -- --feature N --upsert` | Update existing stories/tests for feature N; create missing |

@@ -21,6 +21,6 @@
     "agility:verify": "node scripts/push-agility-api.mjs --verify"
   },
   "devDependencies": {
-    "md-to-pdf": "^5.2.4"
+    "md-mermaid-pdf": "^0.1.7"
   }
 }

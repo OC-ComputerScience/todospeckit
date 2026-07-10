@@ -123,14 +123,14 @@ Also update when relevant:
 - `AGILITY_SCOPE` in `.env.agility.example`
 - `scripts/agility/backlog-data.mjs` — `DEFAULT_PROJECT` (Agility Scope name)
 
-`npm run specs:pdf` and Agility export/push **auto-discover** `features/feature-N-*.md` (epic titles from `# Feature: …`). PDF also picks up `.cursor/rules/*.mdc`, `docs/adr/NNNN-*.md`, and `docs/nfr/*.md`. You do **not** edit file lists when adding features, ADRs, or NFR docs.
+`npm run specs:pdf` and Agility export/push **auto-discover** `features/feature-N-*.md` (epic titles from `# Feature: …`). PDF also picks up `.cursor/rules/*.mdc`, `docs/adr/NNNN-*.md`, `docs/nfr/*.md`, and `docs/arch_diagrams/*.md`, and **renders Mermaid** (including C4). You do **not** edit file lists when adding features, ADRs, NFR, or arch docs.
 
 ### 3. Install and configure
 
 ```bash
 npm install --prefix frontend
 npm install --prefix backend
-npm install                    # root (md-to-pdf for specs:pdf)
+npm install                    # root (md-mermaid-pdf for specs:pdf)
 
 # Required for local API + tests (macOS / Linux / Git Bash)
 cp backend/.env.example backend/.env
