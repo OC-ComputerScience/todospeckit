@@ -108,9 +108,9 @@ Replaces the Feature 1 placeholder home page.
 
 **Sidebar**
 *   Heading: **My Lists**
-*   `[+ New List]` button opens a `<v-dialog>` with a name `<v-text-field>` and **Create** / **Cancel** actions.
+*   `[+ New List]` button opens a `<v-dialog>` with a name `<v-text-field>` and **Create** / **Cancel** actions. Place the button in `<v-card-item>` `#append` (not inside `<v-card-title>`) and use class `oc-cta` so label size matches **Add** / **Edit Profile**.
 *   Clickable list of list names; active list is visually highlighted.
-*   Each list row has a **rename** icon (opens a `<v-dialog>` pre-filled with the current name; **Save** / **Cancel**) and a **delete** icon (opens a confirmation `<v-dialog>`).
+*   Each list row has a **rename** icon (opens a `<v-dialog>` pre-filled with the current name; **Save** / **Cancel**) and a **delete** icon (opens a confirmation `<v-dialog>`). Icon-only row actions may use `size="small"`.
 *   **Empty state:** **"No lists yet. Create your first list."** when the user has zero lists.
 
 **Main panel (placeholder — Feature 2)**
