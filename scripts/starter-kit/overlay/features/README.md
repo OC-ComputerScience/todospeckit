@@ -29,4 +29,5 @@ Update on merge to `dev` when schema or API changed — required DoD ([Merge che
 
 - Cursor rules: `.cursor/rules/`
 - ADRs: `docs/adr/`
+- Quality attributes (NFRs): `docs/nfr/`
 - Starter kit notes: `docs/STARTER-KIT.md`

@@ -131,6 +131,26 @@ function discoverAdrFiles() {
   return files;
 }
 
+/** NFR index + quality-attributes (and any other markdown under docs/nfr/). */
+function discoverNfrFiles() {
+  const nfrDir = join(rootDir, "docs", "nfr");
+  const files = [];
+  const readme = join(nfrDir, "README.md");
+
+  if (existsSync(readme)) {
+    files.push(toRepoRelative(readme));
+  }
+
+  for (const absolute of listFiles(
+    nfrDir,
+    (name) => name.endsWith(".md") && name !== "README.md",
+  )) {
+    files.push(toRepoRelative(absolute));
+  }
+
+  return files;
+}
+
 /**
  * Catalog + framework, then `feature-N-*.md` (numeric), then reference docs.
  * New feature/ADR markdown is picked up automatically — no list edits required.
@@ -200,6 +220,7 @@ function joinSections(paths) {
 function buildCombinedMarkdown() {
   const ruleFiles = discoverRuleFiles();
   const adrFiles = discoverAdrFiles();
+  const nfrFiles = discoverNfrFiles();
   const specFiles = discoverSpecFiles();
 
   const featureStart = specFiles.findIndex((path) => /\/feature-\d+-/.test(path));
@@ -215,12 +236,14 @@ function buildCombinedMarkdown() {
         : specFiles.slice(featureStart, referenceStart);
   const referenceSpecs = referenceStart === -1 ? [] : specFiles.slice(referenceStart);
 
-  console.log(`PDF sources — ${ruleFiles.length} rules, ${adrFiles.length} ADRs, ${specFiles.length} feature docs`);
+  console.log(
+    `PDF sources — ${ruleFiles.length} rules, ${adrFiles.length} ADRs, ${nfrFiles.length} NFRs, ${specFiles.length} feature docs`,
+  );
 
   return [
     "# Todo Speckit — Rules & Specifications",
     "",
-    "Generated from `.cursor/rules/`, `docs/adr/`, and `features/` (auto-discovered).",
+    "Generated from `.cursor/rules/`, `docs/adr/`, `docs/nfr/`, and `features/` (auto-discovered).",
     "",
     "---",
     "",
@@ -232,11 +255,15 @@ function buildCombinedMarkdown() {
     "",
     joinSections(adrFiles),
     PAGE_BREAK,
-    "# Part 3: Feature Specifications",
+    "# Part 3: Quality Attributes (NFRs)",
+    "",
+    joinSections(nfrFiles),
+    PAGE_BREAK,
+    "# Part 4: Feature Specifications",
     "",
     joinSections([...catalogAndFramework, ...featureSpecs]),
     PAGE_BREAK,
-    "# Part 4: Reference (current integrated state)",
+    "# Part 5: Reference (current integrated state)",
     "",
     joinSections(referenceSpecs),
   ].join("\n");

@@ -47,6 +47,7 @@ Feature specs define **changes**; reference files describe **what exists now**. 
 
 - Cursor rules: `.cursor/rules/`
 - Architecture decisions: `docs/adr/` — [index](../docs/adr/README.md)
+- Quality attributes (NFRs): `docs/nfr/` — [index](../docs/nfr/README.md)
 - Living reference: `features/reference/` (data model + API snapshot on `dev`)
 - Backend env: `backend/.env` (copy from `backend/.env.example`)
 - Test env: `backend/.env.test` (copy from `backend/.env.test.example`)
@@ -85,11 +86,12 @@ Output:
 
 1. All `.cursor/rules/*.mdc` (preferred order, then any extras alphabetically)
 2. `docs/adr/README.md` + every `docs/adr/NNNN-*.md` (numeric order)
-3. `features/README.md`, `features/framework.md`
-4. Every `features/feature-N-*.md` (numeric order)
-5. `features/reference/*.md`
+3. `docs/nfr/README.md` + `docs/nfr/*.md` (quality attributes)
+4. `features/README.md`, `features/framework.md`
+5. Every `features/feature-N-*.md` (numeric order)
+6. `features/reference/*.md`
 
-Adding a new feature or ADR markdown file is enough — no edits to `scripts/export-specs-pdf.mjs`.
+Adding a new feature, ADR, or NFR markdown file is enough — no edits to `scripts/export-specs-pdf.mjs`.
 
 Manual alternative (no npm script):
 
