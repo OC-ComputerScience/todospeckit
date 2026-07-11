@@ -1,16 +1,8 @@
 <script setup>
-import { computed } from "vue";
-import { useRoute } from "vue-router";
-import MenuBar from "./components/MenuBar.vue";
-
-const route = useRoute();
-
-const showMenuBar = computed(() => !["login", "register"].includes(route.name));
 </script>
 
 <template>
   <v-app>
-    <MenuBar v-if="showMenuBar" />
     <v-main>
       <router-view />
     </v-main>
@@ -30,7 +22,7 @@ const showMenuBar = computed(() => !["login", "register"].includes(route.name));
   color: rgb(var(--v-theme-primary));
 }
 
-/* Primary labeled CTAs — shared size for + New List, Add, Edit Profile */
+/* Primary labeled CTAs — shared size for peer buttons */
 .v-btn.oc-cta {
   font-size: 0.875rem !important;
   font-weight: 500;

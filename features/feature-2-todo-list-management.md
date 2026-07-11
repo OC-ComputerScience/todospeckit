@@ -2,7 +2,7 @@
 
 **Feature ID:** 2
 **Branch pattern:** `feature/2-todo-list-management`
-**Status:** Shipped
+**Status:** Ready
 **Created:** 2026-02-01
 **Input:** Signed-in users manage private named todo lists on one dashboard view; new lists are added via a dialog
 **Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md)
@@ -74,7 +74,7 @@
 
 ## Assumptions
 
-- Feature 1 auth and session handling are on `dev`.
+- Feature 1 auth and session handling MUST be merged to `dev` before implementing this feature.
 - Lists and todos use **dialog-based** workflows (no split sidebar / main panel).
 - `MenuBar` is introduced in this feature with basic sign-out (profile dropdown is Feature 4).
 

@@ -40,7 +40,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/todo", routes);
+app.use("/api", routes);
 
 const PORT = process.env.PORT || 3200;
 

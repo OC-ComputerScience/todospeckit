@@ -2,7 +2,7 @@
 
 **Feature ID:** 4
 **Branch pattern:** `feature/4-user-profile-management`
-**Status:** Shipped
+**Status:** Ready
 **Created:** 2026-03-01
 **Input:** Signed-in users view and edit their profile from a menu-bar dropdown; logout moves to profile menu
 **Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md), [Feature 2 — Todo List Management](feature-2-todo-list-management.md), [Feature 3 — Todo List Item Management](feature-3-todo-list-item-management.md)
@@ -68,7 +68,7 @@
 
 ## Assumptions
 
-- Features 1–3 are on `dev`.
+- Features 1–3 MUST be merged to `dev` before implementing this feature.
 - No new database tables — profile uses existing `users` from Feature 1.
 - Role is read-only; no admin user management.
 
@@ -145,7 +145,7 @@ All endpoints enforce **self-access only**. Cross-user access attempts return `4
 ## Screen Requirements
 
 ### [Component: MenuBar] — all authenticated routes
-Extends the Feature 2 `MenuBar`. Dashboard sidebar and main panel are unchanged.
+Extends the Feature 2 `MenuBar`. Dashboard lists view is unchanged.
 
 **Menu bar changes (this feature)**
 *   Replace the inline display name + **Sign out** button with a **user icon** (`mdi-account-circle` or similar).
