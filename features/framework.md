@@ -38,7 +38,7 @@ frontend/ + backend/    ← implementation
         ↓
 tests/                  ← verification
         ↓
-features/reference/     ← integrated snapshot after merge to dev
+features/reference/     ← integrated snapshot; updated in feature PR when API/schema changes
 ```
 
 ```mermaid
@@ -100,7 +100,7 @@ Every new feature uses `features/feature-N-short-name.md` with these sections **
 | **Test Coverage Map** | Each scenario → test file / area |
 | **Out of Scope** | Explicit deferrals with links to other feature files |
 
-Optional sections used in this repo when needed: **Data Ownership & Isolation**, **Definition of Done**, **Delivered to Feature X** (handoff notes). App-wide ilities live in [docs/nfr/quality-attributes.md](../docs/nfr/quality-attributes.md) — do not duplicate the full table in every feature.
+Standard closing sections (use on every feature): **Agent implementation request** (copy-paste prompt for Cursor — includes living reference updates), **Definition of Done**. Optional when needed: **Data Ownership & Isolation**, **Delivered to Feature X** (handoff notes). App-wide ilities live in [docs/nfr/quality-attributes.md](../docs/nfr/quality-attributes.md) — do not duplicate the full table in every feature.
 
 ### User story format
 
@@ -263,7 +263,7 @@ git checkout dev && git merge feature/N-short-name
 
 ### 6. Update living reference (required when schema/API changed)
 
-If tables or API endpoints changed, update [reference/data-model.md](./reference/data-model.md) and [reference/api.md](./reference/api.md) **in the same merge** (or immediately after). Skipping this is the most common SDD drift failure — treat it as Definition of Done, not optional cleanup.
+If tables or API endpoints changed, update [reference/data-model.md](./reference/data-model.md) and [reference/api.md](./reference/api.md) **in the same PR as the implementation** (preferred — include in the [Agent implementation request](#agent-implementation-request) block). Skipping this is the most common SDD drift failure — treat it as Definition of Done, not optional cleanup.
 
 ---
 
@@ -458,6 +458,68 @@ Optional visual references: export frames to `docs/ui/feature-N/` and link from 
 
 ---
 
+## Agent implementation request
+
+Every feature file ends with an **Agent implementation request** section: a copy-paste prompt block Cursor reads when you `@` the spec and ask to implement the feature. It bundles **living reference** updates so they are not forgotten at merge.
+
+Place it after **Test Coverage Map**, before **Definition of Done** and **Out of Scope**.
+
+### Template (add to each `feature-N-*.md`)
+
+```markdown
+## Agent implementation request
+
+Copy when asking Cursor to implement this feature (`@` this file):
+
+\`\`\`text
+Implement Feature N from @features/feature-N-short-name.md on branch `feature/N-short-name`.
+
+Follow layer order in @features/framework.md (models → routes → backend tests → frontend → frontend tests).
+Map every Gherkin scenario in the Test Coverage Map; run `npm test` before finishing.
+If API routes, payloads, or schema changed per this spec, update @features/reference/api.md and/or @features/reference/data-model.md in the same PR to match shipped code.
+Complete Definition of Done and the merge checklist in @features/framework.md.
+Do not implement behavior not in this spec.
+\`\`\`
+
+**Reference updates for this feature:** list `api.md`, `data-model.md`, or `none` (UI-only / no API or schema delta).
+```
+
+Customize the last line per feature. Omit the reference-update sentence only when the feature has no **API Requirements** and no **Data Model Requirements**.
+
+### Cursor requests (implement full feature)
+
+When starting work, paste the block from the feature file (or use this formula):
+
+```text
+Implement Feature N from @features/feature-N-short-name.md on branch `feature/N-short-name`.
+
+Follow @features/framework.md layer order and Test Coverage Map.
+When API or schema changes land, update @features/reference/api.md and/or @features/reference/data-model.md in the same PR.
+Run `npm test`. Complete Definition of Done in the feature file.
+```
+
+**One-liner:**
+
+```text
+Implement @features/feature-N-short-name.md per its Agent implementation request and Definition of Done.
+```
+
+Layer-by-layer prompts are still fine (e.g. “implement Data Model Requirements only”) — add reference updates on the **last** slice that touches API or schema.
+
+### Definition of Done template
+
+```markdown
+## Definition of Done
+
+*   [ ] Backend and frontend implemented per this spec
+*   [ ] All mapped tests pass (`npm test`)
+*   [ ] Test Coverage Map complete
+*   [ ] `features/reference/data-model.md` updated (if schema changed)
+*   [ ] `features/reference/api.md` updated (if API changed)
+```
+
+---
+
 ## Features vs sprints
 
 | | Feature spec | Sprint / iteration |
@@ -478,6 +540,7 @@ Example: Feature 2 (lists) and Feature 4 (profile) can ship in the same sprint, 
 - [ ] Complete user stories, system/API/screen/data sections as applicable
 - [ ] Write Gherkin acceptance criteria for all behavior
 - [ ] Add **Test Coverage Map** before coding
+- [ ] Add **Agent implementation request** (with correct reference file list) and **Definition of Done**
 - [ ] Document **Out of Scope** with links to other features
 - [ ] Add row to [features/README.md](./README.md) catalog
 - [ ] No Agility list edit required — `feature-N-*.md` is auto-discovered (`# Feature: …` → epic name)
@@ -488,8 +551,9 @@ Example: Feature 2 (lists) and Feature 4 (profile) can ship in the same sprint, 
 ## Cursor and AI usage
 
 - Rules in `.cursor/rules/` apply automatically; they do not replace feature specs.
-- In prompts, `@`-mention one feature file and **one slice** (e.g. “implement Data Model Requirements only”).
+- In prompts, `@`-mention one feature file and **one slice** (e.g. “implement Data Model Requirements only”), or use the feature’s **Agent implementation request** block for full implementation.
 - If the AI proposes behavior not in the spec, update the spec first or reject the change (constitution Principle 6).
+- Living reference updates are part of the **Agent implementation request** — not a separate reminder after merge.
 
 ---
 

@@ -23,7 +23,7 @@ Implement features in dependency order (1 → 2 → 3; 4 and 5 after 3). Feature
 
 ## Living reference (current integrated state)
 
-After features merge to `dev`, keep these snapshots in sync with the codebase (**required** when schema or API changed — see [Merge checklist + Agility sync](./framework.md#merge-checklist--agility-sync)):
+Keep these snapshots in sync with the codebase when schema or API changes — **in the same PR as implementation** (required DoD; see [Merge checklist + Agility sync](./framework.md#merge-checklist--agility-sync)). Use each feature’s **Agent implementation request** block when implementing with Cursor.
 
 | File | Purpose |
 |------|---------|
@@ -31,9 +31,13 @@ After features merge to `dev`, keep these snapshots in sync with the codebase (*
 | [reference/data-model.md](./reference/data-model.md) | Current database tables and associations |
 | [reference/api.md](./reference/api.md) | Current REST API under `/todo/` |
 
+New features: include **Agent implementation request** and **Definition of Done** at the end of each `feature-N-*.md` (see [framework.md](./framework.md#agent-implementation-request)).
+
 Feature specs define **changes**; reference files describe **what exists now**. Spec evolution after merge: prefer a new feature delta — [framework.md](./framework.md#spec-evolution-after-merge).
 
 ## Implementation order (each feature)
+
+**Cursor:** `Implement @features/feature-N-….md per its Agent implementation request and Definition of Done.` (or layer-by-layer — see [framework.md](./framework.md#agent-implementation-request)).
 
 1. Backend models and associations
 2. Backend routes, controllers, authorization helpers

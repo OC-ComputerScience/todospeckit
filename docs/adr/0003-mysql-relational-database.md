@@ -65,7 +65,7 @@ users ──┬── sessions
 | **Production** | `sync()` without alter; schema changes require explicit migration discipline (out of scope for v1 teaching model) |
 | **Tests** | `sync({ force: true })` in Jest `beforeAll` — drops and recreates tables per suite; `resetTestDatabase()` truncates between tests |
 
-No checked-in Sequelize migration files in v1 — schema is defined in `backend/app/models/*.model.js` and synced. Feature specs authorize schema changes; `features/reference/data-model.md` is updated on merge to `dev`.
+No checked-in Sequelize migration files in v1 — schema is defined in `backend/app/models/*.model.js` and synced. Feature specs authorize schema changes; `features/reference/data-model.md` is updated in the same feature PR when schema changes (see [Agent implementation request](../../features/framework.md#agent-implementation-request)).
 
 ### Connection handling
 
