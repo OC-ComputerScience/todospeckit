@@ -2,7 +2,7 @@
 
 **Feature ID:** 5
 **Branch pattern:** `feature/5-todo-due-date`
-**Status:** Shipped
+**Status:** Ready
 **Created:** 2026-03-15
 **Input:** Optional calendar due dates on todos with display and overdue highlighting
 **Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md), [Feature 2 — Todo List Management](feature-2-todo-list-management.md), [Feature 3 — Todo List Item Management](feature-3-todo-list-item-management.md)
@@ -68,7 +68,7 @@
 
 ## Assumptions
 
-- Features 1–3 are on `dev` (todo CRUD complete).
+- Features 1–3 MUST be merged to `dev` before implementing this feature (todo CRUD complete).
 - No timezone or time-of-day — date-only in local browser calendar.
 - No sorting, filtering, reminders, or calendar views.
 

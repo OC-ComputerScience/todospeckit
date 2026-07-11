@@ -1,6 +1,0 @@
-AssetType,Name,Scope,Description,Reference
-Portfolio Item,User Authentication,Todo Speckit,Epic for features/feature-1-user-auth.md. Spec-driven backlog from Todo Speckit.,TS-F1-EPIC
-Portfolio Item,Todo List Management,Todo Speckit,Epic for features/feature-2-todo-list-management.md. Spec-driven backlog from Todo Speckit.,TS-F2-EPIC
-Portfolio Item,Todo Item Management,Todo Speckit,Epic for features/feature-3-todo-list-item-management.md. Spec-driven backlog from Todo Speckit.,TS-F3-EPIC
-Portfolio Item,User Profile Management,Todo Speckit,Epic for features/feature-4-user-profile-management.md. Spec-driven backlog from Todo Speckit.,TS-F4-EPIC
-Portfolio Item,Todo Due Date,Todo Speckit,Epic for features/feature-5-todo-due-date.md. Spec-driven backlog from Todo Speckit.,TS-F5-EPIC

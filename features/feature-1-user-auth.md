@@ -2,7 +2,7 @@
 
 **Feature ID:** 1
 **Branch pattern:** `feature/1-user-auth`
-**Status:** Shipped
+**Status:** Ready
 **Created:** 2026-01-15
 **Input:** Multi-user authentication and session management so each user can sign in and access private todo data
 **Related:** [ADR-0001 — Client–server multi-user architecture](../docs/adr/0001-client-server-multi-user-architecture.md), [ADR-0002 — Security architecture](../docs/adr/0002-security-architecture.md)

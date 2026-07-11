@@ -2,7 +2,7 @@
 
 **Feature ID:** 3
 **Branch pattern:** `feature/3-todo-list-item-management`
-**Status:** Shipped
+**Status:** Ready
 **Created:** 2026-02-15
 **Input:** Signed-in users manage todo items per list via dialogs opened from list rows (items, add, edit, delete)
 **Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md), [Feature 2 — Todo List Management](feature-2-todo-list-management.md)
@@ -86,7 +86,7 @@
 
 ## Assumptions
 
-- Features 1–2 are on `dev` (auth, lists, single-view dashboard, `MenuBar` with sign-out).
+- Features 1–2 MUST be merged to `dev` before implementing this feature (auth, lists, single-view dashboard, `MenuBar` with sign-out).
 - Due dates are out of scope (Feature 5).
 - No drag-and-drop reorder, search, or sharing.
 
