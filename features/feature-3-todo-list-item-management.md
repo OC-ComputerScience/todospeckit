@@ -4,7 +4,7 @@
 **Branch pattern:** `feature/3-todo-list-item-management`
 **Status:** Shipped
 **Created:** 2026-02-15
-**Input:** Signed-in users add, view, complete, edit, and delete todos in the selected list
+**Input:** Signed-in users manage todo items per list via dialogs opened from list rows (items, add, edit, delete)
 **Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md), [Feature 2 — Todo List Management](feature-2-todo-list-management.md)
 
 ---
@@ -13,20 +13,20 @@
 
 ### US-3.1: Add tasks to a list
 **As a** signed-in user  
-**I want to** add todo items to the currently selected list  
+**I want to** add todo items to a list from its items dialog  
 **So that** I can track what needs to be done in that context
 
 **Priority:** P1  
-**Independent test:** Add a todo to selected list; it appears in main panel with `completed: false`  
+**Independent test:** Open items dialog for a list, add a todo via add-item dialog; it appears in the items list with `completed: false`  
 **Acceptance scenarios:** see ### US-3.1 under Acceptance Criteria
 
 ### US-3.2: View tasks in a list
 **As a** signed-in user  
-**I want to** see all items in the selected list  
+**I want to** open a list's items dialog and see all todos for that list  
 **So that** I know what work belongs to that group
 
 **Priority:** P1  
-**Independent test:** Switch lists; main panel shows only todos for the selected owned list  
+**Independent test:** Open items dialog on different list rows; each dialog shows only that list's todos  
 **Acceptance scenarios:** see ### US-3.2 under Acceptance Criteria
 
 ### US-3.3: Complete tasks
@@ -80,19 +80,19 @@
 - **FR-007**: New todos MUST default to `completed: false`.
 - **FR-008**: Deleting a list MUST delete all todos in that list (cascade).
 - **FR-009**: Todos MUST be ordered incomplete first, then by `createdAt` ascending.
-- **FR-010**: This feature MUST extend the Feature 2 dashboard main panel — sidebar list behavior is unchanged.
+- **FR-010**: This feature MUST extend the Feature 2 single-view lists UI: each list row gains an **Items** icon that opens a list-items `<v-dialog>`. Todo add/edit/delete use nested dialogs — no sidebar/main split.
 
 ---
 
 ## Assumptions
 
-- Features 1–2 are on `dev` (auth, lists, sidebar, `MenuBar` with sign-out).
+- Features 1–2 are on `dev` (auth, lists, single-view dashboard, `MenuBar` with sign-out).
 - Due dates are out of scope (Feature 5).
 - No drag-and-drop reorder, search, or sharing.
 
 ## Edge Cases
 
-- Add todo with no list selected → UI disabled; no API call.
+- Add todo with items dialog closed → no add UI visible; no API call until user opens items dialog and add-item dialog.
 - Empty todo title → client block and/or `400`.
 - Title longer than 255 characters → `400`.
 - Parent list or todo owned by another user → `404`.
@@ -116,7 +116,7 @@ Each user owns their todo items exclusively. Items are private to the user even 
 | **Todo scope** | `GET`, `PUT`, and `DELETE` on todos match both `id` and `userId = req.user.id`. |
 | **Create scope** | `POST .../todos` succeeds only when `:listId` is owned by the caller; new todo `userId` is set from `req.user.id`. |
 | **Cross-user access** | If a todo or parent list belongs to another user, respond with `404` — never `403`. |
-| **UI scope** | The main panel shows only todos for the selected list that belong to the signed-in user (via API). |
+| **UI scope** | The list-items dialog shows only todos for the list opened from that row, fetched via API for the signed-in user. |
 | **Implementation** | Use shared helpers (e.g. `getAccessibleListOrNull`, `getAccessibleTodoOrNull`) in `app/authorization/`. |
 
 ---
@@ -158,21 +158,28 @@ All endpoints enforce **list ownership** and **todo ownership** by the authentic
 ## Screen Requirements
 
 ### [View: Application Dashboard] — route name `home`
-Extends the Feature 2 dashboard. Sidebar behavior is unchanged; **main panel** is fully implemented in this feature.
+Extends the Feature 2 single-view lists dashboard. List CRUD (add/rename/delete list) is unchanged; this feature adds todo management via dialogs.
 
-**Main panel**
-*   Heading shows the selected list name, or **"Select a list"** when none is selected.
-*   Text field + **Add** button to create a new todo in the selected list (disabled when no list is selected). **Add** uses class `oc-cta` (same label size as **+ New List** / **Edit Profile**).
-*   Todo rows: checkbox (`completed`), title text, **edit** icon, **delete** icon.
-*   **Edit:** clicking the edit icon opens a `<v-dialog>` with a `<v-text-field>` pre-filled with the current title; **Save** / **Cancel**.
-*   **Delete:** clicking delete opens a confirmation `<v-dialog>`.
+**List rows (extend Feature 2)**
+*   Each list row adds an **Items** icon (`aria-label`: **Items** or **View items for &lt;list name&gt;**).
+*   Clicking **Items** opens a **list-items dialog** for that list.
+
+**List-items dialog**
+*   Title shows the list name (e.g. **Groceries — Items**).
+*   Primary action: **+ Add Item** opens a nested **add-item dialog** with a title `<v-text-field>` and **Add** / **Cancel**. **+ Add Item** and **Add** use class `oc-cta`.
+*   Todo rows: **checkbox** (`completed`), **name** (title text), **edit** icon, **delete** icon.
+*   **Edit:** edit icon opens a nested **edit-item dialog** with title field pre-filled; **Save** / **Cancel**.
+*   **Delete:** delete icon opens a confirmation `<v-dialog>`.
 *   Completed todos show struck-through or muted title styling.
-*   **Empty state:** **"No todos in this list yet."** when the selected list has zero todos.
+*   **Empty state:** **"No todos in this list yet."** when the list has zero todos.
 *   **Loading state:** skeleton or progress indicator while todos are fetching.
 *   **Error state:** `<v-alert type="error">` for API failures.
+*   **Close:** dialog has **Close** or equivalent to return to the lists view.
 
 **List switch behavior**
-*   Selecting a different list in the sidebar loads that list's todos in the main panel.
+*   User opens items dialog on one list row, closes it, then opens items on another row — each dialog load fetches only that list's todos.
+
+**Implementation note:** list-items, add-item, and edit-item dialogs may be child components; only one list-items dialog need be open at a time.
 
 ---
 
@@ -208,55 +215,60 @@ Extends the Feature 2 dashboard. Sidebar behavior is unchanged; **main panel** i
 
 ### US-3.1 — Add tasks to a list
 
-#### Scenario: User adds a todo to the selected list
+#### Scenario: User adds a todo to a list via dialog
 *   **Given** I am signed in on the dashboard
-*   **And** I have selected list `Groceries`
-*   **When** I enter todo title `Buy milk`
-*   **And** I click **Add**
+*   **And** I own list `Groceries`
+*   **When** I click the **Items** icon on the `Groceries` row
+*   **And** I click **+ Add Item**
+*   **And** I enter todo title `Buy milk`
+*   **And** I confirm the add-item dialog
 *   **Then** the API returns `201` with a todo object where `completed` is `false`
 *   **And** the returned `userId` matches my authenticated user ID
 *   **And** the returned `listId` matches `Groceries`
-*   **And** `Buy milk` appears in the main panel
+*   **And** `Buy milk` appears in the list-items dialog
 
 #### Scenario: User adds a todo with an empty title
 *   **Given** I am signed in
-*   **And** I have a list selected
-*   **When** I leave the todo title empty
-*   **And** I click **Add**
+*   **And** I have opened the items dialog for an owned list
+*   **When** I open the add-item dialog
+*   **And** I leave the todo title empty
+*   **And** I attempt to confirm
 *   **Then** inline validation blocks the request
 *   **And** I see the message **"Todo title is required."**
 *   **And** no API request is sent
 
-#### Scenario: User adds a todo when no list is selected
-*   **Given** I am signed in
-*   **And** I have no list selected
-*   **When** I view the main panel
-*   **Then** the add-todo input and **Add** button are disabled
+#### Scenario: Add item is only available inside the items dialog
+*   **Given** I am signed in on the dashboard
+*   **And** the list-items dialog is not open
+*   **When** I view the lists view
+*   **Then** I do not see an add-todo field or **+ Add Item** control on the main lists view
 
 ---
 
 ### US-3.2 — View tasks in a list
 
-#### Scenario: Selected list has no todos
+#### Scenario: List items dialog shows empty state
 *   **Given** I am signed in
-*   **And** I have selected an empty list
-*   **When** the todos finish loading
+*   **And** I own an empty list `Personal`
+*   **When** I open the items dialog for `Personal`
+*   **And** the todos finish loading
 *   **Then** I see **"No todos in this list yet."**
 
-#### Scenario: User switches lists
+#### Scenario: User opens items for different lists
 *   **Given** I am signed in
 *   **And** list `Work` has todos `Email client` and `Write report`
 *   **And** list `Personal` has todo `Call mom`
-*   **When** I select `Personal` in the sidebar
-*   **Then** the main panel shows only `Call mom`
-*   **When** I select `Work` in the sidebar
-*   **Then** the main panel shows `Email client` and `Write report`
+*   **When** I open the items dialog for `Personal`
+*   **Then** I see only `Call mom`
+*   **When** I close the items dialog
+*   **And** I open the items dialog for `Work`
+*   **Then** I see `Email client` and `Write report`
 
-#### Scenario: User only sees their own todos when switching lists
+#### Scenario: User only sees their own todos when opening items
 *   **Given** I am signed in as user A
 *   **And** I own list `Work` with todo `My task`
 *   **And** user B owns list `Work` with todo `Their task` (same list name, different owner)
-*   **When** I select my `Work` list
+*   **When** I open the items dialog for my `Work` list
 *   **Then** I see only `My task`
 *   **And** I do not see `Their task`
 
@@ -266,14 +278,14 @@ Extends the Feature 2 dashboard. Sidebar behavior is unchanged; **main panel** i
 
 #### Scenario: User marks a todo as complete
 *   **Given** I am signed in
-*   **And** I have todo `Buy milk` with `completed: false`
+*   **And** I have opened the items dialog for a list containing todo `Buy milk` with `completed: false`
 *   **When** I check the todo's checkbox
 *   **Then** the API returns `200` with `completed: true`
 *   **And** the todo displays as completed (struck-through or muted)
 
 #### Scenario: User marks a completed todo as incomplete
 *   **Given** I am signed in
-*   **And** I have todo `Buy milk` with `completed: true`
+*   **And** I have opened the items dialog for a list containing todo `Buy milk` with `completed: true`
 *   **When** I uncheck the todo's checkbox
 *   **Then** the API returns `200` with `completed: false`
 *   **And** the todo displays as active again
@@ -284,17 +296,20 @@ Extends the Feature 2 dashboard. Sidebar behavior is unchanged; **main panel** i
 
 #### Scenario: User edits a todo title
 *   **Given** I am signed in
-*   **And** I have todo `Buy milk`
-*   **When** I edit the title to `Buy oat milk`
+*   **And** I have opened the items dialog for a list containing todo `Buy milk`
+*   **When** I click the edit icon on `Buy milk`
+*   **And** I change the title to `Buy oat milk` in the edit dialog
+*   **And** I confirm
 *   **Then** the API returns `200` with the updated title
-*   **And** the UI shows `Buy oat milk`
+*   **And** the list-items dialog shows `Buy oat milk`
 
 #### Scenario: User deletes a todo
 *   **Given** I am signed in
-*   **And** I have todo `Buy milk`
-*   **When** I delete the todo
+*   **And** I have opened the items dialog for a list containing todo `Buy milk`
+*   **When** I click the delete icon on `Buy milk`
+*   **And** I confirm
 *   **Then** the API returns `200` or `204`
-*   **And** the todo is removed from the main panel
+*   **And** the todo is removed from the list-items dialog
 
 ---
 
@@ -357,12 +372,12 @@ Extends the Feature 2 dashboard. Sidebar behavior is unchanged; **main panel** i
 
 | Story | Scenario | Test file | Test name |
 |-------|----------|-----------|-----------|
-| US-3.1 | User adds a todo to the selected list | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User adds a todo to the selected list` |
+| US-3.1 | User adds a todo to a list via dialog | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User adds a todo to a list via dialog` |
 | US-3.1 | User adds a todo with an empty title | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User adds a todo with an empty title` |
-| US-3.1 | User adds a todo when no list is selected | `frontend/tests/Dashboard.test.js` | `User adds a todo when no list is selected` |
-| US-3.2 | Selected list has no todos | `frontend/tests/Dashboard.test.js` | `Selected list has no todos` |
-| US-3.2 | User switches lists | `frontend/tests/Dashboard.test.js` | `User switches lists` |
-| US-3.2 | User only sees their own todos when switching lists | `backend/tests/todos.test.js` | `User only sees their own todos when switching lists` |
+| US-3.1 | Add item is only available inside the items dialog | `frontend/tests/Dashboard.test.js` | `Add item is only available inside the items dialog` |
+| US-3.2 | List items dialog shows empty state | `frontend/tests/Dashboard.test.js` | `List items dialog shows empty state` |
+| US-3.2 | User opens items for different lists | `frontend/tests/Dashboard.test.js` | `User opens items for different lists` |
+| US-3.2 | User only sees their own todos when opening items | `backend/tests/todos.test.js` | `User only sees their own todos when opening items` |
 | US-3.3 | User marks a todo as complete | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User marks a todo as complete` |
 | US-3.3 | User marks a completed todo as incomplete | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User marks a completed todo as incomplete` |
 | US-3.4 | User edits a todo title | `backend/tests/todos.test.js`, `frontend/tests/Dashboard.test.js` | `User edits a todo title` |

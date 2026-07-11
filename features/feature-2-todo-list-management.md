@@ -4,7 +4,7 @@
 **Branch pattern:** `feature/2-todo-list-management`
 **Status:** Shipped
 **Created:** 2026-02-01
-**Input:** Signed-in users create and manage private named todo lists in a dashboard sidebar
+**Input:** Signed-in users manage private named todo lists on one dashboard view; new lists are added via a dialog
 **Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md)
 
 ---
@@ -17,25 +17,25 @@
 **So that** I can organize tasks into separate groups
 
 **Priority:** P1  
-**Independent test:** Create a list via UI or API; it appears in sidebar owned by caller  
+**Independent test:** Open add-list dialog, create a list; it appears in the lists view  
 **Acceptance scenarios:** see ### US-2.1 under Acceptance Criteria
 
 ### US-2.2: View my lists
 **As a** signed-in user  
-**I want to** see all of my todo lists in a sidebar  
+**I want to** see all of my todo lists on one screen  
 **So that** I can see what groups I have created
 
 **Priority:** P1  
-**Independent test:** Dashboard loads with only the signed-in user's lists  
+**Independent test:** Dashboard loads a single list of owned lists (no sidebar split)  
 **Acceptance scenarios:** see ### US-2.2 under Acceptance Criteria
 
-### US-2.3: Select a list
+### US-2.3: Manage list rows
 **As a** signed-in user  
-**I want to** select a list from the sidebar  
-**So that** I can focus on one group at a time (todo items added in Feature 3)
+**I want** each list row to show **edit** and **delete** actions  
+**So that** I can manage lists without leaving the lists view (todo **items** open in a dialog — Feature 3)
 
 **Priority:** P1  
-**Independent test:** Click a list; main panel heading updates to that list name  
+**Independent test:** Each list row exposes edit and delete icon actions  
 **Acceptance scenarios:** see ### US-2.3 under Acceptance Criteria
 
 ### US-2.4: Rename and delete lists
@@ -44,7 +44,7 @@
 **So that** I can keep my workspace organized
 
 **Priority:** P2  
-**Independent test:** Rename and delete an owned list; sidebar reflects changes  
+**Independent test:** Rename and delete an owned list from row actions; lists view updates  
 **Acceptance scenarios:** see ### US-2.4 under Acceptance Criteria
 
 ### US-2.5: Private lists only
@@ -68,14 +68,14 @@
 - **FR-004**: On create, `userId` MUST be set from `req.user.id` only — ignore or strip any `userId` in the request body.
 - **FR-005**: List names MUST be trimmed before save; empty strings MUST be rejected.
 - **FR-006**: Lists MUST be ordered alphabetically by name in API responses.
-- **FR-007**: This feature MUST deliver list CRUD and sidebar UI only — todo item UI and API are Feature 3.
+- **FR-007**: This feature MUST deliver list CRUD and a **single-view** lists UI in `Dashboard.vue` (dialog-based add/edit/delete). No sidebar/main split. Todo **items** UI is Feature 3.
 
 ---
 
 ## Assumptions
 
 - Feature 1 auth and session handling are on `dev`.
-- Main panel remains a placeholder until Feature 3.
+- Lists and todos use **dialog-based** workflows (no split sidebar / main panel).
 - `MenuBar` is introduced in this feature with basic sign-out (profile dropdown is Feature 4).
 
 ## Edge Cases
@@ -88,8 +88,8 @@
 ## Success Criteria
 
 - **SC-001**: Every Gherkin scenario has at least one automated test before merge.
-- **SC-002**: Signed-in user can create, view, select, rename, and delete lists without seeing another user's data.
-- **SC-003**: `npm test` passes for list API and dashboard sidebar behavior.
+- **SC-002**: Signed-in user can create, view, rename, and delete lists on one screen without seeing another user's data.
+- **SC-003**: `npm test` passes for list API and dashboard lists-view behavior.
 
 ---
 
@@ -103,7 +103,7 @@ Each user owns their lists exclusively. Another authenticated user must not be a
 | **Write scope** | `PUT` and `DELETE` apply only when the list row matches both `id` and `req.user.id`. |
 | **Create scope** | New lists are always owned by the authenticated user. |
 | **Cross-user access** | If a list belongs to another user, respond with `404` — never `403` (do not confirm the list exists). |
-| **UI scope** | The sidebar shows only lists returned by `GET /todo/lists` for the signed-in user. |
+| **UI scope** | The lists view shows only lists returned by `GET /todo/lists` for the signed-in user. |
 | **Implementation** | Use a shared helper (e.g. `getAccessibleListOrNull(req, listId)`) in `app/authorization/` — do not duplicate scope logic in controllers. |
 
 ---
@@ -143,31 +143,25 @@ All endpoints return **only data owned by the authenticated user**. Cross-user a
 ## Screen Requirements
 
 ### [View: Application Dashboard] — route name `home`
-Replaces the Feature 1 placeholder home page.
+Replaces the Feature 1 placeholder home page. **Single Vue view** (`Dashboard.vue`) — no sidebar / main-panel split.
 
-**Layout:** split screen using Vuetify grids (`<v-row>`).
-
-| Column | Breakpoint | Contents (this feature) |
-|--------|------------|------------------------|
-| Sidebar | `cols="12" md="4"` | List management pane |
-| Main | `cols="12" md="8"` | Placeholder for Feature 3 todo items |
-
-**Sidebar**
+**Lists view (this feature)**
 *   Heading: **My Lists**
-*   `[+ New List]` button opens a `<v-dialog>` with a name `<v-text-field>` and **Create** / **Cancel** actions. Place the button in `<v-card-item>` `#append` (not inside `<v-card-title>`) and use class `oc-cta` so label size matches **Add** / **Edit Profile**.
-*   Clickable list of list names; active list is visually highlighted.
-*   Each list row has a **rename** icon (opens a `<v-dialog>` pre-filled with the current name; **Save** / **Cancel**) and a **delete** icon (opens a confirmation `<v-dialog>`). Icon-only row actions may use `size="small"`.
+*   Primary action: **+ New List** opens a `<v-dialog>` with a name `<v-text-field>` and **Create** / **Cancel**. Use class `oc-cta` on **Create** and **+ New List** (per [ui-style-system.mdc](../../.cursor/rules/ui-style-system.mdc)).
+*   Display owned lists as rows (e.g. `<v-list>` or table): each row shows the **list name** and icon actions:
+    *   **Edit** icon — opens rename `<v-dialog>` pre-filled with current name; **Save** / **Cancel**
+    *   **Delete** icon — opens confirmation `<v-dialog>`
+    *   *(Feature 3 adds an **Items** icon on each row — not in Feature 2)*
+*   Icon-only row actions use `size="small"` and accessible `aria-label`s (**Edit list**, **Delete list**).
 *   **Empty state:** **"No lists yet. Create your first list."** when the user has zero lists.
-
-**Main panel (placeholder — Feature 2)**
-*   When a list is selected: heading shows the list name and message **"Todo items will appear here in a later feature."**
-*   When no list is selected: **"Select a list"**
 *   **Loading state:** skeleton or progress indicator while lists are fetching.
 *   **Error state:** `<v-alert type="error">` for API failures.
 
 **App chrome**
 *   Introduce `MenuBar` in this feature (not present in Feature 1): signed-in user's name and **Sign out**.
 *   `MenuBar` is hidden on login and register routes.
+
+**Implementation note:** one route/view for lists; list CRUD dialogs are child components or inline `<v-dialog>` blocks in `Dashboard.vue` unless the team splits presentational dialogs later.
 
 ---
 
@@ -206,9 +200,8 @@ Replaces the Feature 1 placeholder home page.
 *   **And** I confirm the dialog
 *   **Then** the API returns `201` with a list object containing `id`, `name`, and `userId`
 *   **And** the returned `userId` matches my authenticated user ID
-*   **And** `Groceries` appears in the sidebar
-*   **And** `Groceries` becomes the selected list
-*   **And** the main panel heading shows `Groceries`
+*   **And** `Groceries` appears in the lists view
+*   **And** the add-list dialog closes
 
 #### Scenario: User creates a list with an empty name
 *   **Given** I am signed in on the dashboard
@@ -233,16 +226,14 @@ Replaces the Feature 1 placeholder home page.
 *   **Given** I am signed in
 *   **And** I own lists `Work` and `Personal`
 *   **When** I navigate to the dashboard
-*   **Then** both lists appear in the sidebar
-*   **And** the first list is selected by default
-*   **And** the main panel shows that list's name
+*   **Then** both lists appear in the lists view
+*   **And** each row shows the list name with edit and delete icon actions
 
 #### Scenario: User has no lists
 *   **Given** I am signed in
 *   **And** I have no lists
 *   **When** I navigate to the dashboard
 *   **Then** I see **"No lists yet. Create your first list."**
-*   **And** the main panel shows **"Select a list"**
 
 #### Scenario: User cannot see another user's lists
 *   **Given** user B owns list `Secret Project`
@@ -250,18 +241,18 @@ Replaces the Feature 1 placeholder home page.
 *   **When** I request `GET /todo/lists`
 *   **Then** the response contains only lists owned by user A
 *   **And** `Secret Project` is not in the response
-*   **And** my sidebar does not show `Secret Project`
+*   **And** the lists view does not show `Secret Project`
 
 ---
 
-### US-2.3 — Select a list
+### US-2.3 — Manage list rows
 
-#### Scenario: User selects a different list
+#### Scenario: List rows show edit and delete actions
 *   **Given** I am signed in
-*   **And** I own lists `Work` and `Personal`
-*   **When** I click `Personal` in the sidebar
-*   **Then** `Personal` is highlighted as the active list
-*   **And** the main panel heading shows `Personal`
+*   **And** I own list `Groceries`
+*   **When** I view the dashboard lists view
+*   **Then** the `Groceries` row shows an **Edit list** icon action
+*   **And** the `Groceries` row shows a **Delete list** icon action
 
 ---
 
@@ -270,17 +261,19 @@ Replaces the Feature 1 placeholder home page.
 #### Scenario: User renames a list
 *   **Given** I am signed in
 *   **And** I own a list named `Groceries`
-*   **When** I rename it to `Shopping`
+*   **When** I click the edit icon on the `Groceries` row
+*   **And** I change the name to `Shopping` in the rename dialog
+*   **And** I confirm
 *   **Then** the API returns `200` with the updated list object
-*   **And** the sidebar shows `Shopping` instead of `Groceries`
+*   **And** the lists view shows `Shopping` instead of `Groceries`
 
 #### Scenario: User deletes a list
 *   **Given** I am signed in
 *   **And** I own a list named `Groceries`
-*   **When** I delete the list and confirm the dialog
+*   **When** I click the delete icon on the `Groceries` row
+*   **And** I confirm the delete dialog
 *   **Then** the API returns `200` or `204`
-*   **And** the list is removed from the sidebar
-*   **And** another owned list is selected if one exists
+*   **And** the list is removed from the lists view
 
 ---
 
@@ -328,7 +321,7 @@ Replaces the Feature 1 placeholder home page.
 | US-2.2 | Dashboard loads with existing lists | `backend/tests/lists.test.js`, `frontend/tests/Dashboard.test.js` | `Dashboard loads with existing lists` |
 | US-2.2 | User has no lists | `frontend/tests/Dashboard.test.js` | `User has no lists` |
 | US-2.2 | User cannot see another user's lists | `backend/tests/lists.test.js` | `User cannot see another user's lists` |
-| US-2.3 | User selects a different list | `backend/tests/lists.test.js`, `frontend/tests/Dashboard.test.js` | `User selects a different list` |
+| US-2.3 | List rows show edit and delete actions | `frontend/tests/Dashboard.test.js` | `List rows show edit and delete actions` |
 | US-2.4 | User renames a list | `backend/tests/lists.test.js`, `frontend/tests/Dashboard.test.js` | `User renames a list` |
 | US-2.4 | User deletes a list | `backend/tests/lists.test.js`, `frontend/tests/Dashboard.test.js` | `User deletes a list` |
 | US-2.5 | User attempts to rename another user's list | `backend/tests/lists.test.js` | `User attempts to rename another user's list` |
@@ -381,5 +374,6 @@ Do not implement behavior not in this spec.
 The following are intentionally deferred to the next feature spec:
 
 *   `todos` table and associations
-*   Main-panel todo list UI (add, complete, edit, delete items)
+*   **Items** icon on each list row; list-items dialog (view todos for that list)
+*   Add / edit / delete todo dialogs and row actions (checkbox, name, edit, delete)
 *   `GET/POST /todo/lists/:listId/todos` and `PUT/DELETE /todo/todos/:id`

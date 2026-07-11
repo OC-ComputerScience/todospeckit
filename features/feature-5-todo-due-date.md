@@ -54,7 +54,7 @@
 
 ### Functional Requirements
 
-- **FR-001**: All behavior MUST build on Feature 3 todo CRUD; list sidebar and ownership rules are unchanged.
+- **FR-001**: All behavior MUST build on Feature 3 todo CRUD (list-items and add/edit-item dialogs); list and ownership rules are unchanged.
 - **FR-002**: `dueDate` MUST be optional on create and update; `null` means no due date.
 - **FR-003**: Dates MUST be calendar-only: API `YYYY-MM-DD`; database `DATEONLY`.
 - **FR-004**: Invalid date strings MUST return `400` with `{ "message": "..." }`.
@@ -159,13 +159,13 @@ Clear due date:
 ## Screen Requirements
 
 ### [View: Application Dashboard] — route name `home`
-Extends Feature 3 main panel only.
+Extends Feature 3 list-items, add-item, and edit-item dialogs only.
 
-**Add todo**
+**Add-item dialog**
 *   Optional `<v-text-field type="date">` (or equivalent) beside the title field for due date.
 *   Leaving the date empty creates a todo with no due date.
 
-**Todo row**
+**Todo row (in list-items dialog)**
 *   Show due date when set (formatted for readability, e.g. `Jul 15, 2026` or locale-appropriate).
 *   When `completed` is `false` and `dueDate` is before today (local date), apply overdue styling (e.g. error color on the date text).
 *   Completed todos do not use overdue styling even if the date is in the past.
@@ -205,18 +205,20 @@ Existing Feature 3 columns are unchanged. Existing rows default to `dueDate: nul
 
 #### Scenario: User adds a todo with a due date
 *   **Given** I am signed in on the dashboard
-*   **And** I have selected a list
-*   **When** I enter todo title `Buy milk`
+*   **And** I have opened the items dialog for an owned list
+*   **When** I click **+ Add Item**
+*   **And** I enter todo title `Buy milk`
 *   **And** I set due date `2026-07-15`
-*   **And** I click **Add**
+*   **And** I confirm the add-item dialog
 *   **Then** the API returns `201` with `dueDate` `2026-07-15`
-*   **And** the todo row shows the due date
+*   **And** the todo row in the list-items dialog shows the due date
 
 #### Scenario: User adds a todo without a due date
 *   **Given** I am signed in
-*   **And** I have selected a list
-*   **When** I enter a title and leave the due date empty
-*   **And** I click **Add**
+*   **And** I have opened the items dialog for an owned list
+*   **When** I open the add-item dialog
+*   **And** I enter a title and leave the due date empty
+*   **And** I confirm
 *   **Then** the API returns `201` with `dueDate` null
 *   **And** no due date is shown on the row
 
@@ -265,14 +267,14 @@ Existing Feature 3 columns are unchanged. Existing rows default to `dueDate: nul
 
 #### Scenario: Incomplete todo past due date is styled as overdue
 *   **Given** I am signed in
-*   **And** I have an incomplete todo with `dueDate` yesterday
-*   **When** I view the todo list
+*   **And** I have opened the items dialog for a list containing an incomplete todo with `dueDate` yesterday
+*   **When** the todos are displayed
 *   **Then** the due date is displayed with overdue styling
 
 #### Scenario: Completed todo past due date is not styled as overdue
 *   **Given** I am signed in
-*   **And** I have a completed todo with `dueDate` yesterday
-*   **When** I view the todo list
+*   **And** I have opened the items dialog for a list containing a completed todo with `dueDate` yesterday
+*   **When** the todos are displayed
 *   **Then** the due date does not use overdue styling
 
 ---
