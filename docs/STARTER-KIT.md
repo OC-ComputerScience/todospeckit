@@ -168,7 +168,7 @@ cd frontend && npm run dev     # SPA on :8082
 
 ### 5. Write Feature 1
 
-1. Add `features/feature-1-short-name.md` using the template in [framework.md](../features/framework.md) (include `# Feature: …`, **Agent implementation request**, and **Definition of Done**).
+1. Add `features/feature-1-short-name.md` using the template in [framework.md](../features/framework.md) (`# Feature: …`, **Status**, **Input**, story **Priority** / **Independent test**, **FR-00N**, **Assumptions**, **Edge Cases**, **SC-00N**, **Key Entities**, **Agent implementation request**, **Definition of Done**).
 2. Add a row to `features/README.md`.
 3. Branch: `git checkout -b feature/1-short-name`
 4. Implement with Cursor — `Implement @features/feature-1-….md per its Agent implementation request and Definition of Done`, or layer-by-layer prompts (see framework [Agent implementation request](../features/framework.md#agent-implementation-request)).

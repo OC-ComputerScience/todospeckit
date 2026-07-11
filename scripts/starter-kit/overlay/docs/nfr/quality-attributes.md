@@ -2,7 +2,7 @@
 
 App-wide non-functional targets for **this** product.
 
-**Teaching policy:** Specs say *what* to build. This table says *how good* the system should be. Only **Accepted** rows (and feature **System Requirements**) constrain implementation. **Deferred** is the quality backlog / example. **Out of scope** is what not to build. See [`.cursor/rules/quality-attributes.mdc`](../../.cursor/rules/quality-attributes.mdc).
+**Teaching policy:** Specs say *what* to build. This table says *how good* the system should be. Only **Accepted** rows (and feature **Requirements (FR-00N)** / **Success Criteria (SC-00N)**) constrain implementation. **Deferred** is the quality backlog / example. **Out of scope** is what not to build. See [`.cursor/rules/quality-attributes.mdc`](../../.cursor/rules/quality-attributes.mdc).
 
 ## Column meanings
 
@@ -42,6 +42,18 @@ App-wide non-functional targets for **this** product.
 | **Accessibility (a11y)** | e.g. aim **WCAG 2.2 AA** for primary flows | | | Deferred | |
 | **Internationalization (i18n)** | e.g. **1** locale | | | Out of scope | |
 | **Maintainability** | **100%** Gherkin scenarios mapped before merge; `npm test` green | Cursor rules + feature specs as source of truth | Merge checklist; `npm test` | Accepted | [framework.md](../../features/framework.md), [quality-attributes.mdc](../../.cursor/rules/quality-attributes.mdc) |
+
+---
+
+## Feature-local NFRs
+
+If only one feature needs a bar:
+
+1. Put it in that feature’s **Requirements (FR-00N)** or **Success Criteria (SC-00N)**.
+2. Add Gherkin when tests must prove it.
+3. Optionally link from a row here (“see Feature N **FR-00N** / **SC-00N**”).
+
+See [feature spec template](../../features/framework.md#feature-spec-template) in the teaching repo.
 
 ---
 

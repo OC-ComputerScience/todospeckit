@@ -31,6 +31,6 @@ NFRs here do **not** authorize new product behavior. Feature specs still authori
 | New app-wide quality bar (or explicit “out of scope”) | Update [quality-attributes.md](./quality-attributes.md) |
 | Choose *how* to meet a bar | Write or update an [ADR](../adr/README.md); link from the attribute row |
 | Ongoing coding constraint for agents | Add/update a `.cursor/rules/*.mdc` entry |
-| Feature-local quality only | Prefer **System Requirements** + Gherkin in that feature |
+| Feature-local quality only | Prefer **Requirements (FR-00N)** / **Success Criteria (SC-00N)** + Gherkin in that feature |
 
 See the teaching repo’s `docs/nfr/` for a filled-in example table, or expand [quality-attributes.md](./quality-attributes.md) as you set bars for your product.

@@ -59,6 +59,6 @@ git checkout -b feature/1-short-name
 
 ## Next steps
 
-1. Write `features/feature-1-….md` (see framework template — include **Agent implementation request** and **Definition of Done**).
+1. Write `features/feature-1-….md` (see [framework template](../../features/framework.md#feature-spec-template) — **Status**, **Input**, **FR-00N**, **SC-00N**, **Key Entities**, **Agent implementation request**, **Definition of Done**).
 2. Update `features/README.md` catalog.
 3. Implement with Cursor: `Implement @features/feature-1-….md per its Agent implementation request and Definition of Done`, or one layer at a time (reference updates in the same PR when API/schema changes).

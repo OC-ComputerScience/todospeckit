@@ -2,6 +2,9 @@
 
 **Feature ID:** 2
 **Branch pattern:** `feature/2-todo-list-management`
+**Status:** Shipped
+**Created:** 2026-02-01
+**Input:** Signed-in users create and manage private named todo lists in a dashboard sidebar
 **Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md)
 
 ---
@@ -13,37 +16,80 @@
 **I want to** create named todo lists (e.g. "Work", "Groceries")  
 **So that** I can organize tasks into separate groups
 
+**Priority:** P1  
+**Independent test:** Create a list via UI or API; it appears in sidebar owned by caller  
+**Acceptance scenarios:** see ### US-2.1 under Acceptance Criteria
+
 ### US-2.2: View my lists
 **As a** signed-in user  
 **I want to** see all of my todo lists in a sidebar  
 **So that** I can see what groups I have created
+
+**Priority:** P1  
+**Independent test:** Dashboard loads with only the signed-in user's lists  
+**Acceptance scenarios:** see ### US-2.2 under Acceptance Criteria
 
 ### US-2.3: Select a list
 **As a** signed-in user  
 **I want to** select a list from the sidebar  
 **So that** I can focus on one group at a time (todo items added in Feature 3)
 
+**Priority:** P1  
+**Independent test:** Click a list; main panel heading updates to that list name  
+**Acceptance scenarios:** see ### US-2.3 under Acceptance Criteria
+
 ### US-2.4: Rename and delete lists
 **As a** signed-in user  
 **I want to** rename or delete a todo list  
 **So that** I can keep my workspace organized
+
+**Priority:** P2  
+**Independent test:** Rename and delete an owned list; sidebar reflects changes  
+**Acceptance scenarios:** see ### US-2.4 under Acceptance Criteria
 
 ### US-2.5: Private lists only
 **As a** signed-in user  
 **I want** my lists visible only to me  
 **So that** other users cannot read or modify my list names
 
+**Priority:** P1  
+**Independent test:** Cross-user list access returns `404`; `GET /todo/lists` never returns another user's rows  
+**Acceptance scenarios:** see ### US-2.5 under Acceptance Criteria
+
 ---
 
-## System Requirements
+## Requirements
 
-*   All list endpoints require a valid session (`authenticate` middleware).
-*   A **list** belongs to exactly one user for its entire lifetime; ownership never changes.
-*   Every database read, update, and delete must include `userId: req.user.id` in the `where` clause.
-*   On create, set `userId` from `req.user.id` only — **ignore or strip** any `userId` sent in the request body.
-*   List names are trimmed before save; empty strings are rejected.
-*   Lists are ordered alphabetically by name.
-*   This feature delivers **list CRUD and sidebar UI only** — todo item UI and API are defined in Feature 3.
+### Functional Requirements
+
+- **FR-001**: All list endpoints MUST require a valid session (`authenticate` middleware).
+- **FR-002**: A list MUST belong to exactly one user for its entire lifetime; ownership MUST never change.
+- **FR-003**: Every database read, update, and delete MUST include `userId: req.user.id` in the `where` clause.
+- **FR-004**: On create, `userId` MUST be set from `req.user.id` only — ignore or strip any `userId` in the request body.
+- **FR-005**: List names MUST be trimmed before save; empty strings MUST be rejected.
+- **FR-006**: Lists MUST be ordered alphabetically by name in API responses.
+- **FR-007**: This feature MUST deliver list CRUD and sidebar UI only — todo item UI and API are Feature 3.
+
+---
+
+## Assumptions
+
+- Feature 1 auth and session handling are on `dev`.
+- Main panel remains a placeholder until Feature 3.
+- `MenuBar` is introduced in this feature with basic sign-out (profile dropdown is Feature 4).
+
+## Edge Cases
+
+- Empty or whitespace-only list name → client block and/or `400`.
+- List name longer than 100 characters → `400`.
+- Invalid `listId` → `400`; unowned list → `404`.
+- Unauthenticated dashboard or `GET /todo/lists` → redirect or `401`.
+
+## Success Criteria
+
+- **SC-001**: Every Gherkin scenario has at least one automated test before merge.
+- **SC-002**: Signed-in user can create, view, select, rename, and delete lists without seeing another user's data.
+- **SC-003**: `npm test` passes for list API and dashboard sidebar behavior.
 
 ---
 
@@ -122,6 +168,13 @@ Replaces the Feature 1 placeholder home page.
 **App chrome**
 *   Introduce `MenuBar` in this feature (not present in Feature 1): signed-in user's name and **Sign out**.
 *   `MenuBar` is hidden on login and register routes.
+
+---
+
+## Key Entities
+
+- **List**: named group belonging to one user; will contain todos (Feature 3).
+- **User**: owns many lists (from Feature 1).
 
 ---
 
@@ -305,7 +358,8 @@ Do not implement behavior not in this spec.
 
 ## Definition of Done
 
-*   [ ] Backend and frontend implemented per this spec
+*   [ ] Backend and frontend implemented per this spec (**FR-00N** satisfied)
+*   [ ] **Success Criteria (SC-00N)** met
 *   [ ] All mapped tests pass (`npm test`)
 *   [ ] Test Coverage Map complete
 *   [ ] `features/reference/data-model.md` updated (if schema changed)

@@ -2,6 +2,9 @@
 
 **Feature ID:** 3
 **Branch pattern:** `feature/3-todo-list-item-management`
+**Status:** Shipped
+**Created:** 2026-02-15
+**Input:** Signed-in users add, view, complete, edit, and delete todos in the selected list
 **Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md), [Feature 2 — Todo List Management](feature-2-todo-list-management.md)
 
 ---
@@ -13,45 +16,93 @@
 **I want to** add todo items to the currently selected list  
 **So that** I can track what needs to be done in that context
 
+**Priority:** P1  
+**Independent test:** Add a todo to selected list; it appears in main panel with `completed: false`  
+**Acceptance scenarios:** see ### US-3.1 under Acceptance Criteria
+
 ### US-3.2: View tasks in a list
 **As a** signed-in user  
 **I want to** see all items in the selected list  
 **So that** I know what work belongs to that group
+
+**Priority:** P1  
+**Independent test:** Switch lists; main panel shows only todos for the selected owned list  
+**Acceptance scenarios:** see ### US-3.2 under Acceptance Criteria
 
 ### US-3.3: Complete tasks
 **As a** signed-in user  
 **I want to** mark todos as complete or incomplete  
 **So that** I can track my progress
 
+**Priority:** P1  
+**Independent test:** Toggle checkbox; API persists `completed` and UI reflects state  
+**Acceptance scenarios:** see ### US-3.3 under Acceptance Criteria
+
 ### US-3.4: Edit and remove tasks
 **As a** signed-in user  
 **I want to** edit or delete individual todos  
 **So that** I can keep my lists accurate
+
+**Priority:** P2  
+**Independent test:** Edit title and delete todo via UI; changes persist after refresh  
+**Acceptance scenarios:** see ### US-3.4 under Acceptance Criteria
 
 ### US-3.5: Private items only
 **As a** signed-in user  
 **I want** my todo items visible only to me  
 **So that** other users cannot read or modify my tasks
 
+**Priority:** P1  
+**Independent test:** Cross-user todo or parent-list access returns `404`  
+**Acceptance scenarios:** see ### US-3.5 under Acceptance Criteria
+
 ### US-3.6: Lists carry their items
 **As a** signed-in user  
 **I want** deleting a list to remove its todo items  
 **So that** I do not leave orphaned tasks in the database
 
+**Priority:** P2  
+**Independent test:** Delete list with todos; todos are gone from database  
+**Acceptance scenarios:** see ### US-3.6 under Acceptance Criteria
+
 ---
 
-## System Requirements
+## Requirements
 
-*   All todo endpoints require a valid session (`authenticate` middleware).
-*   A **todo** belongs to exactly one list and one user for its entire lifetime.
-*   Every database read, update, and delete must scope todos with `userId: req.user.id`.
-*   Before creating a todo, verify the parent list is owned by `req.user.id`; otherwise return `404`.
-*   On create, set `userId` and `listId` from validated server context — **ignore or strip** any `userId` or `listId` spoofing in the request body that would cross ownership boundaries.
-*   Todo titles are trimmed before save; empty strings are rejected.
-*   New todos default to `completed: false`.
-*   Deleting a list deletes all todos in that list (cascade).
-*   Todos are ordered with incomplete first, then by creation date ascending.
-*   This feature extends the Feature 2 dashboard main panel — sidebar list behavior is unchanged.
+### Functional Requirements
+
+- **FR-001**: All todo endpoints MUST require a valid session (`authenticate` middleware).
+- **FR-002**: A todo MUST belong to exactly one list and one user for its entire lifetime.
+- **FR-003**: Every todo read, update, and delete MUST scope with `userId: req.user.id`.
+- **FR-004**: Before creating a todo, the parent list MUST be owned by `req.user.id`; otherwise return `404`.
+- **FR-005**: On create, `userId` and `listId` MUST come from validated server context — ignore client spoofing of ownership.
+- **FR-006**: Todo titles MUST be trimmed before save; empty strings MUST be rejected.
+- **FR-007**: New todos MUST default to `completed: false`.
+- **FR-008**: Deleting a list MUST delete all todos in that list (cascade).
+- **FR-009**: Todos MUST be ordered incomplete first, then by `createdAt` ascending.
+- **FR-010**: This feature MUST extend the Feature 2 dashboard main panel — sidebar list behavior is unchanged.
+
+---
+
+## Assumptions
+
+- Features 1–2 are on `dev` (auth, lists, sidebar, `MenuBar` with sign-out).
+- Due dates are out of scope (Feature 5).
+- No drag-and-drop reorder, search, or sharing.
+
+## Edge Cases
+
+- Add todo with no list selected → UI disabled; no API call.
+- Empty todo title → client block and/or `400`.
+- Title longer than 255 characters → `400`.
+- Parent list or todo owned by another user → `404`.
+- Unauthenticated todo API → `401`.
+
+## Success Criteria
+
+- **SC-001**: Every Gherkin scenario has at least one automated test before merge.
+- **SC-002**: User can add, view, complete, edit, and delete todos in an owned list end-to-end.
+- **SC-003**: Deleting a list removes its todos; `npm test` passes.
 
 ---
 
@@ -122,6 +173,13 @@ Extends the Feature 2 dashboard. Sidebar behavior is unchanged; **main panel** i
 
 **List switch behavior**
 *   Selecting a different list in the sidebar loads that list's todos in the main panel.
+
+---
+
+## Key Entities
+
+- **Todo**: task item with title and completion state; belongs to one list and one user.
+- **List**: parent container for todos (Feature 2); deleting a list removes its todos.
 
 ---
 
@@ -339,7 +397,8 @@ Do not implement behavior not in this spec.
 
 ## Definition of Done
 
-*   [ ] Backend and frontend implemented per this spec
+*   [ ] Backend and frontend implemented per this spec (**FR-00N** satisfied)
+*   [ ] **Success Criteria (SC-00N)** met
 *   [ ] All mapped tests pass (`npm test`)
 *   [ ] Test Coverage Map complete
 *   [ ] `features/reference/data-model.md` updated (if schema changed)
