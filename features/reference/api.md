@@ -1,7 +1,7 @@
 # API Reference
 
 **Base path:** `/todo/`  
-**Status:** Integrated API through **Feature 1** (authentication).  
+**Status:** Integrated API through **Feature 2** (authentication and list CRUD).  
 **Authority for new work:** feature specs in `features/` — update this file in the same PR when routes or payloads change.
 
 **Auth:** Send `Authorization: Bearer <token>` on protected routes.  
@@ -12,7 +12,7 @@
 | Area | Feature |
 |------|---------|
 | Register, login, logout | 1 |
-| `GET /todo/lists` (read-only; full list CRUD in Feature 2) | 1 (auth test) / 2 |
+| List CRUD (`GET/POST/PUT/DELETE /todo/lists`) | 2 |
 
 ---
 
@@ -67,10 +67,34 @@
 
 ---
 
-## Lists (read-only — Feature 1)
+## Lists (Feature 2)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| `GET` | `/todo/lists` | Yes | Lists owned by caller (array, ordered by `name` ASC); empty until Feature 2 create |
+| `GET` | `/todo/lists` | Yes | Lists owned by caller (array, ordered by `name` ASC) |
+| `POST` | `/todo/lists` | Yes | Create a new list |
+| `PUT` | `/todo/lists/:listId` | Yes | Rename a list |
+| `DELETE` | `/todo/lists/:listId` | Yes | Delete a list owned by the caller |
 
-**Success** (`200`): JSON array of list objects (may be empty).
+**Create / rename body:**
+```json
+{ "name": "Groceries" }
+```
+
+**List success** (`200` / `201`):
+```json
+{
+  "id": 1,
+  "name": "Groceries",
+  "userId": 42,
+  "createdAt": "2026-07-02T12:00:00.000Z",
+  "updatedAt": "2026-07-02T12:00:00.000Z"
+}
+```
+
+**Delete success** (`200`):
+```json
+{ "message": "List deleted successfully." }
+```
+
+**Validation errors:** empty/whitespace name `400` with `"List name is required."`; name > 100 chars `400` with `"List name must be 100 characters or fewer."`; invalid `listId` `400`; unowned list `404` with `"List with id=<id> not found."`

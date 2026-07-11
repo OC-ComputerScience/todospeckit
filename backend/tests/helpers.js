@@ -33,3 +33,7 @@ export const registerUser = async (overrides = {}) => {
     authHeader: { Authorization: `Bearer ${response.body.token}` },
   };
 };
+
+export const createList = async (authHeader, name) => {
+  return request(app).post("/todo/lists").set(authHeader).send({ name });
+};

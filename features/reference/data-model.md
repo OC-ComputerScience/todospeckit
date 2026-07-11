@@ -1,6 +1,6 @@
 # Data Model Reference
 
-**Status:** Integrated schema through **Feature 1** (`users`, `sessions`; `lists` table present for authenticated read).  
+**Status:** Integrated schema through **Feature 2** (`users`, `sessions`, `lists` CRUD).  
 **Authority for new work:** feature specs in `features/` — update this file in the same PR when schema changes.  
 **Architecture:** [ADR-0003 — MySQL relational database](../../docs/adr/0003-mysql-relational-database.md)
 
@@ -9,7 +9,7 @@
 | Table / column | Introduced |
 |----------------|------------|
 | `users`, `sessions` | Feature 1 |
-| `lists` (read via `GET /todo/lists`; CRUD in Feature 2) | Feature 1 table / Feature 2 CRUD |
+| `lists` (CRUD) | Feature 2 |
 
 ---
 
@@ -55,7 +55,7 @@
 | `createdAt` | DATE | Sequelize timestamps |
 | `updatedAt` | DATE | Sequelize timestamps |
 
-**Note:** Table exists after Feature 1 sync; create/rename/delete APIs ship in Feature 2.
+**Note:** Full list CRUD ships in Feature 2; todo items (Feature 3) are deferred.
 
 ---
 
