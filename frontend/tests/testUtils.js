@@ -6,13 +6,13 @@ import { createMemoryHistory, createRouter } from "vue-router";
 
 export const vuetify = createVuetify({ components, directives });
 
-export async function createTestRouter(initialPath = "/") {
+export async function createTestRouter(initialPath = "/login") {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: "/", name: "home", component: { template: "<div>Home</div>" } },
       { path: "/login", name: "login", component: { template: "<div>Login</div>" } },
       { path: "/register", name: "register", component: { template: "<div>Register</div>" } },
+      { path: "/", name: "home", component: { template: "<div>Home</div>" } },
     ],
   });
 
