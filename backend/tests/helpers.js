@@ -7,8 +7,9 @@ export const syncTestDatabase = async () => {
 };
 
 export const resetTestDatabase = async () => {
-  await db.todo.destroy({ where: {} });
-  await db.list.destroy({ where: {} });
+  if (db.list) {
+    await db.list.destroy({ where: {} });
+  }
   await db.session.destroy({ where: {} });
   await db.user.destroy({ where: {} });
 };
@@ -31,22 +32,4 @@ export const registerUser = async (overrides = {}) => {
     token: response.body.token,
     authHeader: { Authorization: `Bearer ${response.body.token}` },
   };
-};
-
-export const createList = async (authHeader, name) => {
-  return request(app).post("/todo/lists").set(authHeader).send({ name });
-};
-
-export const createTodo = async (authHeader, listId, title, dueDate) => {
-  const payload = { title };
-
-  if (dueDate !== undefined) {
-    payload.dueDate = dueDate;
-  }
-
-  return request(app).post(`/todo/lists/${listId}/todos`).set(authHeader).send(payload);
-};
-
-export const updateProfile = async (authHeader, userId, payload) => {
-  return request(app).put(`/todo/users/${userId}`).set(authHeader).send(payload);
 };
