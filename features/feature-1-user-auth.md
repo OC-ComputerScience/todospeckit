@@ -312,6 +312,34 @@ Each scenario above must map to at least one automated test.
 
 ---
 
+## Agent implementation request
+
+Copy when asking Cursor to implement this feature (`@` this file):
+
+```text
+Implement Feature 1 from @features/feature-1-user-auth.md on branch `feature/1-user-auth`.
+
+Follow layer order in @features/framework.md (models → routes → backend tests → frontend → frontend tests).
+Map every Gherkin scenario in the Test Coverage Map; run `npm test` before finishing.
+If API routes, payloads, or schema changed per this spec, update @features/reference/api.md and/or @features/reference/data-model.md in the same PR to match shipped code.
+Complete Definition of Done and the merge checklist in @features/framework.md.
+Do not implement behavior not in this spec.
+```
+
+**Reference updates for this feature:** `features/reference/data-model.md`, `features/reference/api.md`
+
+---
+
+## Definition of Done
+
+*   [ ] Backend and frontend implemented per this spec
+*   [ ] All mapped tests pass (`npm test`)
+*   [ ] Test Coverage Map complete
+*   [ ] `features/reference/data-model.md` updated (if schema changed)
+*   [ ] `features/reference/api.md` updated (if API changed)
+
+---
+
 ## Out of Scope
 
 *   Password reset (`POST /todo/reset-password`)

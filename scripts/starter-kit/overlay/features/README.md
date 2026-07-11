@@ -17,13 +17,13 @@ No application code may be written unless it maps to a requirement in one of the
 
 ## Living reference
 
-Update on merge to `dev` when schema or API changed — required DoD ([Merge checklist + Agility sync](./framework.md#merge-checklist--agility-sync)). Spec evolution after merge: [prefer a new feature delta](./framework.md#spec-evolution-after-merge).
+Keep snapshots in sync when schema or API changes — **in the same PR as implementation** (required DoD; see [Merge checklist + Agility sync](./framework.md#merge-checklist--agility-sync)). Each `feature-N-*.md` includes an **Agent implementation request** block so Cursor updates reference during implementation ([framework.md](./framework.md#agent-implementation-request)). Spec evolution after merge: [prefer a new feature delta](./framework.md#spec-evolution-after-merge).
 
 | File | Purpose |
 |------|---------|
 | [reference/README.md](./reference/README.md) | How to maintain reference docs |
-| [reference/data-model.md](./reference/data-model.md) | Current database tables (update on merge to `dev`) |
-| [reference/api.md](./reference/api.md) | Current REST API (update on merge to `dev`) |
+| [reference/data-model.md](./reference/data-model.md) | Current database tables (update in feature PR when schema changes) |
+| [reference/api.md](./reference/api.md) | Current REST API (update in feature PR when API changes) |
 
 ## Related
 

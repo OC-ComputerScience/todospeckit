@@ -302,13 +302,17 @@ git checkout -b feature/1-user-auth
 
 ### How to reference specs in prompts
 
-Always `@` mention the feature spec and a single slice of work. Spec files are not loaded automatically; project rules in `.cursor/rules/` are.
+Always `@` mention the feature spec. Project rules in `.cursor/rules/` load automatically; spec files do not.
 
-```
-@features/feature-1-user-auth.md
+Each feature ends with an **Agent implementation request** block and **Definition of Done** — use them so living reference updates are not forgotten:
+
+```text
+Implement @features/feature-N-….md per its Agent implementation request and Definition of Done.
 ```
 
-Good prompts are **narrow** (one layer at a time). Avoid *"build the entire feature"* in a single message — the constitution expects atomic steps.
+For layer-by-layer work, `@` the spec and name one slice (models, API, tests, etc.). On the **last** slice that touches API or schema, include reference updates (`features/reference/api.md` and/or `data-model.md`) in the same PR.
+
+Good prompts are **narrow** when stepping through layers. For a full feature pass, the one-liner above is enough — the spec’s Agent block carries the rest.
 
 ### Micro-step workflow (every feature)
 
@@ -328,11 +332,12 @@ After each step, run tests. Do not move to the next feature until the current fe
 
 ### Definition of done (each feature)
 
-A feature is complete when:
+A feature is complete when the spec’s **Definition of Done** is satisfied (see each `features/feature-N-*.md` and [framework.md](features/framework.md#agent-implementation-request)):
 
 - Every **user story** in the spec has corresponding code
 - Every **Gherkin scenario** has at least one automated test (see the spec's Test Coverage Map)
 - `npm test` passes from the repo root
+- **`features/reference/api.md` and/or `data-model.md` updated** in the same PR when routes, payloads, or schema changed
 - You can demonstrate the feature manually in the browser
 - Changes are committed on the feature branch and merged into `dev` (not `main`)
 

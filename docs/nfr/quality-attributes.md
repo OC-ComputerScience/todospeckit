@@ -75,5 +75,5 @@ Do **not** invent a new feature file solely to “add performance.”
 1. Edit this table (**Target**, **Approach**, **Status**, **Links**). Prefer a number in **Target**.
 2. If the **Approach** changes → ADR; put the ADR in **Links**.
 3. If agents need a lasting coding constraint → Cursor rule; put the rule in **Links**.
-4. If API/schema changed as a result → `features/reference/` on merge.
+4. If API/schema changed as a result → `features/reference/` in the same feature PR (see [Agent implementation request](../../features/framework.md#agent-implementation-request)).
 5. Promoting **Deferred** → **Accepted** requires verification (tests or documented manual gate) that matches **How we verify**.

@@ -50,5 +50,5 @@ App-wide non-functional targets for **this** product.
 1. Edit **Target**, **Approach**, **Status**, **Links**. Prefer a number in **Target**.
 2. **Approach** change → [ADR](../adr/README.md); add to **Links**.
 3. Agent coding constraint → `.cursor/rules/`; add to **Links**.
-4. API/schema change → `features/reference/` on merge.
+4. API/schema change → `features/reference/` in the same feature PR ([Agent implementation request](../../features/framework.md#agent-implementation-request)).
 5. **Deferred** → **Accepted** only with matching verification.
