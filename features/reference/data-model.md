@@ -1,6 +1,6 @@
 # Data Model Reference
 
-**Status:** Integrated schema through **Feature 2** (`users`, `sessions`, `lists` CRUD).  
+**Status:** Integrated schema through **Feature 3** (`users`, `sessions`, `lists`, `todos`).  
 **Authority for new work:** feature specs in `features/` — update this file in the same PR when schema changes.  
 **Architecture:** [ADR-0003 — MySQL relational database](../../docs/adr/0003-mysql-relational-database.md)
 
@@ -10,6 +10,7 @@
 |----------------|------------|
 | `users`, `sessions` | Feature 1 |
 | `lists` (CRUD) | Feature 2 |
+| `todos` | Feature 3 |
 
 ---
 
@@ -55,7 +56,21 @@
 | `createdAt` | DATE | Sequelize timestamps |
 | `updatedAt` | DATE | Sequelize timestamps |
 
-**Note:** Full list CRUD ships in Feature 2; todo items (Feature 3) are deferred.
+**Note:** Due dates ship in Feature 5.
+
+---
+
+## `todos`
+
+| Column | Type | Rules |
+|--------|------|-------|
+| `id` | INTEGER PK | Auto-increment |
+| `listId` | INTEGER FK | Required → `lists.id`; cascade on list delete |
+| `title` | STRING(255) | Required |
+| `completed` | BOOLEAN | Default `false` |
+| `userId` | INTEGER FK | Required → `users.id` |
+| `createdAt` | DATE | Sequelize timestamps |
+| `updatedAt` | DATE | Sequelize timestamps |
 
 ---
 
@@ -65,3 +80,7 @@
 * `Session belongsTo User`
 * `User hasMany List` — `onDelete: CASCADE`
 * `List belongsTo User`
+* `List hasMany Todo` — `onDelete: CASCADE`
+* `Todo belongsTo List`
+* `User hasMany Todo` — `onDelete: CASCADE`
+* `Todo belongsTo User`
