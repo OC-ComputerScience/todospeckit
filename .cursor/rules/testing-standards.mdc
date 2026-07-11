@@ -32,4 +32,4 @@ Harness smoke tests (`backend/tests/app.test.js`, `frontend/tests/App.test.js`) 
 *   Assert loading and error UI states on promise resolve/reject.
 
 ## SDD link
-Each Gherkin scenario in `features/feature-*.md` maps to at least one `it` block. No `expect(true).toBe(true)`.
+Each Gherkin scenario in `features/feature-*.md` maps to at least one `it` block. Traceability: **US-N.n** → scenario → test; functional rules live in **FR-00N**; measurable bars in **SC-00N**. No `expect(true).toBe(true)`.

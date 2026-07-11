@@ -31,7 +31,7 @@ Keep these snapshots in sync with the codebase when schema or API changes — **
 | [reference/data-model.md](./reference/data-model.md) | Current database tables and associations |
 | [reference/api.md](./reference/api.md) | Current REST API under `/todo/` |
 
-New features: include **Agent implementation request** and **Definition of Done** at the end of each `feature-N-*.md` (see [framework.md](./framework.md#agent-implementation-request)).
+New features: follow the template in [framework.md](./framework.md#feature-spec-template) — **Status**, **Input**, story **Priority** / **Independent test**, **FR-00N**, **Assumptions**, **Edge Cases**, **SC-00N**, **Key Entities**, plus **Agent implementation request** and **Definition of Done**.
 
 Feature specs define **changes**; reference files describe **what exists now**. Spec evolution after merge: prefer a new feature delta — [framework.md](./framework.md#spec-evolution-after-merge).
 

@@ -13,6 +13,8 @@ No application code may be written unless it maps to a requirement in one of the
 |----|------|--------|------------|
 | — | *Add `feature-1-….md` before implementation* | `feature/1-…` | — |
 
+New features: follow [framework.md](./framework.md#feature-spec-template) — **Status**, **Input**, **FR-00N**, **SC-00N**, **Key Entities**, Gherkin, **Agent implementation request**, **Definition of Done**.
+
 **Branch roles:** `main` = scaffold-only starter kit · `dev` = integration · `feature/N-*` = feature work (branch from `dev`).
 
 ## Living reference

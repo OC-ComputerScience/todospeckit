@@ -2,7 +2,7 @@
 
 App-wide non-functional targets for Todo Speckit.
 
-**Teaching policy:** Specs say *what* to build. This table says *how good* the system should be. Only **Accepted** rows (and feature **System Requirements**) constrain implementation. **Deferred** is the quality backlog / classroom example. **Out of scope** is what not to build. Cursor agents follow [`.cursor/rules/quality-attributes.mdc`](../../.cursor/rules/quality-attributes.mdc) for this literacy — they must **not** treat every Deferred number as always-on.
+**Teaching policy:** Specs say *what* to build. This table says *how good* the system should be. Only **Accepted** rows (and feature **Requirements (FR-00N)** / **Success Criteria (SC-00N)**) constrain implementation. **Deferred** is the quality backlog / classroom example. **Out of scope** is what not to build. Cursor agents follow [`.cursor/rules/quality-attributes.mdc`](../../.cursor/rules/quality-attributes.mdc) for this literacy — they must **not** treat every Deferred number as always-on.
 
 ## Column meanings
 
@@ -33,14 +33,14 @@ Use **Links** to point at the durable artifacts that explain or enforce the row:
 | **ADR** (`docs/adr/…`) | *Why* this Approach was chosen |
 | **Cursor rule** (`.cursor/rules/…`) | *How* agents/code must behave day to day |
 | **Code path** (e.g. `logger.js`) | Concrete implementation of a minimal bar |
-| **Feature / framework** | Process or Screen Requirements that carry usability/maintainability |
+| **Feature / framework** | Process, **FR-00N**, **SC-00N**, or Screen Requirements that carry usability/maintainability |
 | **—** | No separate artifact yet (common for Deferred rows) |
 
 When Approach changes, update or add an ADR and refresh **Links**. When agents need a lasting coding constraint, add/update a Cursor rule and link it here.
 
 ---
 
-Update this table when the bar changes. Feature-local bars stay in that feature’s **System Requirements** (+ Gherkin when testable).
+Update this table when the bar changes. Feature-local bars stay in that feature’s **Requirements (FR-00N)** and/or **Success Criteria (SC-00N)** (+ Gherkin when testable).
 
 | Attribute | Target | Approach | How we verify | Status | Links |
 |-----------|--------|----------|---------------|--------|-------|
@@ -62,11 +62,11 @@ Update this table when the bar changes. Feature-local bars stay in that feature�
 
 If only one feature needs a bar (e.g. a specific validation or UI responsiveness note):
 
-1. Put it under that feature’s **System Requirements**.
+1. Put it under that feature’s **Requirements (FR-00N)** (behavior/rules) or **Success Criteria (SC-00N)** (measurable outcome).
 2. Add Gherkin when it must be proven by tests.
-3. Optionally add a one-line pointer here (“see Feature N System Requirements”).
+3. Optionally add a one-line pointer here (“see Feature N **FR-00N** / **SC-00N**”).
 
-Do **not** invent a new feature file solely to “add performance.”
+Do **not** invent a new feature file solely to “add performance.” See [feature spec template](../../features/framework.md#feature-spec-template).
 
 ---
 

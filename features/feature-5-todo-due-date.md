@@ -2,6 +2,9 @@
 
 **Feature ID:** 5
 **Branch pattern:** `feature/5-todo-due-date`
+**Status:** Shipped
+**Created:** 2026-03-15
+**Input:** Optional calendar due dates on todos with display and overdue highlighting
 **Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md), [Feature 2 — Todo List Management](feature-2-todo-list-management.md), [Feature 3 — Todo List Item Management](feature-3-todo-list-item-management.md)
 **Related:** `features/reference/data-model.md`, `features/reference/api.md` (update in same PR when implementing)
 
@@ -14,34 +17,73 @@
 **I want to** optionally set a due date when I add a todo  
 **So that** I can plan when work should be finished
 
+**Priority:** P1  
+**Independent test:** Create todo with `dueDate`; API returns date and row displays it  
+**Acceptance scenarios:** see ### US-5.1 under Acceptance Criteria
+
 ### US-5.2: View due dates on todos
 **As a** signed-in user  
 **I want to** see each todo's due date in the list  
 **So that** I know what is due and when
+
+**Priority:** P1  
+**Independent test:** Todos with `dueDate` show formatted date in list rows  
+**Acceptance scenarios:** covered by US-5.1 and US-5.3 scenarios (display in list)
 
 ### US-5.3: Edit or clear a due date
 **As a** signed-in user  
 **I want to** change or remove a due date when editing a todo  
 **So that** I can keep deadlines accurate
 
+**Priority:** P1  
+**Independent test:** Edit dialog sets or clears `dueDate`; API and UI stay in sync  
+**Acceptance scenarios:** see ### US-5.3 under Acceptance Criteria
+
 ### US-5.4: Spot overdue todos
 **As a** signed-in user  
 **I want** incomplete todos past their due date to stand out visually  
 **So that** I can prioritize overdue work
 
+**Priority:** P2  
+**Independent test:** Incomplete todo with past `dueDate` uses overdue styling; completed does not  
+**Acceptance scenarios:** see ### US-5.4 under Acceptance Criteria
+
 ---
 
-## System Requirements
+## Requirements
 
-*   All behavior builds on Feature 3 todo CRUD; list sidebar and ownership rules are unchanged.
-*   `dueDate` is **optional** on create and update; `null` means no due date.
-*   Store dates as **calendar dates only** (no time-of-day): API uses `YYYY-MM-DD`; database uses `DATEONLY`.
-*   Reject invalid date strings with `400` and `{ "message": "..." }`.
-*   Sending `dueDate: null` on `PUT` clears the due date.
-*   Omitting `dueDate` on `PUT` leaves the existing value unchanged.
-*   Todo sort order is unchanged from Feature 3 (incomplete first, then `createdAt` ascending).
-*   **Overdue:** an incomplete todo is overdue when `dueDate` is before today's date in the **browser's local calendar** (frontend display only; API returns the stored date).
-*   Update `features/reference/data-model.md` and `features/reference/api.md` in the same PR when implementing (see **Agent implementation request** below).
+### Functional Requirements
+
+- **FR-001**: All behavior MUST build on Feature 3 todo CRUD; list sidebar and ownership rules are unchanged.
+- **FR-002**: `dueDate` MUST be optional on create and update; `null` means no due date.
+- **FR-003**: Dates MUST be calendar-only: API `YYYY-MM-DD`; database `DATEONLY`.
+- **FR-004**: Invalid date strings MUST return `400` with `{ "message": "..." }`.
+- **FR-005**: Sending `dueDate: null` on `PUT` MUST clear the due date.
+- **FR-006**: Omitting `dueDate` on `PUT` MUST leave the existing value unchanged.
+- **FR-007**: Todo sort order MUST remain unchanged from Feature 3 (incomplete first, then `createdAt` ascending).
+- **FR-008**: Incomplete todos MUST be styled overdue when `dueDate` is before today in the browser's local calendar (frontend only; API returns stored date).
+- **FR-009**: Reference docs MUST be updated in the same PR when implementing (see **Agent implementation request**).
+
+---
+
+## Assumptions
+
+- Features 1–3 are on `dev` (todo CRUD complete).
+- No timezone or time-of-day — date-only in local browser calendar.
+- No sorting, filtering, reminders, or calendar views.
+
+## Edge Cases
+
+- Invalid `dueDate` on create or update → `400` (`"Due date must be a valid date in YYYY-MM-DD format."`).
+- Cross-user todo `dueDate` change → `404`.
+- Completed todo with past due date → no overdue styling.
+- Create without `dueDate` → `null` in API and no date on row.
+
+## Success Criteria
+
+- **SC-001**: Every Gherkin scenario has at least one automated test before merge.
+- **SC-002**: User can set, view, edit, and clear due dates on owned todos.
+- **SC-003**: Overdue styling applies only to incomplete past-due todos; `npm test` passes.
 
 ---
 
@@ -136,6 +178,12 @@ Extends Feature 3 main panel only.
 **Validation**
 *   Client-side: reject invalid date input before API call where the control allows it.
 *   API errors shown via existing `<v-alert type="error">`.
+
+---
+
+## Key Entities
+
+- **Todo**: gains optional **dueDate** (calendar date); still belongs to one list and one user.
 
 ---
 
@@ -267,7 +315,8 @@ Do not implement behavior not in this spec.
 
 ## Definition of Done
 
-*   [ ] Backend and frontend implemented per this spec
+*   [ ] Backend and frontend implemented per this spec (**FR-00N** satisfied)
+*   [ ] **Success Criteria (SC-00N)** met
 *   [ ] All mapped tests pass (`npm test`)
 *   [ ] Test Coverage Map complete
 *   [ ] `features/reference/data-model.md` updated

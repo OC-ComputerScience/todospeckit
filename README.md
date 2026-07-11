@@ -10,7 +10,7 @@ The application is intentionally simple (auth, todo lists, todo items). The peda
 
 In traditional workflows, code often leads and documentation follows. SDD inverts that relationship:
 
-1. **Write the spec first** — user stories, API contracts, data models, and Gherkin acceptance criteria live in `features/` before application code exists.
+1. **Write the spec first** — user stories, **FR-00N** / **SC-00N**, API contracts, data models, and Gherkin acceptance criteria live in `features/` before application code exists.
 2. **Implement against the spec** — every model, route, service, and view must trace back to an explicit requirement.
 3. **Verify with tests** — each acceptance scenario maps to automated tests; code is not "done" until they pass.
 4. **Govern with rules** — `.cursor/rules/` encodes stack conventions so humans and AI assistants produce consistent output.
@@ -60,7 +60,7 @@ todo-speckit/
 
 ### Specifications (`features/`)
 
-See [features/framework.md](features/framework.md) for the SDD methodology (templates, traceability, workflow).
+See [features/framework.md](features/framework.md) for the SDD methodology (templates aligned with [GitHub Spec Kit](https://github.com/github/spec-kit) — **FR-00N**, **SC-00N**, traceability, workflow).
 
 | Feature | Spec | Delivers |
 |--------|------|----------|
@@ -334,7 +334,8 @@ After each step, run tests. Do not move to the next feature until the current fe
 
 A feature is complete when the spec’s **Definition of Done** is satisfied (see each `features/feature-N-*.md` and [framework.md](features/framework.md#agent-implementation-request)):
 
-- Every **user story** in the spec has corresponding code
+- Every **user story** and **FR-00N** in the spec has corresponding code
+- **Success Criteria (SC-00N)** for the feature are met
 - Every **Gherkin scenario** has at least one automated test (see the spec's Test Coverage Map)
 - `npm test` passes from the repo root
 - **`features/reference/api.md` and/or `data-model.md` updated** in the same PR when routes, payloads, or schema changed

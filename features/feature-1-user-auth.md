@@ -2,6 +2,9 @@
 
 **Feature ID:** 1
 **Branch pattern:** `feature/1-user-auth`
+**Status:** Shipped
+**Created:** 2026-01-15
+**Input:** Multi-user authentication and session management so each user can sign in and access private todo data
 **Related:** [ADR-0001 — Client–server multi-user architecture](../docs/adr/0001-client-server-multi-user-architecture.md), [ADR-0002 — Security architecture](../docs/adr/0002-security-architecture.md)
 
 ---
@@ -13,39 +16,82 @@
 **I want to** create an account with my name, email, username, and password  
 **So that** I can sign in and manage my own private todo lists
 
+**Priority:** P1  
+**Independent test:** Submit valid registration and land on protected home with `user` in `localStorage`  
+**Acceptance scenarios:** see ### US-1.1 under Acceptance Criteria
+
 ### US-1.2: Sign in
 **As a** registered user  
 **I want to** sign in with my username and password  
 **So that** I can access the application dashboard securely
+
+**Priority:** P1  
+**Independent test:** Sign in with known credentials and receive session token + redirect to home  
+**Acceptance scenarios:** see ### US-1.2 under Acceptance Criteria
 
 ### US-1.3: Stay signed in across page loads
 **As a** signed-in user  
 **I want** my session to persist in the browser  
 **So that** I do not have to sign in again every time I refresh the page
 
+**Priority:** P1  
+**Independent test:** Refresh or revisit protected route with valid `localStorage` session — no re-login  
+**Acceptance scenarios:** see ### US-1.3 under Acceptance Criteria
+
 ### US-1.4: Sign out
 **As a** signed-in user  
 **I want to** sign out  
 **So that** no one else can use my account on a shared device
+
+**Priority:** P2  
+**Independent test:** Sign out clears server session and `localStorage`; user lands on login  
+**Acceptance scenarios:** see ### US-1.4 under Acceptance Criteria
 
 ### US-1.5: Block unauthenticated access
 **As the** application  
 **I want to** require a valid session for all non-auth screens  
 **So that** users can only see and modify their own data
 
+**Priority:** P1  
+**Independent test:** Navigate to protected route without session → redirect to login; API without token → `401`  
+**Acceptance scenarios:** see ### US-1.5 under Acceptance Criteria
+
 ---
 
-## System Requirements
+## Requirements
 
-*   Users authenticate with **username** + **password** (not email-only login).
-*   Registration collects: first name, last name, email, username, password.
-*   Passwords are hashed with **bcrypt** (`SALT_ROUNDS = 10`) before persistence; hashes are never returned by the API.
-*   Sessions use a **JWT + Session table** pattern: token stored server-side; client sends `Authorization: Bearer <token>`.
-*   Session lifetime: **24 hours** from creation.
-*   Reuse a non-expired session for the same user on login when one already exists.
-*   Default role for new users: `worker`.
-*   **Data ownership foundation:** every authenticated request must resolve to exactly one user via `req.user.id` from the session token. Later features scope all lists and todo items to this ID.
-*   **Frontend email validation:** registration uses shared `emailRules` from `frontend/src/config/validation.js` — required plus regex format check (`/^[^\s@]+@[^\s@]+\.[^\s@]+$/`); invalid format message: **"Enter a valid email address."**
+### Functional Requirements
+
+- **FR-001**: Users MUST authenticate with **username** + **password** (not email-only login).
+- **FR-002**: Registration MUST collect first name, last name, email, username, and password.
+- **FR-003**: Passwords MUST be hashed with **bcrypt** (`SALT_ROUNDS = 10`) before persistence; hashes MUST never be returned by the API.
+- **FR-004**: Sessions MUST use a **JWT + Session table** pattern: token stored server-side; client sends `Authorization: Bearer <token>`.
+- **FR-005**: Session lifetime MUST be **24 hours** from creation.
+- **FR-006**: Login MUST reuse a non-expired session for the same user when one already exists.
+- **FR-007**: Default role for new users MUST be `worker`.
+- **FR-008**: Every authenticated request MUST resolve to exactly one user via `req.user.id` from the session token (foundation for Features 2–3 ownership).
+- **FR-009**: Registration MUST use shared `emailRules` from `frontend/src/config/validation.js` — required plus regex (`/^[^\s@]+@[^\s@]+\.[^\s@]+$/`); invalid format message: **"Enter a valid email address."**
+
+---
+
+## Assumptions
+
+- Greenfield app — no existing users or external identity provider.
+- Single browser `localStorage` session per device (no multi-tab sync beyond shared storage).
+- Lists and todos are deferred to Features 2–3; Feature 1 delivers auth and a minimal protected home placeholder only.
+
+## Edge Cases
+
+- Duplicate username or email on register → `400` with clear message.
+- Invalid login credentials → `401` (same message for wrong username or password).
+- Missing or expired token on protected API → `401`; frontend clears session and redirects to login.
+- Whitespace-only required fields → rejected (client and/or server).
+
+## Success Criteria
+
+- **SC-001**: Every Gherkin scenario in this feature has at least one automated test before merge.
+- **SC-002**: A new user can register, sign in, reach the protected home page, and sign out in one manual pass.
+- **SC-003**: `npm test` passes with backend auth and frontend router/register/login coverage.
 
 ---
 
@@ -106,6 +152,13 @@ Feature 1 establishes identity; Features 2–3 enforce per-user data boundaries.
 *   Displays a welcome message using the user's first name.
 *   **No `MenuBar`** in Feature 1 — auth pages and this placeholder use a full-screen layout only.
 *   **Sign out** button on this page (standalone `v-btn`; removed from page content when `MenuBar` is added in Feature 2).
+
+---
+
+## Key Entities
+
+- **User**: registered account (name, email, username, role); owns future lists and todos.
+- **Session**: server-side record tying a JWT token to a user; expires after 24 hours.
 
 ---
 
@@ -332,7 +385,8 @@ Do not implement behavior not in this spec.
 
 ## Definition of Done
 
-*   [ ] Backend and frontend implemented per this spec
+*   [ ] Backend and frontend implemented per this spec (**FR-00N** satisfied)
+*   [ ] **Success Criteria (SC-00N)** met
 *   [ ] All mapped tests pass (`npm test`)
 *   [ ] Test Coverage Map complete
 *   [ ] `features/reference/data-model.md` updated (if schema changed)

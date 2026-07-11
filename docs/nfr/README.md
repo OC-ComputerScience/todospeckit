@@ -31,13 +31,13 @@ NFRs here do **not** authorize new product behavior by themselves. Feature specs
 | New app-wide quality bar (or explicit “out of scope”) | Update [quality-attributes.md](./quality-attributes.md) |
 | Choose *how* to meet a bar (caching, HA, auth model, …) | Write or update an [ADR](../adr/README.md); link from the attribute row |
 | Ongoing coding constraint for agents | Add/update a `.cursor/rules/*.mdc` entry; link from the row |
-| Feature-local quality only | Prefer **System Requirements** + Gherkin in that feature; optionally link here |
+| Feature-local quality only | Prefer **Requirements (FR-00N)** / **Success Criteria (SC-00N)** + Gherkin in that feature; optionally link here |
 
 ---
 
 ## Related
 
 - [ADR index](../adr/README.md)
-- [SDD framework](../../features/framework.md)
+- [SDD framework](../../features/framework.md) — feature spec template (**FR-00N**, **SC-00N**, Gherkin)
 - [Quality attributes rule](../../.cursor/rules/quality-attributes.mdc)
 - [Security rule](../../.cursor/rules/security.mdc)

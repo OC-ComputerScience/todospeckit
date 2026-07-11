@@ -64,7 +64,7 @@ flowchart TD
   spec -.->|export stories + AC| agile
 ```
 
-**Specs define changes.** Reference files describe the current integrated product. **NFRs** in `docs/nfr/` record app-wide quality bars; feature-local bars go in **System Requirements**. **Sprints** assign stories to iterations in your agile tool; they are not fields in feature markdown.
+**Specs define changes.** Reference files describe the current integrated product. **NFRs** in `docs/nfr/` record app-wide quality bars; feature-local bars go in **Requirements (FR-00N)**. **Sprints** assign stories to iterations in your agile tool; they are not fields in feature markdown.
 
 ---
 
@@ -79,39 +79,104 @@ Every new feature uses `features/feature-N-short-name.md` with these sections **
 
 **Feature ID:** N
 **Branch pattern:** `feature/N-short-name`
+**Status:** Draft | Ready | Shipped
+**Created:** YYYY-MM-DD
+**Input:** One-line intent — what prompted this feature (the user description)
 **Depends on:** [Feature X — …](feature-X-….md), …   ← omit if none
 **Related:** `features/reference/…`, [ADR-NNNN](../docs/adr/NNNN-title.md)   ← optional
 ```
 
 - **Feature ID** — sequential integer; never reuse a retired ID.
 - **Branch pattern** — one Git branch per feature, branched from `dev`, merged back to `dev` (never `main`).
+- **Status** — `Draft` while writing; `Ready` when FR/Gherkin complete; `Shipped` after merge to `dev`.
+- **Input** — mirrors GitHub Spec Kit’s feature description (what/why, not stack).
 - **Depends on** — link to feature files whose code must already be on `dev`.
 
-### Required sections
+### Required sections (in order)
 
 | Section | Purpose |
 |---------|---------|
-| **User Stories** | `US-N.n` backlog items (feature N, story n) |
-| **System Requirements** | Cross-cutting behavior, validation, security; feature-local NFRs (link [docs/nfr/](../docs/nfr/README.md) for app-wide bars) |
+| **User Stories** | `US-N.n` with **Priority**, **Independent test**, link to Gherkin |
+| **Requirements → Functional Requirements** | Numbered `FR-00N` rules (was “System Requirements”) |
+| **Assumptions** | Explicit dependencies and scope boundaries |
+| **Edge Cases** | Boundary/error cases not covered in a single scenario |
+| **Success Criteria** | Numbered `SC-00N` measurable outcomes for this feature |
+| **Data Ownership & Isolation** | Multi-user scope rules (when applicable) |
+| **Key Entities** | Conceptual data — what exists, relationships (no column types) |
 | **API Requirements** | Endpoints, payloads, status codes (if applicable) |
 | **Screen Requirements** | Routes, views, UX (if applicable) |
 | **Data Model Requirements** | Tables, columns, associations (if applicable) |
 | **Acceptance Criteria (Gherkin)** | Testable `Given / When / Then` scenarios |
 | **Test Coverage Map** | Each scenario → test file / area |
+| **Agent implementation request** | Cursor prompt block (includes reference updates) |
+| **Definition of Done** | Merge checklist for this feature |
 | **Out of Scope** | Explicit deferrals with links to other feature files |
 
-Standard closing sections (use on every feature): **Agent implementation request** (copy-paste prompt for Cursor — includes living reference updates), **Definition of Done**. Optional when needed: **Data Ownership & Isolation**, **Delivered to Feature X** (handoff notes). App-wide ilities live in [docs/nfr/quality-attributes.md](../docs/nfr/quality-attributes.md) — do not duplicate the full table in every feature.
+Optional when needed: **Delivered to Feature X** (handoff notes). App-wide ilities live in [docs/nfr/quality-attributes.md](../docs/nfr/quality-attributes.md) — do not duplicate the full table in every feature.
 
 ### User story format
 
 ```markdown
-### US-1.1: Short title
+### US-N.1: Short title
 **As a** …
 **I want to** …
 **So that** …
+
+**Priority:** P1
+**Independent test:** How this story can be verified alone (e.g. "Register via API and reach protected home")
+**Acceptance scenarios:** see ### US-N.1 under Acceptance Criteria
 ```
 
-Use **As a** or **As the** (for system-level stories). Number stories **`US-<feature-id>.<story-number>`** — e.g. Feature 2’s third story is `US-2.3`. Story numbers restart at `.1` in each feature file.
+Use **As a** or **As the** (for system-level stories). Number stories **`US-<feature-id>.<story-number>`** — e.g. Feature 2’s third story is `US-2.3`. Story numbers restart at `.1` in each feature file. **Priority:** `P1` = must ship in this feature; `P2` = important; `P3` = nice-to-have.
+
+### Functional requirements format
+
+Rename the old **System Requirements** section. Number every rule:
+
+```markdown
+## Requirements
+
+### Functional Requirements
+
+- **FR-001**: System MUST …
+- **FR-002**: Users MUST be able to …
+```
+
+Restart `FR-001` in each feature file. While drafting, mark unknowns: `[NEEDS CLARIFICATION: …]` — resolve before `Status: Ready`.
+
+### Assumptions, edge cases, success criteria
+
+```markdown
+## Assumptions
+
+- Feature 1 auth is on `dev`
+- …
+
+## Edge Cases
+
+- Empty required field → `400` or client validation block
+- Cross-user resource → `404`
+
+## Success Criteria
+
+- **SC-001**: Every Gherkin scenario has at least one automated test before merge
+- **SC-002**: …
+```
+
+Feature-local **SC** items only; app-wide bars stay in [docs/nfr/quality-attributes.md](../docs/nfr/quality-attributes.md).
+
+### Key Entities
+
+Conceptual model before **Data Model Requirements** (GitHub Spec Kit alignment):
+
+```markdown
+## Key Entities
+
+- **User**: account owner; has many lists and todos
+- **List**: named group of todos; belongs to one user
+```
+
+No column types here — those belong in **Data Model Requirements** or `features/reference/data-model.md`.
 
 ### Gherkin format
 
@@ -130,6 +195,22 @@ Group scenarios under a `###` heading that includes the **story ID** and title (
 Each `### US-N.n` block under **Acceptance Criteria** owns the scenarios for that user story. One story may have many scenarios; do not mix scenarios from different stories under one heading.
 
 Every scenario must appear in the **Test Coverage Map** and have at least one automated test before the feature is done.
+
+---
+
+## GitHub Spec Kit alignment
+
+This repo uses one merged `feature-N-*.md` per capability (teaching app + fixed stack). [GitHub Spec Kit](https://github.com/github/spec-kit) splits **spec** (what/why) from **plan** (how). Map phases as follows:
+
+| Spec Kit phase | Todo Speckit artifact |
+|----------------|----------------------|
+| `speckit.specify` | User Stories, FR, Assumptions, Edge Cases, SC, Gherkin, Out of Scope |
+| `speckit.plan` | ADRs, `.cursor/rules/`, API/Data/Screen sections in feature file |
+| `speckit.tasks` | Test Coverage Map + [layer order](#3-implement-in-layer-order) |
+| `speckit.implement` | Agent implementation request + code |
+| Post-merge snapshot | `features/reference/` |
+
+Spec Kit’s `spec.md` avoids stack detail; our **API Requirements** and **Data Model Requirements** are intentional plan-level content in one file for traceability and Agility export.
 
 ---
 
@@ -302,7 +383,7 @@ Once a feature has merged to `dev`, treat its spec as **released history** unles
 
 Before merging `feature/N-*` → `dev`:
 
-- [ ] **Spec** — Feature file matches what shipped (stories, Screen/API/Data, Out of Scope).
+- [ ] **Spec** — Feature file matches what shipped (stories, **FR-00N**, **SC-00N**, Screen/API/Data, Out of Scope).
 - [ ] **Tests** — Every Gherkin scenario has a real `it`; Test Coverage Map complete; suites pass.
 - [ ] **Living reference** — If models, columns, routes, or payloads changed: update [reference/data-model.md](./reference/data-model.md) and/or [reference/api.md](./reference/api.md) in this PR (required DoD — not optional cleanup).
 - [ ] **Catalog** — [features/README.md](./README.md) row for new features; ADR links if architecture changed.
@@ -511,7 +592,8 @@ Layer-by-layer prompts are still fine (e.g. “implement Data Model Requirements
 ```markdown
 ## Definition of Done
 
-*   [ ] Backend and frontend implemented per this spec
+*   [ ] Backend and frontend implemented per this spec (**FR-00N** satisfied)
+*   [ ] **Success Criteria (SC-00N)** met
 *   [ ] All mapped tests pass (`npm test`)
 *   [ ] Test Coverage Map complete
 *   [ ] `features/reference/data-model.md` updated (if schema changed)
@@ -537,7 +619,7 @@ Example: Feature 2 (lists) and Feature 4 (profile) can ship in the same sprint, 
 
 - [ ] Pick next sequential **Feature ID** and filename `feature-N-kebab-name.md`
 - [ ] Fill header: branch pattern, **Depends on** links
-- [ ] Complete user stories, system/API/screen/data sections as applicable
+- [ ] Complete user stories, **Requirements (FR-00N)**, **Assumptions**, **Edge Cases**, **Success Criteria (SC-00N)**, **Key Entities**, API/screen/data sections as applicable
 - [ ] Write Gherkin acceptance criteria for all behavior
 - [ ] Add **Test Coverage Map** before coding
 - [ ] Add **Agent implementation request** (with correct reference file list) and **Definition of Done**

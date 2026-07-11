@@ -2,6 +2,9 @@
 
 **Feature ID:** 4
 **Branch pattern:** `feature/4-user-profile-management`
+**Status:** Shipped
+**Created:** 2026-03-01
+**Input:** Signed-in users view and edit their profile from a menu-bar dropdown; logout moves to profile menu
 **Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md), [Feature 2 — Todo List Management](feature-2-todo-list-management.md), [Feature 3 — Todo List Item Management](feature-3-todo-list-item-management.md)
 
 ---
@@ -13,35 +16,75 @@
 **I want to** open a profile dropdown from a user icon on the menu bar  
 **So that** I can see my name, username, and email at a glance
 
+**Priority:** P1  
+**Independent test:** Open profile dropdown; name, username, and email are visible  
+**Acceptance scenarios:** see ### US-4.1 under Acceptance Criteria
+
 ### US-4.2: Edit profile
 **As a** signed-in user  
 **I want to** edit my profile  
 **So that** I can change my name, username, email, and password
+
+**Priority:** P1  
+**Independent test:** Save valid profile changes; API and `localStorage` reflect updates  
+**Acceptance scenarios:** see ### US-4.2 under Acceptance Criteria
 
 ### US-4.3: Log out from profile
 **As a** signed-in user  
 **I want to** see a **Log out** action in the profile dropdown  
 **So that** I can end my session
 
+**Priority:** P2  
+**Independent test:** Log out from dropdown clears session and redirects to login  
+**Acceptance scenarios:** see ### US-4.3 under Acceptance Criteria
+
 ### US-4.4: Single logout entry point
 **As a** signed-in user  
 **I want** the menu bar **Sign out** button removed  
 **So that** logout lives in one consistent place (the profile dropdown)
 
+**Priority:** P2  
+**Independent test:** Menu bar has no standalone **Sign out** button  
+**Acceptance scenarios:** see ### US-4.4 under Acceptance Criteria
+
 ---
 
-## System Requirements
+## Requirements
 
-*   All profile endpoints require a valid session (`authenticate` middleware).
-*   A user may read and update **only their own** profile row (`id` must match `req.user.id`).
-*   Cross-user profile access attempts return `404` — never `403`.
-*   Profile fields are trimmed before save; empty required strings are rejected.
-*   Password updates are optional on `PUT`; when provided, enforce the same minimum length as registration (8 characters) and hash with bcrypt before save.
-*   Username is normalized on save: `trim().toLowerCase()`.
-*   Responses never include the password hash.
-*   After a successful profile update, the frontend refreshes `localStorage` key `user` and dispatches `user-logged-in` so `MenuBar` reflects the new display name.
-*   **Frontend email validation:** Edit Profile uses the same shared `emailRules` from `frontend/src/config/validation.js` as registration (required + regex format check).
-*   Dashboard list and todo behavior is unchanged (Features 2–3).
+### Functional Requirements
+
+- **FR-001**: All profile endpoints MUST require a valid session (`authenticate` middleware).
+- **FR-002**: A user MAY read and update only their own profile row (`id` MUST match `req.user.id`).
+- **FR-003**: Cross-user profile access MUST return `404` — never `403`.
+- **FR-004**: Profile fields MUST be trimmed before save; empty required strings MUST be rejected.
+- **FR-005**: Password updates MUST be optional on `PUT`; when provided, enforce minimum 8 characters and bcrypt hash before save.
+- **FR-006**: Username MUST be normalized on save: `trim().toLowerCase()`.
+- **FR-007**: Responses MUST never include the password hash.
+- **FR-008**: After successful profile update, the frontend MUST refresh `localStorage` key `user` and dispatch `user-logged-in` so `MenuBar` reflects the new display name.
+- **FR-009**: Edit Profile MUST use shared `emailRules` from `frontend/src/config/validation.js` (same as registration).
+- **FR-010**: Dashboard list and todo behavior MUST remain unchanged (Features 2–3).
+
+---
+
+## Assumptions
+
+- Features 1–3 are on `dev`.
+- No new database tables — profile uses existing `users` from Feature 1.
+- Role is read-only; no admin user management.
+
+## Edge Cases
+
+- Fetch or update another user's profile → `404`.
+- Duplicate username or email on update → `400`.
+- Optional password omitted on update → existing password unchanged.
+- Invalid email format or short password → client block and/or `400`.
+- Unauthenticated profile API → `401`.
+
+## Success Criteria
+
+- **SC-001**: Every Gherkin scenario has at least one automated test before merge.
+- **SC-002**: User can view profile, edit fields, and log out from the profile dropdown only.
+- **SC-003**: `npm test` passes for `users.test.js` and `MenuBar.test.js`.
 
 ---
 
@@ -129,6 +172,12 @@ Extends the Feature 2 `MenuBar`. Dashboard sidebar and main panel are unchanged.
 
 **Logout**
 *   **Log out** in the profile dropdown replaces menu-bar **Sign out** (same API and redirect behavior as Feature 1).
+
+---
+
+## Key Entities
+
+- **User**: same entity as Feature 1; profile fields editable via API (no new tables).
 
 ---
 
@@ -348,7 +397,8 @@ Do not implement behavior not in this spec.
 
 ## Definition of Done
 
-*   [ ] Backend and frontend implemented per this spec
+*   [ ] Backend and frontend implemented per this spec (**FR-00N** satisfied)
+*   [ ] **Success Criteria (SC-00N)** met
 *   [ ] All mapped tests pass (`npm test`)
 *   [ ] Test Coverage Map complete
 *   [ ] `features/reference/data-model.md` updated (if schema changed)
