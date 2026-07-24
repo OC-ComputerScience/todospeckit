@@ -6,7 +6,7 @@
 **Created:** 2026-03-15
 **Input:** Optional calendar due dates on todos with display and overdue highlighting
 **Depends on:** [Feature 1 — User Authentication](feature-1-user-auth.md), [Feature 2 — Todo List Management](feature-2-todo-list-management.md), [Feature 3 — Todo List Item Management](feature-3-todo-list-item-management.md)
-**Related:** `features/reference/data-model.md`, `features/reference/api.md` (update in same PR when implementing)
+**Related:** `features/reference/data-model.md`, `features/reference/api.md`, `features/reference/behavior.md` (update in same PR when implementing)
 
 ---
 
@@ -306,12 +306,12 @@ Implement Feature 5 from @features/feature-5-todo-due-date.md on branch `feature
 
 Follow layer order in @features/framework.md (models → routes → backend tests → frontend → frontend tests).
 Map every Gherkin scenario in the Test Coverage Map; run `npm test` before finishing.
-If API routes, payloads, or schema changed per this spec, update @features/reference/api.md and/or @features/reference/data-model.md in the same PR to match shipped code.
+If API routes, payloads, schema, or product rules changed per this spec, update @features/reference/api.md, @features/reference/data-model.md, and/or @features/reference/behavior.md in the same PR to match shipped code.
 Complete Definition of Done and the merge checklist in @features/framework.md.
 Do not implement behavior not in this spec.
 ```
 
-**Reference updates for this feature:** `features/reference/data-model.md`, `features/reference/api.md`
+**Reference updates for this feature:** `features/reference/data-model.md`, `features/reference/api.md`, `features/reference/behavior.md`
 
 ---
 
@@ -323,6 +323,7 @@ Do not implement behavior not in this spec.
 *   [ ] Test Coverage Map complete
 *   [ ] `features/reference/data-model.md` updated
 *   [ ] `features/reference/api.md` updated
+*   [ ] `features/reference/behavior.md` updated (if product rules changed)
 
 ---
 

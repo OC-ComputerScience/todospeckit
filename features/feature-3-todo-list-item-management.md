@@ -401,12 +401,12 @@ Implement Feature 3 from @features/feature-3-todo-list-item-management.md on bra
 
 Follow layer order in @features/framework.md (models → routes → backend tests → frontend → frontend tests).
 Map every Gherkin scenario in the Test Coverage Map; run `npm test` before finishing.
-If API routes, payloads, or schema changed per this spec, update @features/reference/api.md and/or @features/reference/data-model.md in the same PR to match shipped code.
+If API routes, payloads, schema, or product rules changed per this spec, update @features/reference/api.md, @features/reference/data-model.md, and/or @features/reference/behavior.md in the same PR to match shipped code.
 Complete Definition of Done and the merge checklist in @features/framework.md.
 Do not implement behavior not in this spec.
 ```
 
-**Reference updates for this feature:** `features/reference/data-model.md`, `features/reference/api.md`
+**Reference updates for this feature:** `features/reference/data-model.md`, `features/reference/api.md`, `features/reference/behavior.md`
 
 ---
 
@@ -418,6 +418,7 @@ Do not implement behavior not in this spec.
 *   [ ] Test Coverage Map complete
 *   [ ] `features/reference/data-model.md` updated (if schema changed)
 *   [ ] `features/reference/api.md` updated (if API changed)
+*   [ ] `features/reference/behavior.md` updated (if product rules changed)
 
 ---
 

@@ -16,7 +16,7 @@ Spec-Driven Development (SDD) inverts the usual order: **spec first, code second
 | **Feature specs** (`features/feature-N-*.md`) | Authorize *what* to build |
 | **Cursor rules** (`.cursor/rules/`) | Constrain *how* to build |
 | **Tests** (Jest, Vitest) | Verify spec + implementation match |
-| **Reference docs** (`features/reference/`) | Snapshot *what exists now* on `dev` |
+| **Reference docs** (`features/reference/`) | Snapshot *what exists now* on `dev` (API, schema, **behavior/rules**) |
 | **Quality attributes** (`docs/nfr/`) | App-wide *ilities* / NFR bars — see also [quality-attributes.mdc](../.cursor/rules/quality-attributes.mdc) (Accepted vs Deferred literacy) |
 | **ADRs** (`docs/adr/`) | Record *why* cross-cutting architecture choices were made |
 | **Sprints / timeboxes** (Agility, Jira, etc.) | Plan *when* work happens — **outside** these specs |
@@ -38,7 +38,7 @@ frontend/ + backend/    ← implementation
         ↓
 tests/                  ← verification
         ↓
-features/reference/     ← integrated snapshot; updated in feature PR when API/schema changes
+features/reference/     ← integrated snapshot; updated in feature PR when API/schema/rules change
 ```
 
 ```mermaid
@@ -342,9 +342,17 @@ When every user story is implemented and every Gherkin scenario has a test, open
 git checkout dev && git merge feature/N-short-name
 ```
 
-### 6. Update living reference (required when schema/API changed)
+### 6. Update living reference (required when integrated product changed)
 
-If tables or API endpoints changed, update [reference/data-model.md](./reference/data-model.md) and [reference/api.md](./reference/api.md) **in the same PR as the implementation** (preferred — include in the [Agent implementation request](#agent-implementation-request) block). Skipping this is the most common SDD drift failure — treat it as Definition of Done, not optional cleanup.
+In the **same PR as the implementation** (preferred — include in the [Agent implementation request](#agent-implementation-request) block):
+
+| If you changed… | Update |
+|-----------------|--------|
+| Tables, columns, associations | [reference/data-model.md](./reference/data-model.md) |
+| Routes or payloads | [reference/api.md](./reference/api.md) |
+| Product rules (ownership, sort, validation, UI rules embedded in code) | [reference/behavior.md](./reference/behavior.md) |
+
+Skipping reference updates is the most common SDD drift failure — treat as Definition of Done, not optional cleanup.
 
 ---
 
@@ -356,7 +364,7 @@ If tables or API endpoints changed, update [reference/data-model.md](./reference
 | Cross-cutting architecture choice | New `docs/adr/NNNN-….md` + link from feature specs |
 | Clarify unmerged spec | Edit the feature file in place |
 | Change already on `dev` | Follow [Spec evolution after merge](#spec-evolution-after-merge) |
-| “What exists now?” | Update `features/reference/` — not the feature spec alone |
+| “What exists now?” (API / schema / **rules**) | Update `features/reference/` (`api.md`, `data-model.md`, `behavior.md`) — not the feature spec alone |
 | Minor UI polish (colors, spacing, button labels on an existing screen) | See [Minor UI changes](#minor-ui-changes) — usually edit rule + Screen Requirements, not a new feature |
 
 Feature specs are **deltas**; reference docs are **current state**.
@@ -373,7 +381,7 @@ Once a feature has merged to `dev`, treat its spec as **released history** unles
 | **Amend only if unreleased** | Edit an existing `feature-N-*.md` in place when the change has **not** shipped to `dev` yet, or the team agrees the edit is a clarification (typo, clearer Gherkin) with **no** behavior change. |
 | **Do not rewrite history silently** | Do not expand Feature 3’s stories after Feature 5 has shipped to “fold in” new scope — that breaks traceability and Agility refs. |
 | **Agility after story/AC text changes** | Re-export or `npm run agility:push -- --feature N --upsert` when user stories or Gherkin changed. Epic/story **Reference** IDs stay stable; names/descriptions update. |
-| **Reference always** | Whether you add Feature N+1 or amend, update `features/reference/` when the integrated API or schema on `dev` changed. |
+| **Reference always** | Whether you add Feature N+1 or amend, update `features/reference/` when the integrated API, schema, or **product rules** on `dev` changed. |
 
 **Default:** new feature file for post-merge product change; amend for pre-merge clarification only.
 
@@ -385,7 +393,7 @@ Before merging `feature/N-*` → `dev`:
 
 - [ ] **Spec** — Feature file matches what shipped (stories, **FR-00N**, **SC-00N**, Screen/API/Data, Out of Scope).
 - [ ] **Tests** — Every Gherkin scenario has a real `it`; Test Coverage Map complete; suites pass.
-- [ ] **Living reference** — If models, columns, routes, or payloads changed: update [reference/data-model.md](./reference/data-model.md) and/or [reference/api.md](./reference/api.md) in this PR (required DoD — not optional cleanup).
+- [ ] **Living reference** — Update in this PR when the integrated product changed: [reference/data-model.md](./reference/data-model.md) (schema), [reference/api.md](./reference/api.md) (routes/payloads), and/or [reference/behavior.md](./reference/behavior.md) (product rules). Required DoD — not optional cleanup.
 - [ ] **Catalog** — [features/README.md](./README.md) row for new features; ADR links if architecture changed.
 - [ ] **NFRs** — If an app-wide quality bar changed: update [docs/nfr/quality-attributes.md](../docs/nfr/quality-attributes.md) (and ADR/rule if approach or coding constraint changed).
 - [ ] **Agility sync** — If stories or Gherkin changed (or this is a new feature):
@@ -393,7 +401,7 @@ Before merging `feature/N-*` → `dev`:
   - New `feature-N-*.md` files are **auto-discovered** (epic title = `# Feature: …`) — no `FEATURE_FILES` edit
   - Or note “Agility deferred” with an owner
 
-**Human review:** reject diffs that implement behavior not in the spec, or that skip reference updates when the API/schema changed.
+**Human review:** reject diffs that implement behavior not in the spec, or that skip reference updates when the API, schema, or product rules changed.
 
 ---
 
@@ -418,7 +426,7 @@ Small visual tweaks still follow SDD: update the **smallest artifact that author
 2. **Edit the smallest doc** — `ui-style-system.mdc` and/or **Screen Requirements** (often one to three bullets).
 3. **Implement** — only the affected Vue files; follow [ui-style-system.mdc](../.cursor/rules/ui-style-system.mdc).
 4. **Verify** — visual check in `npm run dev`; run `npm run test:frontend` when labels or interaction changed.
-5. **Skip** — `features/reference/` (API/data only), new ADRs, new feature files, Agility push unless story/AC text changed.
+5. **Skip** — `features/reference/` (unless a product rule or API/schema changed), new ADRs, new feature files, Agility push unless story/AC text changed. If Screen Requirements change a stated UI rule (empty-state copy, overdue styling, where Log out lives), update [reference/behavior.md](./reference/behavior.md).
 
 ### Three tiers (practical policy)
 
@@ -557,15 +565,15 @@ Implement Feature N from @features/feature-N-short-name.md on branch `feature/N-
 
 Follow layer order in @features/framework.md (models → routes → backend tests → frontend → frontend tests).
 Map every Gherkin scenario in the Test Coverage Map; run `npm test` before finishing.
-If API routes, payloads, or schema changed per this spec, update @features/reference/api.md and/or @features/reference/data-model.md in the same PR to match shipped code.
+If API routes, payloads, schema, or product rules changed per this spec, update @features/reference/api.md, @features/reference/data-model.md, and/or @features/reference/behavior.md in the same PR to match shipped code.
 Complete Definition of Done and the merge checklist in @features/framework.md.
 Do not implement behavior not in this spec.
 \`\`\`
 
-**Reference updates for this feature:** list `api.md`, `data-model.md`, or `none` (UI-only / no API or schema delta).
+**Reference updates for this feature:** list `api.md`, `data-model.md`, `behavior.md`, or `none` (no integrated-product delta).
 ```
 
-Customize the last line per feature. Omit the reference-update sentence only when the feature has no **API Requirements** and no **Data Model Requirements**.
+Customize the last line per feature. Omit the reference-update sentence only when the feature has no **API Requirements**, no **Data Model Requirements**, and no new/changed **FR** product rules.
 
 ### Cursor requests (implement full feature)
 
@@ -575,7 +583,7 @@ When starting work, paste the block from the feature file (or use this formula):
 Implement Feature N from @features/feature-N-short-name.md on branch `feature/N-short-name`.
 
 Follow @features/framework.md layer order and Test Coverage Map.
-When API or schema changes land, update @features/reference/api.md and/or @features/reference/data-model.md in the same PR.
+When API, schema, or product rules change, update @features/reference/api.md, @features/reference/data-model.md, and/or @features/reference/behavior.md in the same PR.
 Run `npm test`. Complete Definition of Done in the feature file.
 ```
 
@@ -585,7 +593,7 @@ Run `npm test`. Complete Definition of Done in the feature file.
 Implement @features/feature-N-short-name.md per its Agent implementation request and Definition of Done.
 ```
 
-Layer-by-layer prompts are still fine (e.g. “implement Data Model Requirements only”) — add reference updates on the **last** slice that touches API or schema.
+Layer-by-layer prompts are still fine (e.g. “implement Data Model Requirements only”) — add reference updates on the **last** slice that touches API, schema, or product rules.
 
 ### Definition of Done template
 
@@ -598,6 +606,7 @@ Layer-by-layer prompts are still fine (e.g. “implement Data Model Requirements
 *   [ ] Test Coverage Map complete
 *   [ ] `features/reference/data-model.md` updated (if schema changed)
 *   [ ] `features/reference/api.md` updated (if API changed)
+*   [ ] `features/reference/behavior.md` updated (if product rules changed)
 ```
 
 ---
@@ -647,7 +656,7 @@ Example: Feature 2 (lists) and Feature 4 (profile) can ship in the same sprint, 
 | Put sprint numbers in feature files | Plan sprints in the agile tool |
 | Skip Test Coverage Map | Map every Gherkin scenario before marking done |
 | Change `reference/` without a spec | Spec authorizes the delta; reference reflects merge |
-| Merge API/schema change without updating `reference/` | Same PR (or immediate follow-up) — see merge checklist |
+| Merge API/schema/**rules** change without updating `reference/` | Same PR (or immediate follow-up) — see merge checklist |
 | Amend a shipped feature to add new scope | New `feature-(N+1)` delta — see [Spec evolution after merge](#spec-evolution-after-merge) |
 | Implement on `main` | `feature/N-*` → `dev` only |
 | One giant “build the feature” prompt | Layer-by-layer micro-steps |

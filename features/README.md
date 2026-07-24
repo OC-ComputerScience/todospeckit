@@ -30,6 +30,7 @@ Keep these snapshots in sync with the codebase when schema or API changes — **
 | [reference/README.md](./reference/README.md) | How to maintain reference docs |
 | [reference/data-model.md](./reference/data-model.md) | Current database tables and associations |
 | [reference/api.md](./reference/api.md) | Current REST API under `/todo/` |
+| [reference/behavior.md](./reference/behavior.md) | Current product rules (ownership, sort, validation, UI) |
 
 New features: follow the template in [framework.md](./framework.md#feature-spec-template) — **Status**, **Input**, story **Priority** / **Independent test**, **FR-00N**, **Assumptions**, **Edge Cases**, **SC-00N**, **Key Entities**, plus **Agent implementation request** and **Definition of Done**.
 
@@ -52,7 +53,7 @@ Feature specs define **changes**; reference files describe **what exists now**. 
 - Cursor rules: `.cursor/rules/`
 - Architecture decisions: `docs/adr/` — [index](../docs/adr/README.md)
 - Quality attributes (NFRs): `docs/nfr/` — [index](../docs/nfr/README.md)
-- Living reference: `features/reference/` (data model + API snapshot on `dev`)
+- Living reference: `features/reference/` (data model + API + **behavior/rules** snapshot on `dev`)
 - Backend env: `backend/.env` (copy from `backend/.env.example`)
 - Test env: `backend/.env.test` (copy from `backend/.env.test.example`)
 - UI references (optional): `docs/ui/` — link Figma exports from each feature spec
