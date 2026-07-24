@@ -19,7 +19,8 @@
     "agility:push": "node scripts/push-agility-api.mjs",
     "agility:push:dry-run": "node scripts/push-agility-api.mjs --dry-run",
     "agility:verify": "node scripts/push-agility-api.mjs --verify",
-    "starter:zip": "node scripts/bundle-starter-kit.mjs"
+    "starter:zip": "node scripts/bundle-starter-kit.mjs",
+    "reset:example": "node scripts/reset-example-app.mjs"
   },
   "devDependencies": {
     "md-mermaid-pdf": "^0.1.7"
