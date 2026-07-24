@@ -14,7 +14,7 @@ We needed to decide:
 2. **Which SQL engine** fits a classroom + XAMPP-style local setup.
 3. **How** the Node backend talks to the database (ORM, schema evolution, tests).
 
-The stack must work on student laptops (often XAMPP with MySQL already installed), support foreign keys and transactions, and stay simple enough to teach alongside Sequelize models and Jest integration tests.
+The stack must work on developer laptops (often XAMPP with MySQL already installed), support foreign keys and transactions, and stay simple enough to teach alongside Sequelize models and Jest integration tests.
 
 ## Decision
 
@@ -103,12 +103,12 @@ No checked-in Sequelize migration files in v1 — schema is defined in `backend/
 | Option | Why not |
 |--------|---------|
 | **SQLite (file DB)** | Simpler setup but weaker classroom alignment with deployed MySQL; concurrent test + dev access is awkward. |
-| **PostgreSQL** | Excellent choice for production; less universal in XAMPP/LAMP student environments for this course. |
+| **PostgreSQL** | Excellent choice for production; less universal in XAMPP/LAMP developer environments for this course. |
 | **MongoDB / document store** | Todo-in-list fits poorly without duplicating ownership; cross-user isolation harder to reason about in specs. |
 | **JSON files / in-memory store** | No real multi-user persistence; fails ADR-0001. |
 | **Prisma** | Viable ORM; Sequelize already wired in rules, models, and course materials. |
 | **Raw SQL only (no ORM)** | More boilerplate; Sequelize matches constitution stack consistency. |
-| **Single shared DB for dev and test** | Risk of wiping student data when tests run `force: true`. |
+| **Single shared DB for dev and test** | Risk of wiping developer data when tests run `force: true`. |
 
 ## Related artifacts
 

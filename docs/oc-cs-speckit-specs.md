@@ -36,8 +36,8 @@ This document establishes the absolute operational guardrails for this engineeri
 *   **The Guardrail:** Vue 3 + Vuetify 4 + axios on the frontend; Node + Express + Sequelize (ES modules) on the backend. Do not introduce alternate frameworks, response envelopes, or directory layouts without updating the spec and rules first.
 
 ## 🤖 Principle 6: The Developer is the Tech Lead
-*   **The Law:** The AI is the executor; the human student is the Architect and Auditor.
-*   **The Guardrail:** You must explain *why* you chose a specific logical architecture block if asked. Do not hide complex code or dependencies. If you notice a logical contradiction in the student's feature file specifications, alert them immediately rather than writing broken code.
+*   **The Law:** The AI is the executor; the human developer is the Architect and Auditor.
+*   **The Guardrail:** You must explain *why* you chose a specific logical architecture block if asked. Do not hide complex code or dependencies. If you notice a logical contradiction in the developer's feature file specifications, alert them immediately rather than writing broken code.
 
 <div style="page-break-after: always;"></div>
 
@@ -963,7 +963,7 @@ We needed to decide:
 2. **Which SQL engine** fits a classroom + XAMPP-style local setup.
 3. **How** the Node backend talks to the database (ORM, schema evolution, tests).
 
-The stack must work on student laptops (often XAMPP with MySQL already installed), support foreign keys and transactions, and stay simple enough to teach alongside Sequelize models and Jest integration tests.
+The stack must work on developer laptops (often XAMPP with MySQL already installed), support foreign keys and transactions, and stay simple enough to teach alongside Sequelize models and Jest integration tests.
 
 ## Decision
 
@@ -1052,12 +1052,12 @@ No checked-in Sequelize migration files in v1 — schema is defined in `backend/
 | Option | Why not |
 |--------|---------|
 | **SQLite (file DB)** | Simpler setup but weaker classroom alignment with deployed MySQL; concurrent test + dev access is awkward. |
-| **PostgreSQL** | Excellent choice for production; less universal in XAMPP/LAMP student environments for this course. |
+| **PostgreSQL** | Excellent choice for production; less universal in XAMPP/LAMP developer environments for this course. |
 | **MongoDB / document store** | Todo-in-list fits poorly without duplicating ownership; cross-user isolation harder to reason about in specs. |
 | **JSON files / in-memory store** | No real multi-user persistence; fails ADR-0001. |
 | **Prisma** | Viable ORM; Sequelize already wired in rules, models, and course materials. |
 | **Raw SQL only (no ORM)** | More boilerplate; Sequelize matches constitution stack consistency. |
-| **Single shared DB for dev and test** | Risk of wiping student data when tests run `force: true`. |
+| **Single shared DB for dev and test** | Risk of wiping developer data when tests run `force: true`. |
 
 ## Related artifacts
 
@@ -1147,7 +1147,7 @@ App-wide non-functional targets for OC CS Speckit (illustrated by the Todo examp
 
 ## Status values
 
-| Status | Meaning | Student / agent expectation |
+| Status | Meaning | Developer / agent expectation |
 |--------|---------|------------------------------|
 | **Accepted** | In force for this product | Must not regress; covered by linked rules, ADRs, and/or tests |
 | **Accepted (minimal)** | Thin bar in force | Meet the stated Approach only; do not expand scope |
@@ -1178,7 +1178,7 @@ Update this table when the bar changes. Feature-local bars stay in that feature�
 | **Data integrity** | **100%** of list/todo rows have a valid owning `userId`; **0** orphan associations after CRUD tests | Relational MySQL; foreign keys / Sequelize associations | Jest + schema in [data-model](../../features/reference/data-model.md) | Accepted | [ADR-0003](../adr/0003-mysql-relational-database.md) |
 | **Reliability** | Happy-path write success ≥ **99%** in local test runs; failed writes return HTTP **4xx/5xx** with a body (never empty **200**) | Single-process Express; no HA/retry layer | Jest on create/update/delete paths | Deferred | — |
 | **Availability** | Local demo uptime goal **≥ 95%** of lab session time; **no** multi-region SLA | Single-node deploy (XAMPP or similar); no HA | N/A | Out of scope | [ADR-0001](../adr/0001-client-server-multi-user-architecture.md) |
-| **Performance** | p95 API latency **&lt; 200 ms** (local XAMPP); dashboard first paint **&lt; 2 s** on a typical student laptop | No formal load-test gate in CI yet | Manual / `npm run dev` (future: timed Jest or k6) | Deferred | — |
+| **Performance** | p95 API latency **&lt; 200 ms** (local XAMPP); dashboard first paint **&lt; 2 s** on a typical developer laptop | No formal load-test gate in CI yet | Manual / `npm run dev` (future: timed Jest or k6) | Deferred | — |
 | **Scalability** | Correct for **≤ 30** concurrent classroom users; **≤ 500** todos per user without pagination redesign | Multi-user correctness, not horizontal scale | Ownership tests; manual multi-browser check | Out of scope | [ADR-0001](../adr/0001-client-server-multi-user-architecture.md) |
 | **Observability** | **100%** of unhandled server errors logged at `error`; HTTP access logged; retain rotating logs **≥ 7 days** | Winston console + daily rotate under `backend/logs/` | Logs present in local runs | Accepted (minimal) | `backend/app/config/logger.js` |
 | **Usability** | New user completes register → create list → add todo in **≤ 3 minutes** without help; primary CTAs use labels from Screen Requirements (**100%** match); **≤ 2** clicks from dashboard to add a todo on an existing list | Vuetify + Screen Requirements; `oc-cta` for primary actions; empty states documented per feature | Manual walkthrough; Vitest for labeled CTAs / flows | Deferred | [ui-style-system.mdc](../../.cursor/rules/ui-style-system.mdc), feature **Screen Requirements** |
@@ -1416,7 +1416,7 @@ title Todo (example) — Deployment (User PC + Web Server)
 
 UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 
-Deployment_Node(userPc, "User PC", "Student / end-user computer") {
+Deployment_Node(userPc, "User PC", "Developer / end-user computer") {
     Deployment_Node(browser, "Web Browser", "Chrome / Edge / Firefox") {
         Container(spa, "Frontend SPA", "Vue 3, Vuetify, axios", "Runs in the browser. Loaded from Apache; calls Backend API with Bearer JWT.")
     }

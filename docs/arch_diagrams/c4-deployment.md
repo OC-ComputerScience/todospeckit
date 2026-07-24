@@ -8,7 +8,7 @@ title Todo (example) — Deployment (User PC + Web Server)
 
 UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 
-Deployment_Node(userPc, "User PC", "Student / end-user computer") {
+Deployment_Node(userPc, "User PC", "Developer / end-user computer") {
     Deployment_Node(browser, "Web Browser", "Chrome / Edge / Firefox") {
         Container(spa, "Frontend SPA", "Vue 3, Vuetify, axios", "Runs in the browser. Loaded from Apache; calls Backend API with Bearer JWT.")
     }
