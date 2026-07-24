@@ -5,10 +5,12 @@ import morgan from "morgan";
 import db from "./app/models/index.js";
 import logger from "./app/config/logger.js";
 
-const syncOptions =
-  process.env.SEQUELIZE_SYNC_ALTER === "true" || process.env.SEQUELIZE_SYNC_ALTER === "1"
-    ? { alter: true }
-    : {};
+const shouldAlterSchema =
+  process.env.SEQUELIZE_SYNC_ALTER === "true" ||
+  process.env.SEQUELIZE_SYNC_ALTER === "1" ||
+  (process.env.NODE_ENV === "development" && process.env.SEQUELIZE_SYNC_ALTER !== "false");
+
+const syncOptions = shouldAlterSchema ? { alter: true } : {};
 
 if (process.env.NODE_ENV !== "test") {
   db.sequelize
@@ -44,7 +46,7 @@ const PORT = process.env.PORT || 3200;
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {
-    logger.info(`Todo Speckit API running on port ${PORT}`);
+    logger.info(`Todo API running on port ${PORT}`);
   });
 }
 

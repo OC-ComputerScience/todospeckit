@@ -2,14 +2,14 @@
   "name": "todo-speckit-backend",
   "version": "1.0.0",
   "type": "module",
-  "description": "Todo Speckit — Node.js REST API",
+  "description": "Todo example app — Node.js REST API (OC CS Speckit)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
-    "bundle": "rm -rf deploy && mkdir deploy && cp -r app server.js package.json package-lock.json todo-speckit-backend.service .env deploy"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "bundle": "node scripts/make-deploy.mjs"
   },
   "keywords": ["node.js", "express", "sequelize"],
   "license": "ISC",

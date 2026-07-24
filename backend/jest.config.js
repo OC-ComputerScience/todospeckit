@@ -5,5 +5,6 @@ export default {
   testMatch: ["**/tests/**/*.test.js"],
   setupFiles: ["./tests/setup.js"],
   modulePathIgnorePatterns: ["<rootDir>/deploy/"],
+  maxWorkers: 1,
   verbose: true,
 };
