@@ -25,4 +25,4 @@ npm run agility:push -- --feature 1     # one feature
 npm run agility:push -- --feature 1 --upsert   # update existing
 ```
 
-See the Todo Speckit `docs/agility-import/README.md` in the source teaching repo for full Excel import steps and upsert behavior, or expand this file as your team adopts Agility.
+See the OC CS Speckit `docs/agility-import/README.md` in the source kit repo for full Excel import steps and upsert behavior, or expand this file as your team adopts Agility.

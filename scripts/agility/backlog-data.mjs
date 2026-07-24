@@ -1,5 +1,5 @@
 /**
- * Shared parser: Todo Speckit feature specs → Agility backlog structure.
+ * Shared parser: OC CS Speckit feature specs → Agility backlog structure.
  *
  * Feature specs are auto-discovered from `features/feature-N-*.md`.
  * Epic names come from each file's `# Feature: …` heading.
@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 export const rootDir = join(__dirname, "..", "..");
 
-export const DEFAULT_PROJECT = "Todo Speckit";
+export const DEFAULT_PROJECT = "OC CS Speckit";
 
 const FEATURE_FILE_RE = /^feature-(\d+)-.+\.md$/i;
 
@@ -306,7 +306,7 @@ export function buildBacklog(project = DEFAULT_PROJECT, options = {}) {
       epic: {
         ref: epicReference,
         name: feature.epic,
-        description: `Epic for ${feature.file}. Spec-driven backlog from Todo Speckit.`,
+        description: `Epic for ${feature.file}. Spec-driven backlog from OC CS Speckit.`,
         specLink: feature.file,
       },
       stories: featureStories,

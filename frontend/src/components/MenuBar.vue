@@ -148,7 +148,7 @@ const handleLogout = async () => {
 
 <template>
   <v-app-bar color="primary" density="comfortable">
-    <v-app-bar-title>Todo Speckit</v-app-bar-title>
+    <v-app-bar-title>Todo</v-app-bar-title>
 
     <v-spacer />
 

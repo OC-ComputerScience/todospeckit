@@ -6,7 +6,7 @@ Vue SPA inside `frontend/src/`: views and components call axios services; router
 
 ```mermaid
 C4Component
-title Todo Speckit — Frontend SPA
+title Todo (example) — Frontend SPA
 
 UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="2")
 

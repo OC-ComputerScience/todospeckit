@@ -1,5 +1,5 @@
 [Unit]
-Description=Todo Speckit Node.js API
+Description=Todo example app Node.js API (OC CS Speckit)
 After=network.target
 
 [Service]

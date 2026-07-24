@@ -1,6 +1,6 @@
 # Quality attributes
 
-App-wide non-functional targets for Todo Speckit.
+App-wide non-functional targets for OC CS Speckit (illustrated by the Todo example application).
 
 **Teaching policy:** Specs say *what* to build. This table says *how good* the system should be. Only **Accepted** rows (and feature **Requirements (FR-00N)** / **Success Criteria (SC-00N)**) constrain implementation. **Deferred** is the quality backlog / classroom example. **Out of scope** is what not to build. Cursor agents follow [`.cursor/rules/quality-attributes.mdc`](../../.cursor/rules/quality-attributes.mdc) for this literacy — they must **not** treat every Deferred number as always-on.
 
@@ -22,7 +22,7 @@ App-wide non-functional targets for Todo Speckit.
 | **Accepted** | In force for this product | Must not regress; covered by linked rules, ADRs, and/or tests |
 | **Accepted (minimal)** | Thin bar in force | Meet the stated Approach only; do not expand scope |
 | **Deferred** | Documented, not enforced yet | Example Target for learning; implement only if a feature spec or instructor requires it |
-| **Out of scope** | Explicit non-goal for this teaching app | Do not design or generate for this bar |
+| **Out of scope** | Explicit non-goal for this Todo example / kit demo | Do not design or generate for this bar |
 
 ## Links column
 

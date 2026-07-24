@@ -2,11 +2,11 @@
 
 **Status:** Accepted  
 **Date:** 2026-07-07  
-**Deciders:** Todo Speckit project (SDD reference implementation)
+**Deciders:** OC CS Speckit project (SDD kit; Todo example application)
 
 ## Context
 
-Todo Speckit is a **multi-user** todo application: each registered user owns private lists and items. No user may read or modify another user's data. The product must be teachable as a Spec-Driven Development reference — clear boundaries between specification, frontend, backend, and tests.
+The **Todo** example application shipped with OC CS Speckit is a **multi-user** todo app: each registered user owns private lists and items. No user may read or modify another user's data. The kit must be teachable as a Spec-Driven Development reference — clear boundaries between specification, frontend, backend, and tests.
 
 We needed to decide:
 
