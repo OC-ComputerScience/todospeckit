@@ -311,7 +311,7 @@ function buildCombinedMarkdown() {
   );
 
   return [
-    "# Todo Speckit — Rules & Specifications",
+    "# OC CS Speckit — Rules & Specifications",
     "",
     "Generated from `.cursor/rules/`, `docs/adr/`, `docs/nfr/`, `docs/arch_diagrams/`, and `features/` (auto-discovered).",
     "Mermaid fences (including C4) are rendered in the PDF via `md-mermaid-pdf`.",
@@ -413,8 +413,8 @@ async function renderPdf(combinedMarkdown, pdfPath) {
 async function main() {
   const combinedMarkdown = buildCombinedMarkdown();
   const outputDir = join(rootDir, "docs");
-  const markdownPath = join(outputDir, "todo-speckit-specs.md");
-  const pdfPath = join(outputDir, "todo-speckit-specs.pdf");
+  const markdownPath = join(outputDir, "oc-cs-speckit-specs.md");
+  const pdfPath = join(outputDir, "oc-cs-speckit-specs.pdf");
 
   mkdirSync(outputDir, { recursive: true });
   writeFileSync(markdownPath, combinedMarkdown, "utf8");

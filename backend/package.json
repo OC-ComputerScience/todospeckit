@@ -2,7 +2,7 @@
   "name": "todo-speckit-backend",
   "version": "1.0.0",
   "type": "module",
-  "description": "Todo Speckit — Node.js REST API",
+  "description": "Todo example app — Node.js REST API (OC CS Speckit)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -1,11 +1,11 @@
 /**
- * Export Todo Speckit user stories + Gherkin AC for Digital.ai Agility Excel import.
+ * Export OC CS Speckit user stories + Gherkin AC for Digital.ai Agility Excel import.
  *
  * Output: docs/agility-import/*.csv — paste into Agility Basic/Advanced import template worksheets:
  *   Portfolio Item (optional epics), Story, Test
  *
  * Usage: node scripts/export-agility-import.mjs
- *        node scripts/export-agility-import.mjs --project "Todo Speckit"
+ *        node scripts/export-agility-import.mjs --project "OC CS Speckit"
  */
 
 import { writeFileSync, mkdirSync } from "node:fs";

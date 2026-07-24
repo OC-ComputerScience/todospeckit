@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Date:** 2026-07-07  
-**Deciders:** Todo Speckit project (SDD reference implementation)
+**Deciders:** OC CS Speckit project (SDD kit; Todo example application)
 
 ## Context
 

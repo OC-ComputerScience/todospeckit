@@ -1,6 +1,6 @@
 # Spec-Driven Development Framework
 
-How Todo Speckit writes, traces, and ships **feature specifications**.  
+How **OC CS Speckit** writes, traces, and ships **feature specifications** (illustrated here by the Todo example application).  
 This document is the methodology handbook; individual feature files are the requirements.
 
 **Related:** [Feature catalog](./README.md) · [ADRs](../docs/adr/README.md) · [Quality attributes (NFRs)](../docs/nfr/README.md) · [Living reference](./reference/README.md) · [Constitution](../.cursor/rules/constitution.mdc)
@@ -200,9 +200,9 @@ Every scenario must appear in the **Test Coverage Map** and have at least one au
 
 ## GitHub Spec Kit alignment
 
-This repo uses one merged `feature-N-*.md` per capability (teaching app + fixed stack). [GitHub Spec Kit](https://github.com/github/spec-kit) splits **spec** (what/why) from **plan** (how). Map phases as follows:
+This repo uses one merged `feature-N-*.md` per capability (Todo example app + fixed stack). [GitHub Spec Kit](https://github.com/github/spec-kit) splits **spec** (what/why) from **plan** (how). Map phases as follows:
 
-| Spec Kit phase | Todo Speckit artifact |
+| Spec Kit phase | OC CS Speckit artifact |
 |----------------|----------------------|
 | `speckit.specify` | User Stories, FR, Assumptions, Edge Cases, SC, Gherkin, Out of Scope |
 | `speckit.plan` | ADRs, `.cursor/rules/`, API/Data/Screen sections in feature file |
@@ -667,7 +667,7 @@ Example: Feature 2 (lists) and Feature 4 (profile) can ship in the same sprint, 
 
 | Command | Output |
 |---------|--------|
-| `npm run specs:pdf` | Rules + ADRs + NFRs + C4 diagrams + specs + reference → `docs/todo-speckit-specs.pdf` (auto-discovers; Mermaid/C4 rendered) |
+| `npm run specs:pdf` | Rules + ADRs + NFRs + C4 diagrams + specs + reference → `docs/oc-cs-speckit-specs.pdf` (auto-discovers; Mermaid/C4 rendered) |
 | `npm run agility:export` | CSV backlog for Agility Excel import (auto-discovers `feature-N-*.md`) |
 | `npm run agility:push` | Push epics, stories, tests via Agility API |
 | `npm run agility:push -- --feature N --upsert` | Update existing stories/tests for feature N; create missing |

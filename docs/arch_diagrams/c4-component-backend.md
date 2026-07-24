@@ -6,7 +6,7 @@ Express app inside `backend/`: routes → controllers → models; cross-cutting 
 
 ```mermaid
 C4Component
-title Todo Speckit — Backend API
+title Todo (example) — Backend API
 
 UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 

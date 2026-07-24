@@ -1,8 +1,8 @@
-# Todo Speckit
+# OC CS Speckit
 
-A reference implementation for **Spec-Driven Development (SDD)** — a multi-user todo application built incrementally from written specifications, with AI-assisted coding guardrails via [Cursor](https://cursor.com) rules.
+**OC CS Speckit** is a Spec-Driven Development (SDD) kit: written specifications, Cursor rules, and living reference docs that drive incremental delivery with AI-assisted coding guardrails via [Cursor](https://cursor.com).
 
-The application is intentionally simple (auth, todo lists, todo items). The pedagogical goal is the **process**: specifications define *what* to build; Cursor rules define *how* to build it; automated tests verify that both were followed.
+This repository ships a **Todo** example application (auth, lists, items) so you can see the process end to end. Specifications define *what* to build; Cursor rules define *how* to build it; automated tests verify that both were followed.
 
 ---
 
@@ -51,6 +51,7 @@ The API is mounted at `/todo/`. All list and todo data is **scoped per user** �
 todo-speckit/
 ├── features/              # SDD specifications (source of truth)
 ├── .cursor/rules/         # AI + team coding conventions
+├── docs/                  # ADRs, NFRs, C4 diagrams, Agility, exports — see docs/README.md
 ├── frontend/              # Vue SPA
 ├── backend/               # Express API
 ├── scripts/               # Local bundle scripts for deployment
@@ -84,6 +85,13 @@ See [features/README.md](features/README.md) for feature dependencies and implem
 | [frontend-services.mdc](.cursor/rules/frontend-services.mdc) | Axios client, router, services layer |
 | [ui-style-system.mdc](.cursor/rules/ui-style-system.mdc) | Vuetify 4 component defaults |
 | [testing-standards.mdc](.cursor/rules/testing-standards.mdc) | Jest/Vitest requirements |
+| [agent-behavior.mdc](.cursor/rules/agent-behavior.mdc) | Assumptions, minimal diffs, verifiable goals |
+| [feature-branch.mdc](.cursor/rules/feature-branch.mdc) | Feature branch gate for product code |
+| [quality-attributes.mdc](.cursor/rules/quality-attributes.mdc) | How to read Accepted vs Deferred NFRs |
+
+### Docs (`docs/`)
+
+See **[docs/README.md](docs/README.md)** for the full index (ADRs, NFRs, C4 diagrams, Agility import, starter kit, generated PDF/Markdown exports).
 
 ---
 

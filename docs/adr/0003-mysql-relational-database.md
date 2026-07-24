@@ -2,11 +2,11 @@
 
 **Status:** Accepted  
 **Date:** 2026-07-07  
-**Deciders:** Todo Speckit project (SDD reference implementation)
+**Deciders:** OC CS Speckit project (SDD kit; Todo example application)
 
 ## Context
 
-Todo Speckit persists multi-user identity, sessions, lists, and todos. The data is inherently **relational**: users own lists; lists contain todos; sessions belong to users. [ADR-0001](./0001-client-server-multi-user-architecture.md) requires a shared server-side database; [ADR-0002](./0002-security-architecture.md) requires row-level ownership enforced in every query.
+The **Todo** example application persists multi-user identity, sessions, lists, and todos. The data is inherently **relational**: users own lists; lists contain todos; sessions belong to users. [ADR-0001](./0001-client-server-multi-user-architecture.md) requires a shared server-side database; [ADR-0002](./0002-security-architecture.md) requires row-level ownership enforced in every query.
 
 We needed to decide:
 

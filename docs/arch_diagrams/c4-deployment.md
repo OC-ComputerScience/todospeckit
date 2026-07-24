@@ -4,7 +4,7 @@ Two machines: the **User PC** runs only the browser; the **Web Server** hosts Ap
 
 ```mermaid
 C4Deployment
-title Todo Speckit — Deployment (User PC + Web Server)
+title Todo (example) — Deployment (User PC + Web Server)
 
 UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 

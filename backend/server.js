@@ -46,7 +46,7 @@ const PORT = process.env.PORT || 3200;
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {
-    logger.info(`Todo Speckit API running on port ${PORT}`);
+    logger.info(`Todo API running on port ${PORT}`);
   });
 }
 

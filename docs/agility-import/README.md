@@ -1,4 +1,4 @@
-# Digital.ai Agility import — Todo Speckit backlog
+# Digital.ai Agility import — OC CS Speckit backlog
 
 Export user stories and Gherkin acceptance criteria from `features/` into CSV files formatted for [Digital.ai Agility Excel import](https://docs.digital.ai/agility/docs/agility/import-data-from-excel).
 
@@ -7,7 +7,7 @@ Export user stories and Gherkin acceptance criteria from `features/` into CSV fi
 From the repo root (replace project name with your Agility **Scope** / project name):
 
 ```bash
-node scripts/export-agility-import.mjs --project "Todo Speckit"
+node scripts/export-agility-import.mjs --project "OC CS Speckit"
 ```
 
 This creates:
@@ -109,7 +109,7 @@ Column titles must match Agility **system names** (ask admin or query `meta.v1` 
 When you add or change stories/AC in `features/`:
 
 ```bash
-node scripts/export-agility-import.mjs --project "Todo Speckit"
+node scripts/export-agility-import.mjs --project "OC CS Speckit"
 ```
 
 Then import only **new** items (or use Agility API for updates).
@@ -129,7 +129,7 @@ Yes — you can create epics, stories, and acceptance tests programmatically usi
    |----------|---------|
    | `AGILITY_BASE_URL` | `https://your-instance.com` (no trailing slash) |
    | `AGILITY_ACCESS_TOKEN` | `1.xxxxx…` |
-   | `AGILITY_SCOPE` | Exact project name, e.g. `Todo Speckit` |
+   | `AGILITY_SCOPE` | Exact project name, e.g. `OC CS Speckit` |
 
 ### Dry run (preview payloads)
 

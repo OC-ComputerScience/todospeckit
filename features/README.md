@@ -1,6 +1,6 @@
 # Feature Specifications
 
-Spec-driven development (SDD) source of truth for the Todo Speckit project.  
+Spec-driven development (SDD) source of truth for **OC CS Speckit** (Todo is the example application in this repo).  
 No application code may be written unless it maps to a requirement in one of these files.
 
 **Methodology:** [framework.md](./framework.md) — how to write, trace, and ship feature specs.
@@ -84,8 +84,8 @@ npm run specs:pdf
 
 Output:
 
-- `docs/todo-speckit-specs.md` — combined Markdown (rules, ADRs, specs, reference)
-- `docs/todo-speckit-specs.pdf` — PDF export
+- `docs/oc-cs-speckit-specs.md` — combined Markdown (rules, ADRs, specs, reference)
+- `docs/oc-cs-speckit-specs.pdf` — PDF export
 
 **Included (auto-discovered each run):**
 
@@ -103,7 +103,7 @@ Manual alternative (no npm script):
 
 ```bash
 # Prefer npm run specs:pdf — it strips .mdc frontmatter, discovers new files, and renders Mermaid.
-npx md-mermaid-pdf docs/todo-speckit-specs.md
+npx md-mermaid-pdf docs/oc-cs-speckit-specs.md
 ```
 
 Note: a plain `md-to-pdf` run leaves Mermaid as code blocks; `npm run specs:pdf` renders diagrams.

@@ -1,6 +1,6 @@
 # Speckit Starter Kit
 
-Use this zip to start a **new** Spec-Driven Development (SDD) application — not to rebuild the Todo Speckit product.
+Use this zip to start a **new** Spec-Driven Development (SDD) application — not to rebuild the **Todo** example application that ships with OC CS Speckit.
 
 This package is the **SDD factory**: methodology, Cursor rules, empty Vue + Express + MySQL shells, test harness, and tooling. You write **new** feature specs for your product, then implement them with Cursor.
 
@@ -13,8 +13,8 @@ This package is the **SDD factory**: methodology, Cursor rules, empty Vue + Expr
 | Goal | Use this kit? |
 |------|----------------|
 | Start a **new** app with the same SDD process + stack | **Yes** |
-| Clone / continue the **todo** teaching app | **No** — clone this repo’s `dev` branch instead |
-| Instructor answer key with full todo implementation | **No** — use the full reference repo |
+| Clone / continue the **Todo** example application | **No** — clone this repo’s `dev` branch instead |
+| Instructor answer key with full Todo implementation | **No** — use the full OC CS Speckit repo |
 
 ---
 
@@ -47,11 +47,11 @@ This package is the **SDD factory**: methodology, Cursor rules, empty Vue + Expr
 
 ---
 
-## Create the zip (from Todo Speckit repo)
+## Create the zip (from the OC CS Speckit repo)
 
 Works on **macOS, Windows, and Linux** (Node.js only — no zsh required).
 
-From the **todo-speckit** repository root:
+From the **OC CS Speckit** repository root (this repo; directory may still be named `todo-speckit`):
 
 ```bash
 npm run starter:zip
@@ -183,7 +183,7 @@ cd frontend && npm run dev     # SPA on :8082
 
 ## Regenerating the zip after kit changes
 
-When you improve rules, framework, or overlay shells in **todo-speckit**:
+When you improve rules, framework, or overlay shells in **OC CS Speckit**:
 
 1. Edit files under `.cursor/rules/`, `features/framework.md`, or `scripts/starter-kit/overlay/`.
 2. Run `npm run starter:zip` again.

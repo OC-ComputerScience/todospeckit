@@ -1,5 +1,5 @@
 /**
- * Push Todo Speckit backlog to Digital.ai Agility via Bulk JSON API.
+ * Push OC CS Speckit backlog to Digital.ai Agility via Bulk JSON API.
  *
  * Auth: Access Token (Bearer) — create in Agility: My Settings → Access Tokens
  * Docs: https://docs.digital.ai/agility/docs/developerlibrary/access-token-authentication
@@ -142,7 +142,7 @@ function parseArgs(argv) {
 }
 
 function printHelp() {
-  console.log(`Push Todo Speckit backlog to Digital.ai Agility (Bulk JSON API)
+  console.log(`Push OC CS Speckit backlog to Digital.ai Agility (Bulk JSON API)
 
 Usage:
   node scripts/push-agility-api.mjs [options]
