@@ -27,7 +27,7 @@ Project documentation outside feature specs (`features/`) and Cursor rules (`.cu
 
 | File | Purpose |
 |------|---------|
-| [STARTER-KIT.md](./STARTER-KIT.md) | How to use `npm run starter:zip` for a new SDD app |
+| [STARTER-KIT.md](./STARTER-KIT.md) | How to use `npm run starter:zip` for a new SDD app; related: `npm run reset:example` keeps Todo specs and strips product code |
 | [oc-cs-speckit-specs.md](./oc-cs-speckit-specs.md) | Combined Markdown from `npm run specs:pdf` (generated) |
 | [oc-cs-speckit-specs.pdf](./oc-cs-speckit-specs.pdf) | PDF export of rules, ADRs, NFRs, diagrams, specs, reference (generated) |
 
