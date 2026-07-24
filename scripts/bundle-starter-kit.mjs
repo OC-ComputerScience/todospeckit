@@ -261,6 +261,23 @@ function main() {
     console.log("Applying overlay from scripts/starter-kit/overlay/");
     cpSync(OVERLAY_DIR, target, { recursive: true });
 
+    // Reference stubs ship only via overlay (never the Todo populated snapshots).
+    const requiredReferenceStubs = [
+      "features/reference/README.md",
+      "features/reference/api.md",
+      "features/reference/data-model.md",
+      "features/reference/behavior.md",
+    ];
+    for (const relative of requiredReferenceStubs) {
+      const path = join(target, relative);
+      if (!existsSync(path)) {
+        throw new Error(
+          `Missing starter reference stub after overlay: ${relative} (add under scripts/starter-kit/overlay/)`,
+        );
+      }
+      console.log(`  ✓ ${relative}`);
+    }
+
     ensureGitkeep(join(target, "frontend", "src", "components"));
     ensureGitkeep(join(target, "frontend", "src", "utils"));
     ensureGitkeep(join(target, "backend", "app", "controllers"));

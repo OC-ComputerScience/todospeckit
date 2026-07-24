@@ -2,7 +2,7 @@
 
 **Living snapshot** of product rules currently in force on `dev`.
 
-Empty until Feature 1+ ships. See the full Speckit repo’s `features/reference/behavior.md` for the intended shape (rule → enforcement → provenance).
+Empty until Feature 1+ ships. See the OC CS Speckit repo’s `features/reference/behavior.md` for the intended shape (rule → enforcement → provenance).
 
 These files answer: *"What rules does the app enforce right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.

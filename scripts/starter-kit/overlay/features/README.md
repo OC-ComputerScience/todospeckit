@@ -19,13 +19,14 @@ New features: follow [framework.md](./framework.md#feature-spec-template) — **
 
 ## Living reference
 
-Keep snapshots in sync when schema or API changes — **in the same PR as implementation** (required DoD; see [Merge checklist + Agility sync](./framework.md#merge-checklist--agility-sync)). Each `feature-N-*.md` includes an **Agent implementation request** block so Cursor updates reference during implementation ([framework.md](./framework.md#agent-implementation-request)). Spec evolution after merge: [prefer a new feature delta](./framework.md#spec-evolution-after-merge).
+Keep snapshots in sync when schema, API, or product rules change — **in the same PR as implementation** (required DoD; see [Merge checklist + Agility sync](./framework.md#merge-checklist--agility-sync)). Each `feature-N-*.md` includes an **Agent implementation request** block so Cursor updates reference during implementation ([framework.md](./framework.md#agent-implementation-request)). Spec evolution after merge: [prefer a new feature delta](./framework.md#spec-evolution-after-merge).
 
 | File | Purpose |
 |------|---------|
 | [reference/README.md](./reference/README.md) | How to maintain reference docs |
 | [reference/data-model.md](./reference/data-model.md) | Current database tables (update in feature PR when schema changes) |
 | [reference/api.md](./reference/api.md) | Current REST API (update in feature PR when API changes) |
+| [reference/behavior.md](./reference/behavior.md) | Current product rules (update in feature PR when rules change) |
 
 ## Related
 

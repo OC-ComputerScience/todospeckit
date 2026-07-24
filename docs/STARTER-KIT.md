@@ -28,7 +28,7 @@ This package is the **SDD factory**: methodology, Cursor rules, empty Vue + Expr
 | **Cursor rules** | All `.cursor/rules/*.mdc` (constitution, **agent-behavior**, structure, API, auth, security, UI, testing, services) |
 | **ADRs** | `docs/adr/README.md` + template (no todo-specific ADRs) |
 | **NFRs** | `docs/nfr/` — quality-attributes stub (fill for your product) |
-| **Reference stubs** | Empty `features/reference/data-model.md` and `api.md` |
+| **Reference stubs** | Empty `features/reference/data-model.md`, `api.md`, and `behavior.md` |
 | **Tooling** | PDF export, Agility CSV/API scripts, deploy bundle scripts, CI workflows |
 | **Frontend shell** | Vue 3 + Vuetify 4 + Vite + axios client + `App.vue` + placeholder home + harness tests |
 | **Backend shell** | Express + Sequelize config + empty models/routes + harness tests |
@@ -39,7 +39,7 @@ This package is the **SDD factory**: methodology, Cursor rules, empty Vue + Expr
 | Exclude | Why |
 |---------|-----|
 | `features/feature-1` … `feature-5-*.md` | Todo product requirements |
-| Populated `features/reference/api.md` / `data-model.md` | Todo integrated snapshot |
+| Populated `features/reference/api.md` / `data-model.md` / `behavior.md` | Todo integrated snapshot |
 | Feature models, routes, controllers, services, views | Built from *your* specs |
 | Feature tests (`auth.test.js`, `Dashboard.test.js`, …) | Written with each feature |
 | Generated PDFs / Agility CSVs | Regenerate after you have specs |
