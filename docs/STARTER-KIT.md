@@ -25,7 +25,7 @@ This package is the **SDD factory**: methodology, Cursor rules, empty Vue + Expr
 | Area | Contents |
 |------|----------|
 | **Methodology** | `features/framework.md`, empty `features/README.md` catalog |
-| **Cursor rules** | All `.cursor/rules/*.mdc` (constitution, structure, API, auth, security, UI, testing, services) |
+| **Cursor rules** | All `.cursor/rules/*.mdc` (constitution, **agent-behavior**, structure, API, auth, security, UI, testing, services) |
 | **ADRs** | `docs/adr/README.md` + template (no todo-specific ADRs) |
 | **NFRs** | `docs/nfr/` — quality-attributes stub (fill for your product) |
 | **Reference stubs** | Empty `features/reference/data-model.md` and `api.md` |
