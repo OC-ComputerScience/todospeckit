@@ -226,6 +226,17 @@ The constitution rule requires the AI to **refuse code generation** that has no 
 
 Export Figma frames to `docs/ui/feature-N/` and link them from the feature spec. Specs remain the functional source of truth; designs are visual guidance.
 
+### Rebuild the Todo example from specs (strip shipped code)
+
+Clone the full repo (kit + Todo answer key), then wipe product code and restore empty shells while **keeping** `features/feature-*.md`:
+
+```bash
+npm run reset:example -- --dry-run   # preview
+npm run reset:example -- --yes       # apply (destructive)
+```
+
+Then implement Feature 1…N from the specs on `feature/*` branches. API prefix stays `/todo` so the specs match.
+
 ### Start a new SDD application (not this todo app)
 
 Works on **macOS, Windows, and Linux** (Node.js only).
@@ -235,7 +246,7 @@ npm run starter:zip
 # → dist/speckit-starter-kit.zip
 ```
 
-See [docs/STARTER-KIT.md](docs/STARTER-KIT.md) for what is included, what is excluded, Windows `copy` equivalents, and the post-unzip checklist.
+See [docs/STARTER-KIT.md](docs/STARTER-KIT.md) for what is included, what is excluded, Windows `copy` equivalents, and the post-unzip checklist. That zip is for a **new** product (no Todo specs); `reset:example` is for rebuilding **this** Todo app from its specs.
 
 ---
 

@@ -14,6 +14,7 @@ This package is the **SDD factory**: methodology, Cursor rules, empty Vue + Expr
 |------|----------------|
 | Start a **new** app with the same SDD process + stack | **Yes** |
 | Clone / continue the **Todo** example application | **No** — clone this repo’s `dev` branch instead |
+| Rebuild Todo locally from `features/feature-*.md` (strip answer-key code) | **No** — use `npm run reset:example -- --yes` in this repo |
 | Instructor answer key with full Todo implementation | **No** — use the full OC CS Speckit repo |
 
 ---
