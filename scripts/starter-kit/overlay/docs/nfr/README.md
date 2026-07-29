@@ -21,6 +21,11 @@ NFRs here do **not** authorize new product behavior. Feature specs still authori
 | File | Contents |
 |------|----------|
 | [quality-attributes.md](./quality-attributes.md) | Attribute table + **Status** / **Links** documentation |
+| [writing-quality-attributes.md](./writing-quality-attributes.md) | Student guide — when/how to write NFR rows |
+
+**Student guide:** [writing-quality-attributes.md](./writing-quality-attributes.md)
+
+See the teaching repo’s `docs/nfr/quality-attributes.md` for a filled-in example table, or expand [quality-attributes.md](./quality-attributes.md) as you set bars for your product.
 
 ---
 
@@ -32,5 +37,3 @@ NFRs here do **not** authorize new product behavior. Feature specs still authori
 | Choose *how* to meet a bar | Write or update an [ADR](../adr/README.md); link from the attribute row |
 | Ongoing coding constraint for agents | Add/update a `.cursor/rules/*.mdc` entry |
 | Feature-local quality only | Prefer **Requirements (FR-00N)** / **Success Criteria (SC-00N)** + Gherkin in that feature |
-
-See the teaching repo’s `docs/nfr/` for a filled-in example table, or expand [quality-attributes.md](./quality-attributes.md) as you set bars for your product.

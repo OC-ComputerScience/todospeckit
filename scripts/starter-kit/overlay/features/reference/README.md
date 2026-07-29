@@ -5,6 +5,8 @@
 These files answer: *"What does the app look like right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.
 
+**Student guide:** [writing-living-reference.md](./writing-living-reference.md) — when/how to update api, data-model, and behavior.
+
 ## Maintenance
 
 | When | Action |
@@ -21,6 +23,7 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | [data-model.md](./data-model.md) | Current database tables, columns, associations |
 | [api.md](./api.md) | Current REST API |
 | [behavior.md](./behavior.md) | Current product rules (ownership, sort, validation, UI rules) |
+| [writing-living-reference.md](./writing-living-reference.md) | Student guide — maintaining reference |
 
 ## Feature provenance
 
