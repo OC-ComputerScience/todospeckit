@@ -13,7 +13,7 @@ Durable **why** decisions for cross-cutting concerns that outlive any single fea
 
 ADRs do **not** replace feature specs or Cursor rules. They capture context, alternatives, and consequences when a choice affects multiple features or the whole stack.
 
-**Student guide:** [writing-adrs.md](./writing-adrs.md) — when to write an ADR, naming, section principles, and checklist.
+**Student guide:** [writing-adrs.md](./writing-adrs.md) ([PDF](./writing-adrs.pdf)) — when to write an ADR, naming, section principles, and checklist.
 
 ---
 

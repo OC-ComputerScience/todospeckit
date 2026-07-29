@@ -15,6 +15,7 @@
     "test:frontend": "npm run test --prefix frontend",
     "specs:pdf": "node scripts/export-specs-pdf.mjs",
     "specs:pdf:setup": "npx puppeteer browsers install chrome",
+    "writing-guides:pdf": "node scripts/export-writing-guides-pdf.mjs",
     "agility:export": "node scripts/export-agility-import.mjs --project \"OC CS Speckit\"",
     "agility:push": "node scripts/push-agility-api.mjs",
     "agility:push:dry-run": "node scripts/push-agility-api.mjs --dry-run",

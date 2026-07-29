@@ -21,9 +21,9 @@ NFRs here do **not** authorize new product behavior by themselves. Feature specs
 | File | Contents |
 |------|----------|
 | [quality-attributes.md](./quality-attributes.md) | Attribute table + **Status** / **Links** documentation |
-| [writing-quality-attributes.md](./writing-quality-attributes.md) | Student guide — when/how to write NFR rows |
+| [writing-quality-attributes.md](./writing-quality-attributes.md) | Student guide — when/how to write NFR rows ([PDF](./writing-quality-attributes.pdf)) |
 
-**Student guide:** [writing-quality-attributes.md](./writing-quality-attributes.md)
+**Student guide:** [writing-quality-attributes.md](./writing-quality-attributes.md) ([PDF](./writing-quality-attributes.pdf))
 
 ---
 
