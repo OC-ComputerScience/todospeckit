@@ -13,6 +13,8 @@ Durable **why** decisions for cross-cutting concerns that outlive any single fea
 
 ADRs do **not** replace feature specs or Cursor rules. They capture context, alternatives, and consequences when a choice affects multiple features or the whole stack.
 
+**Student guide:** [writing-adrs.md](./writing-adrs.md) — when to write an ADR, naming, section principles, and checklist.
+
 ---
 
 ## When to write an ADR
@@ -34,6 +36,7 @@ Write the ADR **before** or **with** the first feature that depends on the decis
 ```
 docs/adr/
   README.md                 ← this file
+  writing-adrs.md           ← student guide (when / how to write)
   NNNN-short-kebab-title.md ← one decision per file
 ```
 

@@ -5,6 +5,8 @@
 These files answer: *"What does the app look like right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.
 
+**Student guide:** [writing-living-reference.md](./writing-living-reference.md) — when/how to update api, data-model, and behavior.
+
 ## Maintenance
 
 | When | Action |
