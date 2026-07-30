@@ -82,7 +82,7 @@ The script:
 |------|---------------|----------------------------|
 | Create zip | `npm run starter:zip` | Same |
 | Copy env files | `cp backend/.env.example backend/.env` | `copy backend\.env.example backend\.env` |
-| PDF export | `npm run specs:pdf` | Same (uses Chrome/Edge if installed, else Puppeteer) |
+| PDF export | `npm run specs:pdf` / `npm run specs:pdf:app` | Same (uses Chrome/Edge if installed, else Puppeteer) |
 | Deploy bundles | `npm run bundle:all` | Same |
 
 ---

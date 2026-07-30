@@ -1,42 +1,40 @@
 # C4 Level 3 — Backend components
 
-Express app inside `backend/`: routes → controllers → models; cross-cutting auth and config.
-
-**Layout:** `$c4BoundaryInRow="1"` stacks **Frontend SPA** → **Backend API** → **Database** (same vertical idea as the frontend diagram). Preview with a C4-capable Mermaid extension.
+Express app inside `backend/`, ordered along the HTTP handling path.
 
 ```mermaid
 C4Component
-title Todo (example) — Backend API
+title Component Diagram — API
 
-UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
-
-Boundary(spaLayer, "Frontend SPA") {
-    Container(spa, "Frontend SPA", "Vue 3, Vite, Vuetify, axios", "Browser client. Calls /todo/ with Bearer token.")
+Container_Boundary(api, "API Application") {
+  Component(routes, "Routes", "app/routes/*", "Resource routers under /todo.")
+  Component(authz, "Authorization", "app/authorization/*", "Session auth and ownership helpers.")
+  Component(controllers, "Controllers", "app/controllers/*", "Validation, feature rules, and responses.")
+  Component(models, "Models", "app/models/*", "Sequelize entities and associations.")
 }
 
-Container_Boundary(api, "Backend API") {
-    Component(routes, "Routes", "Express routers", "Mounts /todo/*; wires HTTP to controllers.")
-    Component(controllers, "Controllers", "Request handlers", "Validate input; call models; return flat JSON.")
-    Component(authz, "Authorization", "authenticate + helpers", "Resolves req.user from Session; ownership helpers; 401 / 404.")
-    Component(models, "Models", "Sequelize", "User, Session, List, Todo and associations.")
-    Component(config, "Config & logger", "db, auth, Winston", "Env, Sequelize instance, request/error logging.")
-}
+Container_Ext(spa, "Web SPA", "Vue + axios")
+ContainerDb_Ext(db, "MySQL", "System of record")
 
-Boundary(dataLayer, "Database") {
-    ContainerDb(db, "MySQL", "MySQL", "Persistent store — users, sessions, lists, todos.")
-}
-
-Rel_D(spa, routes, "JSON", "Bearer")
-Rel(routes, authz, "Uses on protected routes")
+Rel(spa, routes, "HTTP JSON", "Bearer JWT")
+Rel(routes, authz, "Protects")
 Rel(routes, controllers, "Delegates")
-Rel(controllers, authz, "Uses ownership helpers")
+Rel(controllers, authz, "Scopes access")
 Rel(controllers, models, "CRUD")
-Rel_D(models, db, "SQL")
 Rel(authz, models, "Loads Session / User")
-Rel(config, models, "Provides Sequelize")
+Rel(models, db, "SQL", "Sequelize")
 
-UpdateRelStyle(spa, routes, $offsetY="-30")
-UpdateRelStyle(models, db, $offsetY="-30")
+UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="1")
+UpdateRelStyle(spa, routes, $offsetY="-20")
+UpdateRelStyle(routes, controllers, $offsetY="-15")
+UpdateRelStyle(controllers, models, $offsetY="-10")
+UpdateRelStyle(models, db, $offsetX="15")
 ```
+
+## Notes
+
+- Protected routes authenticate first; controllers reuse authorization helpers for ownership checks.
+- Cross-user resources return `404`, while missing or invalid sessions return `401`.
+- Database/auth configuration and Winston logging are omitted to keep the request path readable; they remain under `app/config/`.
 
 **Related:** [ADR-0002](../adr/0002-security-architecture.md) · [auth-patterns.mdc](../../.cursor/rules/auth-patterns.mdc) · [security.mdc](../../.cursor/rules/security.mdc)

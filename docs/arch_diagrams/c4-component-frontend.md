@@ -1,42 +1,37 @@
 # C4 Level 3 — Frontend components
 
-Vue SPA inside `frontend/src/`: views and components call axios services; router and localStorage support UX only (API remains authoritative).
-
-**Layout:** `$c4BoundaryInRow="2"` places **Client UI** and **Shared** side by side; **Backend API** alone on the next row (underneath). Mermaid cannot set a different boundary count per row, so this is the workable pattern. Preview with a C4-capable Mermaid extension.
+Vue SPA inside `frontend/src/`, ordered along the user interaction and API request path.
 
 ```mermaid
 C4Component
-title Todo (example) — Frontend SPA
+title Component Diagram — Web SPA
 
-UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="2")
-
-Boundary(clientUi, "Frontend SPA — Client UI") {
-    Component(views, "Views", "Vue SFCs", "Route pages: login, register, dashboard, profile.")
-    Component(components, "Components", "Vue SFCs", "Reusable UI: forms, nav, dialogs.")
-    Component(router, "Router", "Vue Router", "Routes and guards (UX only).")
-    Component(services, "Services", "axios *Services.js", "HTTP to /todo/; Bearer token.")
+Container_Boundary(spa, "Web SPA") {
+  Component(router, "Router", "vue-router", "Routes and UX-only auth redirects.")
+  Component(views, "Views", "views/*.vue", "Login, register, dashboard, and profile flows.")
+  Component(ui, "UI Components", "components/*.vue", "Navigation, forms, dialogs, and rows.")
+  Component(services, "API Services", "*Services.js", "axios modules for /todo resources.")
+  Component(config, "Client Config", "config + plugins", "Token storage, helpers, and Vuetify.")
 }
 
-Boundary(shared, "Shared") {
-    Component(config, "Config & plugins", "utils, Vuetify", "localStorage user helper; theme.")
-}
+Container_Ext(api, "API", "Express /todo")
 
-Boundary(apiLayer, "Backend API") {
-    Container(api, "Backend API", "Node.js, Express, Sequelize", "Server source of truth. REST under /todo/.")
-}
-
-Rel(views, components, "Composes")
-Rel(views, router, "Navigates")
+Rel(router, views, "Renders")
+Rel(views, ui, "Uses")
 Rel(views, services, "Calls")
-Rel(components, services, "Calls")
-Rel(router, config, "User cache")
 Rel(services, config, "Token")
-Rel_D(services, api, "JSON", "Bearer")
+Rel(services, api, "HTTP JSON", "Bearer JWT")
 
-UpdateRelStyle(views, components, $offsetY="-20")
-UpdateRelStyle(views, router, $offsetY="-20")
-UpdateRelStyle(views, services, $offsetY="-20")
-UpdateRelStyle(services, api, $offsetY="-30")
+UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="1")
+UpdateRelStyle(router, views, $offsetY="-20")
+UpdateRelStyle(views, services, $offsetY="-10")
+UpdateRelStyle(services, api, $offsetX="20")
 ```
+
+## Notes
+
+- Router guards and `localStorage` improve UX only; the API remains authoritative.
+- Views may compose UI components that call services for dialog actions; the main request spine is simplified above.
+- API modules follow the `*Services.js` naming rule.
 
 **Related:** [frontend-services.mdc](../../.cursor/rules/frontend-services.mdc) · [ui-style-system.mdc](../../.cursor/rules/ui-style-system.mdc)

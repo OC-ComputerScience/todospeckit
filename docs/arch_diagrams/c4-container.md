@@ -4,21 +4,30 @@ Monorepo split: browser SPA talks to a stateless REST API; API owns auth and `us
 
 ```mermaid
 C4Container
-title Todo (example) — Containers
+title Container Diagram — Todo
 
-Person(user, "Registered User", "Uses the SPA in a browser.")
+Person(user, "Registered User", "Uses Todo in a browser.")
 
 System_Boundary(todoApp, "Todo") {
-    Container(spa, "Frontend SPA", "Vue 3, Vite, Vuetify 4, axios", "SPA on port 8082 (dev). Router guards and localStorage user cache for UX only.")
-    Container(api, "Backend API", "Node.js, Express, Sequelize", "REST under /todo/. JWT + Session table; authenticate middleware; ownership in every query.")
-    ContainerDb(db, "Database", "MySQL", "users, sessions, lists, todos — rows scoped by userId.")
+  Container(spa, "Web SPA", "Vue 3, Vuetify, axios", "Browser UI and UX-only route guards.")
+  Container(api, "API", "Node.js, Express, Sequelize", "REST /todo — auth and ownership enforcement.")
+  ContainerDb(db, "Database", "MySQL", "Users, sessions, lists, and todos.")
 }
 
 Rel(user, spa, "Uses", "HTTPS")
-Rel(spa, api, "JSON API calls", "Bearer JWT, /todo/")
-Rel(api, db, "Reads and writes", "Sequelize")
+Rel(spa, api, "JSON", "Bearer JWT")
+Rel(api, db, "SQL", "Sequelize")
+
+UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+UpdateRelStyle(user, spa, $offsetY="-20")
+UpdateRelStyle(spa, api, $offsetY="-15")
+UpdateRelStyle(api, db, $offsetX="15")
 ```
 
-**Dev ports:** frontend `8082` · backend `3200` · CORS origin must match the SPA.
+## Notes
+
+- API routes are mounted under `/todo/`; authenticated requests carry a Bearer JWT backed by the Session table.
+- The API assigns and scopes ownership from `req.user.id`; the browser never supplies a trusted owner ID.
+- Dev ports: frontend `8082` · backend `3200`; CORS origin must match the SPA.
 
 **Related:** [project-structure.mdc](../../.cursor/rules/project-structure.mdc) · [api.md](../../features/reference/api.md)

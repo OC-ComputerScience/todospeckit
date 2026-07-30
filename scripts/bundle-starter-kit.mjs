@@ -294,6 +294,10 @@ function main() {
     removeMatching(join(target, "docs", "adr"), (name) => /^\d{4}-.*\.md$/i.test(name));
     removeIfExists(join(target, "docs", "oc-cs-speckit-specs.md"));
     removeIfExists(join(target, "docs", "oc-cs-speckit-specs.pdf"));
+    removeIfExists(join(target, "docs", "todo-app-specs.md"));
+    removeIfExists(join(target, "docs", "todo-app-specs.pdf"));
+    removeIfExists(join(target, "docs", "app-specs.md"));
+    removeIfExists(join(target, "docs", "app-specs.pdf"));
     removeMatching(join(target, "docs", "agility-import"), (name) => name.endsWith(".csv"));
     removeIfExists(join(target, "frontend", "src", "views", "Login.vue"));
     removeIfExists(join(target, "frontend", "src", "views", "Register.vue"));

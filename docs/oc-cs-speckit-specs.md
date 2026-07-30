@@ -617,6 +617,8 @@ Durable **why** decisions for cross-cutting concerns that outlive any single fea
 
 ADRs do **not** replace feature specs or Cursor rules. They capture context, alternatives, and consequences when a choice affects multiple features or the whole stack.
 
+**Student guide:** [writing-adrs.md](./writing-adrs.md) ([PDF](./writing-adrs.pdf)) — when to write an ADR, naming, section principles, and checklist.
+
 ---
 
 ## When to write an ADR
@@ -638,6 +640,7 @@ Write the ADR **before** or **with** the first feature that depends on the decis
 ```
 docs/adr/
   README.md                 ← this file
+  writing-adrs.md           ← student guide (when / how to write)
   NNNN-short-kebab-title.md ← one decision per file
 ```
 
@@ -1101,6 +1104,9 @@ NFRs here do **not** authorize new product behavior by themselves. Feature specs
 | File | Contents |
 |------|----------|
 | [quality-attributes.md](./quality-attributes.md) | Attribute table + **Status** / **Links** documentation |
+| [writing-quality-attributes.md](./writing-quality-attributes.md) | Student guide — when/how to write NFR rows ([PDF](./writing-quality-attributes.pdf)) |
+
+**Student guide:** [writing-quality-attributes.md](./writing-quality-attributes.md) ([PDF](./writing-quality-attributes.pdf))
 
 ---
 
@@ -1208,6 +1214,192 @@ Do **not** invent a new feature file solely to “add performance.” See [featu
 4. If API/schema changed as a result → `features/reference/` in the same feature PR (see [Agent implementation request](../../features/framework.md#agent-implementation-request)).
 5. Promoting **Deferred** → **Accepted** requires verification (tests or documented manual gate) that matches **How we verify**.
 
+<div style="page-break-after: always;"></div>
+
+<!-- source: docs/nfr/writing-quality-attributes.md -->
+
+# writing-quality-attributes.md
+
+# Writing Quality Attributes (NFRs)
+
+A student guide for recording **app-wide quality bars** (“ilities”) in `docs/nfr/quality-attributes.md`: what they are, how to fill each column, how to set **Status**, and when to use a feature FR/SC instead.
+
+**Living table:** [quality-attributes.md](./quality-attributes.md)  
+**Folder index:** [README.md](./README.md)  
+**Agent literacy:** [`.cursor/rules/quality-attributes.mdc`](../../.cursor/rules/quality-attributes.mdc)  
+**Related:** [writing ADRs](../adr/writing-adrs.md) · [writing feature requirements](../../features/writing-feature-requirements.md) · [writing feature design](../../features/writing-feature-design.md)
+
+---
+
+## What quality attributes are
+
+**Quality attributes** (non-functional requirements, or NFRs) describe **how good** the system should be — security posture, performance, observability, maintainability — not **what feature** to build next.
+
+| Artifact | Question |
+|----------|----------|
+| **Feature specs** | *What* must the product do? |
+| **Quality attributes** (`docs/nfr/`) | *How good* must it be across the product? |
+| **ADRs** | *Why* this Approach for a quality? |
+| **Cursor rules** | *How* must code meet an Accepted bar day to day? |
+
+NFRs here do **not** authorize new product behavior by themselves. A **Deferred** performance number does not mean “add caching this sprint” unless a feature **FR-00N** / **SC-00N**, Gherkin, or an instructor explicitly requires it.
+
+---
+
+## When to edit the NFR table (vs a feature or ADR)
+
+| Situation | Write / update… |
+|-----------|-----------------|
+| App-wide bar or explicit non-goal | **[quality-attributes.md](./quality-attributes.md)** row |
+| *How* to meet a bar (auth model, DB, logging approach) | **ADR** — then link it from the row |
+| Ongoing coding constraint for agents | **Cursor rule** — then link it from the row |
+| Quality that only one feature needs | Feature **FR-00N** / **SC-00N** (+ Gherkin); optional one-line pointer in the table |
+| New user-facing capability | **Feature spec** — not a new NFR row alone |
+
+**Rule of thumb:** if every feature must respect the bar (or we must explicitly refuse to build for it), it belongs in the quality-attributes table.
+
+### Examples from this project
+
+| Attribute | Status | Why it belongs in NFRs |
+|-----------|--------|-------------------------|
+| **Security** | Accepted | Cross-cutting: auth on protected routes, **0** cross-user leaks, **404** not **403** |
+| **Data integrity** | Accepted | Every list/todo row has owning `userId` — app-wide invariant |
+| **Observability** | Accepted (minimal) | Thin Winston logging bar — meet Approach, don’t invent a full APM platform |
+| **Performance** | Deferred | Illustrative p95 / first-paint numbers — **not** a CI gate yet |
+| **Availability** / **Scalability** / **i18n** | Out of scope | Explicit non-goals (no multi-region HA, no i18n framework) |
+| **Maintainability** | Accepted | Specs + Test Coverage Map + `npm test` as process bar |
+
+---
+
+## The table shape
+
+Every product keeps one main table in [quality-attributes.md](./quality-attributes.md):
+
+| Attribute | Target | Approach | How we verify | Status | Links |
+|-----------|--------|----------|---------------|--------|-------|
+| **Security** | … | … | … | Accepted | ADR, rules, … |
+
+### Column principles
+
+| Column | Write this | Avoid |
+|--------|------------|--------|
+| **Attribute** | Standard ility name (Security, Performance, …) | Vague “Quality” or feature names (“Lists”) |
+| **Target** | Prefer a **number** or countable bar (`100%`, `0`, `p95 < 200 ms`, `≤ 2` clicks) | “Make it fast” with no measure |
+| **Approach** | How the bar is realized *or* why it is limited / out of scope | A second Target paragraph |
+| **How we verify** | Tests, manual check, or `N/A` | “Somehow” |
+| **Status** | One of the four values below | Mixing Accepted wording with Deferred intent |
+| **Links** | ADR / rule / code path / feature pointer, or **—** | Orphan Accepted rows with no enforcement link |
+
+**Teaching note:** Targets on **Deferred** / **Out of scope** rows are often **illustrative classroom examples**, not production SLOs. Only **Accepted** (and feature FR/SC) constrain implementation by default.
+
+---
+
+## Status values — principles
+
+| Status | Meaning | When writing / coding |
+|--------|---------|------------------------|
+| **Accepted** | In force for this product | Do **not** regress; back with Links (ADR/rule/tests) |
+| **Accepted (minimal)** | Thin bar in force | Meet the stated Approach only; do **not** expand into a platform |
+| **Deferred** | Documented backlog / learning example | Guidance only — implement only if a feature or human requires it |
+| **Out of scope** | Explicit non-goal | Do **not** invent HA, i18n frameworks, etc. |
+
+### Choosing Status
+
+1. **Can you verify it today** (automated or documented manual gate)? → candidate for **Accepted** or **Accepted (minimal)**.
+2. **Useful to teach or plan, but not enforced?** → **Deferred** (keep a numeric Target as an example).
+3. **We will not build for this?** → **Out of scope** (say so in Approach).
+4. **Promoting Deferred → Accepted** requires matching **How we verify** — do not flip Status without tests or a real manual gate.
+
+---
+
+## Links column — principles
+
+| Link type | Use when |
+|-----------|----------|
+| **ADR** (`docs/adr/…`) | *Why* this Approach (e.g. ADR-0002 for Security) |
+| **Cursor rule** (`.cursor/rules/…`) | *How* agents must behave every day |
+| **Code path** | Minimal concrete implementation (e.g. `logger.js`) |
+| **Feature / framework** | Process or FR/SC that carries the bar |
+| **—** | Common for Deferred rows with no artifact yet |
+
+When Approach changes → update or add an ADR and refresh **Links**.  
+When agents need a lasting constraint → add/update a Cursor rule and link it.
+
+---
+
+## Principles for writing good NFR rows
+
+1. **One ility per row.** Don’t combine Security and Performance into one Attribute.
+2. **Prefer measurable Targets.** Numbers beat adjectives.
+3. **Separate Target from Approach.** Target = bar; Approach = how/limits.
+4. **Be honest about Status.** Deferred numbers are not secret Accepted gates.
+5. **Link enforcement for Accepted rows.** An Accepted Security row without ADR/rule/tests is a smell.
+6. **Keep feature-local quality in features.** Validation copy, one-screen UX notes → FR/SC + Gherkin.
+7. **Out of scope is a feature, not an omission.** Explicit non-goals stop agents from inventing multi-region HA or i18n.
+8. **Accepted (minimal) means thin.** Observability via Winston logs ≠ “build Datadog.”
+9. **Align with ADRs and rules.** Don’t contradict ADR-0002 in the Security Approach.
+10. **Update the table when reality changes.** New auth model, new logging, or a promoted bar → edit the row in the same change set when possible.
+
+---
+
+## Feature-local NFRs
+
+If only one feature needs a bar:
+
+1. Put it under that feature’s **Requirements (FR-00N)** and/or **Success Criteria (SC-00N)**.
+2. Add Gherkin when tests must prove it.
+3. Optionally add a one-line pointer on a related app-wide row (“see Feature N **FR-00N** / **SC-00N**”).
+
+Do **not** invent a new feature file solely to “add performance.”
+
+---
+
+## Workflow: add or change a bar
+
+1. Edit [quality-attributes.md](./quality-attributes.md) — **Target**, **Approach**, **How we verify**, **Status**, **Links**. Prefer a number in **Target**.
+2. If **Approach** changes → [write/update an ADR](../adr/writing-adrs.md); put it in **Links**.
+3. If agents need a lasting coding constraint → Cursor rule; put it in **Links**.
+4. If API/schema/rules change as a result → `features/reference/` in the same feature PR.
+5. **Deferred → Accepted** only with verification that matches **How we verify**.
+
+---
+
+## Checklist (before you call a row “done”)
+
+- [ ] Attribute name is a clear ility (not a feature title)
+- [ ] Target is measurable (or explicitly qualitative with a clear bar)
+- [ ] Approach explains realization **or** deliberate limit / non-goal
+- [ ] How we verify is realistic for the Status
+- [ ] Status matches enforcement reality (Accepted ↔ Links / tests)
+- [ ] Links point at ADR / rule / code / feature — or **—** on purpose
+- [ ] No conflict with existing Accepted ADRs or Cursor rules
+- [ ] Feature-only concerns left in FR/SC, not forced into the app-wide table
+
+---
+
+## Anti-patterns
+
+| Avoid | Do instead |
+|-------|------------|
+| Treating every Deferred Target as a sprint commitment | Honor Status; only Accepted (+ feature FR/SC) constrain by default |
+| “Make it secure” with no Target | `100%` protected routes auth’d; `0` cross-user leaks in tests |
+| Accepted row with Links = **—** forever | Add ADR/rule/tests or demote to Deferred |
+| Putting “user can create a list” in NFRs | Feature story / FR |
+| Inventing i18n or HA because a Target number looks cool | Respect **Out of scope** |
+| Duplicating the whole NFR table inside every feature | Link here; keep feature-local bars in FR/SC |
+
+---
+
+## How this fits the other guides
+
+```text
+Product behavior (what)     → features/writing-feature-requirements.md
+                              features/writing-feature-design.md
+Architecture why            → docs/adr/writing-adrs.md
+Quality bars (how good)     → docs/nfr/writing-quality-attributes.md  (this file)
+Day-to-day how for agents   → .cursor/rules/*.mdc (incl. quality-attributes.mdc)
+```
+
 
 <div style="page-break-after: always;"></div>
 
@@ -1248,26 +1440,29 @@ Adding a new `docs/arch_diagrams/*.md` file is enough; preferred order is listed
 
 # C4 Level 1 — System context
 
-**Todo** (example application in OC CS Speckit): a registered user uses the web app; the app persists private lists and todos in MySQL via the API. No external SaaS dependencies in the teaching model.
-
-Mermaid C4 layout is limited. Keep relationship labels **short**; avoid large `$offsetX` (it often drops text inside boxes). A small negative `$offsetY` lifts labels above the line.
+**Todo** (the OC CS Speckit example application) stores each registered user's private lists and todos in MySQL through a server API. There are no external SaaS dependencies.
 
 ```mermaid
 C4Context
-title Todo (example) — System Context
+title System Context — Todo
 
 UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 
 Person(user, "Registered User", "Owns private lists and todos.")
-System(todoApp, "Todo", "Frontend SPA + Backend API. Server is source of truth. Example app for OC CS Speckit.")
-SystemDb_Ext(mysql, "MySQL", "users, sessions, lists, todos.")
+System(todoApp, "Todo", "Web application for private lists and todos.")
+SystemDb_Ext(mysql, "MySQL", "Application system of record.")
 
-Rel_R(user, todoApp, "Uses")
-Rel_R(todoApp, mysql, "Reads/writes")
+Rel(user, todoApp, "Uses", "HTTPS")
+Rel(todoApp, mysql, "Reads and writes", "Sequelize")
 
-UpdateRelStyle(user, todoApp, $offsetX="0", $offsetY="-40")
-UpdateRelStyle(todoApp, mysql, $offsetX="0", $offsetY="-40")
+UpdateRelStyle(user, todoApp, $offsetY="-20")
+UpdateRelStyle(todoApp, mysql, $offsetX="15")
 ```
+
+## Notes
+
+- The Todo system contains the Vue SPA and Express API; the [container diagram](./c4-container.md) expands that boundary.
+- The API is the source of truth. Browser storage is only a session/UX hint.
 
 **Related:** [ADR-0001](../adr/0001-client-server-multi-user-architecture.md) · [ADR-0003](../adr/0003-mysql-relational-database.md)
 
@@ -1283,22 +1478,31 @@ Monorepo split: browser SPA talks to a stateless REST API; API owns auth and `us
 
 ```mermaid
 C4Container
-title Todo (example) — Containers
+title Container Diagram — Todo
 
-Person(user, "Registered User", "Uses the SPA in a browser.")
+Person(user, "Registered User", "Uses Todo in a browser.")
 
 System_Boundary(todoApp, "Todo") {
-    Container(spa, "Frontend SPA", "Vue 3, Vite, Vuetify 4, axios", "SPA on port 8082 (dev). Router guards and localStorage user cache for UX only.")
-    Container(api, "Backend API", "Node.js, Express, Sequelize", "REST under /todo/. JWT + Session table; authenticate middleware; ownership in every query.")
-    ContainerDb(db, "Database", "MySQL", "users, sessions, lists, todos — rows scoped by userId.")
+  Container(spa, "Web SPA", "Vue 3, Vuetify, axios", "Browser UI and UX-only route guards.")
+  Container(api, "API", "Node.js, Express, Sequelize", "REST /todo — auth and ownership enforcement.")
+  ContainerDb(db, "Database", "MySQL", "Users, sessions, lists, and todos.")
 }
 
 Rel(user, spa, "Uses", "HTTPS")
-Rel(spa, api, "JSON API calls", "Bearer JWT, /todo/")
-Rel(api, db, "Reads and writes", "Sequelize")
+Rel(spa, api, "JSON", "Bearer JWT")
+Rel(api, db, "SQL", "Sequelize")
+
+UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+UpdateRelStyle(user, spa, $offsetY="-20")
+UpdateRelStyle(spa, api, $offsetY="-15")
+UpdateRelStyle(api, db, $offsetX="15")
 ```
 
-**Dev ports:** frontend `8082` · backend `3200` · CORS origin must match the SPA.
+## Notes
+
+- API routes are mounted under `/todo/`; authenticated requests carry a Bearer JWT backed by the Session table.
+- The API assigns and scopes ownership from `req.user.id`; the browser never supplies a trusted owner ID.
+- Dev ports: frontend `8082` · backend `3200`; CORS origin must match the SPA.
 
 **Related:** [project-structure.mdc](../../.cursor/rules/project-structure.mdc) · [api.md](../../features/reference/api.md)
 
@@ -1310,44 +1514,39 @@ Rel(api, db, "Reads and writes", "Sequelize")
 
 # C4 Level 3 — Frontend components
 
-Vue SPA inside `frontend/src/`: views and components call axios services; router and localStorage support UX only (API remains authoritative).
-
-**Layout:** `$c4BoundaryInRow="2"` places **Client UI** and **Shared** side by side; **Backend API** alone on the next row (underneath). Mermaid cannot set a different boundary count per row, so this is the workable pattern. Preview with a C4-capable Mermaid extension.
+Vue SPA inside `frontend/src/`, ordered along the user interaction and API request path.
 
 ```mermaid
 C4Component
-title Todo (example) — Frontend SPA
+title Component Diagram — Web SPA
 
-UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="2")
-
-Boundary(clientUi, "Frontend SPA — Client UI") {
-    Component(views, "Views", "Vue SFCs", "Route pages: login, register, dashboard, profile.")
-    Component(components, "Components", "Vue SFCs", "Reusable UI: forms, nav, dialogs.")
-    Component(router, "Router", "Vue Router", "Routes and guards (UX only).")
-    Component(services, "Services", "axios *Services.js", "HTTP to /todo/; Bearer token.")
+Container_Boundary(spa, "Web SPA") {
+  Component(router, "Router", "vue-router", "Routes and UX-only auth redirects.")
+  Component(views, "Views", "views/*.vue", "Login, register, dashboard, and profile flows.")
+  Component(ui, "UI Components", "components/*.vue", "Navigation, forms, dialogs, and rows.")
+  Component(services, "API Services", "*Services.js", "axios modules for /todo resources.")
+  Component(config, "Client Config", "config + plugins", "Token storage, helpers, and Vuetify.")
 }
 
-Boundary(shared, "Shared") {
-    Component(config, "Config & plugins", "utils, Vuetify", "localStorage user helper; theme.")
-}
+Container_Ext(api, "API", "Express /todo")
 
-Boundary(apiLayer, "Backend API") {
-    Container(api, "Backend API", "Node.js, Express, Sequelize", "Server source of truth. REST under /todo/.")
-}
-
-Rel(views, components, "Composes")
-Rel(views, router, "Navigates")
+Rel(router, views, "Renders")
+Rel(views, ui, "Uses")
 Rel(views, services, "Calls")
-Rel(components, services, "Calls")
-Rel(router, config, "User cache")
 Rel(services, config, "Token")
-Rel_D(services, api, "JSON", "Bearer")
+Rel(services, api, "HTTP JSON", "Bearer JWT")
 
-UpdateRelStyle(views, components, $offsetY="-20")
-UpdateRelStyle(views, router, $offsetY="-20")
-UpdateRelStyle(views, services, $offsetY="-20")
-UpdateRelStyle(services, api, $offsetY="-30")
+UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="1")
+UpdateRelStyle(router, views, $offsetY="-20")
+UpdateRelStyle(views, services, $offsetY="-10")
+UpdateRelStyle(services, api, $offsetX="20")
 ```
+
+## Notes
+
+- Router guards and `localStorage` improve UX only; the API remains authoritative.
+- Views may compose UI components that call services for dialog actions; the main request spine is simplified above.
+- API modules follow the `*Services.js` naming rule.
 
 **Related:** [frontend-services.mdc](../../.cursor/rules/frontend-services.mdc) · [ui-style-system.mdc](../../.cursor/rules/ui-style-system.mdc)
 
@@ -1359,44 +1558,42 @@ UpdateRelStyle(services, api, $offsetY="-30")
 
 # C4 Level 3 — Backend components
 
-Express app inside `backend/`: routes → controllers → models; cross-cutting auth and config.
-
-**Layout:** `$c4BoundaryInRow="1"` stacks **Frontend SPA** → **Backend API** → **Database** (same vertical idea as the frontend diagram). Preview with a C4-capable Mermaid extension.
+Express app inside `backend/`, ordered along the HTTP handling path.
 
 ```mermaid
 C4Component
-title Todo (example) — Backend API
+title Component Diagram — API
 
-UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
-
-Boundary(spaLayer, "Frontend SPA") {
-    Container(spa, "Frontend SPA", "Vue 3, Vite, Vuetify, axios", "Browser client. Calls /todo/ with Bearer token.")
+Container_Boundary(api, "API Application") {
+  Component(routes, "Routes", "app/routes/*", "Resource routers under /todo.")
+  Component(authz, "Authorization", "app/authorization/*", "Session auth and ownership helpers.")
+  Component(controllers, "Controllers", "app/controllers/*", "Validation, feature rules, and responses.")
+  Component(models, "Models", "app/models/*", "Sequelize entities and associations.")
 }
 
-Container_Boundary(api, "Backend API") {
-    Component(routes, "Routes", "Express routers", "Mounts /todo/*; wires HTTP to controllers.")
-    Component(controllers, "Controllers", "Request handlers", "Validate input; call models; return flat JSON.")
-    Component(authz, "Authorization", "authenticate + helpers", "Resolves req.user from Session; ownership helpers; 401 / 404.")
-    Component(models, "Models", "Sequelize", "User, Session, List, Todo and associations.")
-    Component(config, "Config & logger", "db, auth, Winston", "Env, Sequelize instance, request/error logging.")
-}
+Container_Ext(spa, "Web SPA", "Vue + axios")
+ContainerDb_Ext(db, "MySQL", "System of record")
 
-Boundary(dataLayer, "Database") {
-    ContainerDb(db, "MySQL", "MySQL", "Persistent store — users, sessions, lists, todos.")
-}
-
-Rel_D(spa, routes, "JSON", "Bearer")
-Rel(routes, authz, "Uses on protected routes")
+Rel(spa, routes, "HTTP JSON", "Bearer JWT")
+Rel(routes, authz, "Protects")
 Rel(routes, controllers, "Delegates")
-Rel(controllers, authz, "Uses ownership helpers")
+Rel(controllers, authz, "Scopes access")
 Rel(controllers, models, "CRUD")
-Rel_D(models, db, "SQL")
 Rel(authz, models, "Loads Session / User")
-Rel(config, models, "Provides Sequelize")
+Rel(models, db, "SQL", "Sequelize")
 
-UpdateRelStyle(spa, routes, $offsetY="-30")
-UpdateRelStyle(models, db, $offsetY="-30")
+UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="1")
+UpdateRelStyle(spa, routes, $offsetY="-20")
+UpdateRelStyle(routes, controllers, $offsetY="-15")
+UpdateRelStyle(controllers, models, $offsetY="-10")
+UpdateRelStyle(models, db, $offsetX="15")
 ```
+
+## Notes
+
+- Protected routes authenticate first; controllers reuse authorization helpers for ownership checks.
+- Cross-user resources return `404`, while missing or invalid sessions return `401`.
+- Database/auth configuration and Winston logging are omitted to keep the request path readable; they remain under `app/config/`.
 
 **Related:** [ADR-0002](../adr/0002-security-architecture.md) · [auth-patterns.mdc](../../.cursor/rules/auth-patterns.mdc) · [security.mdc](../../.cursor/rules/security.mdc)
 
@@ -1408,41 +1605,30 @@ UpdateRelStyle(models, db, $offsetY="-30")
 
 # C4 Level 4 — Deployment
 
-Two machines: the **User PC** runs only the browser; the **Web Server** hosts Apache (static Frontend SPA), the Node app runtime (Backend API), and MySQL.
+Logical deployment: the **User PC** runs the SPA in a browser; the **Web Server** hosts static assets, the Node API, and MySQL.
 
 ```mermaid
 C4Deployment
-title Todo (example) — Deployment (User PC + Web Server)
-
-UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+title Deployment Diagram — Todo
 
 Deployment_Node(userPc, "User PC", "Developer / end-user computer") {
-    Deployment_Node(browser, "Web Browser", "Chrome / Edge / Firefox") {
-        Container(spa, "Frontend SPA", "Vue 3, Vuetify, axios", "Runs in the browser. Loaded from Apache; calls Backend API with Bearer JWT.")
-    }
+  Container(spa, "Web SPA", "Browser + Vue", "Loaded from Apache; runs on the user PC.")
 }
 
 Deployment_Node(webServer, "Web Server", "Classroom or CI deploy host") {
-    Deployment_Node(apache, "Apache", "HTTP / HTTPS static hosting") {
-        Container(staticAssets, "Static SPA assets", "Built Vue dist + .htaccess", "Served to the browser; not the running app.")
-    }
-
-    Deployment_Node(runtime, "App Runtime", "Node.js 20+") {
-        Container(api, "Backend API", "Express, Sequelize", "REST under /todo/. Listens on app port (e.g. 3200).")
-    }
-
-    Deployment_Node(data, "Database Server", "MySQL") {
-        ContainerDb(db, "Database", "MySQL", "users, sessions, lists, todos.")
-    }
+  Container(staticAssets, "Static Assets", "Apache", "Built Vue dist and .htaccess.")
+  Container(api, "API", "Node.js + Express", "REST /todo on port 3200.")
+  ContainerDb(db, "Database", "MySQL", "Users, sessions, lists, and todos.")
 }
 
-Rel(spa, staticAssets, "Loaded from", "HTTPS")
-Rel(spa, api, "JSON API", "Bearer JWT")
+Rel(staticAssets, spa, "Serves", "HTTPS")
+Rel(spa, api, "JSON", "Bearer JWT")
 Rel(api, db, "SQL", "TCP")
 
-UpdateRelStyle(spa, staticAssets, $offsetY="-30")
-UpdateRelStyle(spa, api, $offsetY="-30")
-UpdateRelStyle(api, db, $offsetY="-30")
+UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="2")
+UpdateRelStyle(staticAssets, spa, $offsetY="-20")
+UpdateRelStyle(spa, api, $offsetY="-15")
+UpdateRelStyle(api, db, $offsetX="15")
 ```
 
 ## Typical ports
@@ -1456,7 +1642,8 @@ UpdateRelStyle(api, db, $offsetY="-30")
 
 ## Notes
 
-- **Local XAMPP classroom:** User PC and Web Server are often the **same** physical machine; the diagram still shows the logical split (browser vs server processes).
+- Nested browser/Apache/runtime/database deployment nodes are intentionally flattened because Mermaid C4 packs deep nesting poorly in PDFs.
+- **Local XAMPP classroom:** User PC and Web Server may be the **same** physical machine; the diagram preserves the logical browser/server boundary.
 - **CI deploy** (`.github/workflows/deploy.yml`): builds SPA + backend, SSH-deploys static files and Node app to the Web Server; DB credentials via secrets.
 
 **Related:** [ADR-0001](../adr/0001-client-server-multi-user-architecture.md) · [c4-container.md](./c4-container.md) · `.github/workflows/deploy.yml`
@@ -1476,7 +1663,12 @@ UpdateRelStyle(api, db, $offsetY="-30")
 Spec-driven development (SDD) source of truth for **OC CS Speckit** (Todo is the example application in this repo).  
 No application code may be written unless it maps to a requirement in one of these files.
 
-**Methodology:** [framework.md](./framework.md) — how to write, trace, and ship feature specs.
+**Methodology:** [framework.md](./framework.md) — how to write, trace, and ship feature specs.  
+**Student guide (requirements):** [writing-feature-requirements.md](./writing-feature-requirements.md) ([PDF](./writing-feature-requirements.pdf)) — stories, FRs, initial data model, Gherkin AC.  
+**Student guide (design):** [writing-feature-design.md](./writing-feature-design.md) ([PDF](./writing-feature-design.pdf)) — ownership, API, screens, test map, DoD, out of scope.  
+**Student guide (living reference):** [reference/writing-living-reference.md](./reference/writing-living-reference.md) ([PDF](./reference/writing-living-reference.pdf)) — update api / data-model / behavior in the same PR.
+
+Regenerate writing-guide PDFs: `npm run writing-guides:pdf`
 
 **Sprints** (timeboxes, iterations, team planning) live in your agile tool — they are **not** part of these specs. One sprint may contain multiple features; one feature may span sprints. Specs describe **what** to build; sprints describe **when** the team works on it.
 
@@ -1501,6 +1693,7 @@ Keep these snapshots in sync with the codebase when schema or API changes — **
 | File | Purpose |
 |------|---------|
 | [reference/README.md](./reference/README.md) | How to maintain reference docs |
+| [reference/writing-living-reference.md](./reference/writing-living-reference.md) | Student guide — writing/updating living reference |
 | [reference/data-model.md](./reference/data-model.md) | Current database tables and associations |
 | [reference/api.md](./reference/api.md) | Current REST API under `/todo/` |
 | [reference/behavior.md](./reference/behavior.md) | Current product rules (ownership, sort, validation, UI) |
@@ -1539,12 +1732,20 @@ npm run test:backend     # Jest
 npm run test:frontend    # Vitest
 ```
 
-## Export rules & specs to PDF
+## Export specs to PDF
 
-Combine Cursor rules, ADRs, and feature specs into one PDF:
+**Product specs only** (ADRs, NFRs, C4, features — no rules/guides/reference):
 
 ```bash
-npm install              # once — installs md-to-pdf at repo root
+npm run specs:pdf:app
+```
+
+Output: `docs/todo-app-specs.md` · `docs/todo-app-specs.pdf`
+
+**Full methodology pack** (rules + ADRs + NFRs + diagrams + specs + reference):
+
+```bash
+npm install              # once — installs md-mermaid-pdf at repo root
 npm run specs:pdf
 ```
 
@@ -1560,7 +1761,7 @@ Output:
 - `docs/oc-cs-speckit-specs.md` — combined Markdown (rules, ADRs, specs, reference)
 - `docs/oc-cs-speckit-specs.pdf` — PDF export
 
-**Included (auto-discovered each run):**
+**Included in `specs:pdf` (auto-discovered each run):**
 
 1. All `.cursor/rules/*.mdc` (preferred order, then any extras alphabetically)
 2. `docs/adr/README.md` + every `docs/adr/NNNN-*.md` (numeric order)
@@ -2256,6 +2457,7 @@ Example: Feature 2 (lists) and Feature 4 (profile) can ship in the same sprint, 
 
 | Command | Output |
 |---------|--------|
+| `npm run specs:pdf:app` | ADRs + NFRs + C4 + feature specs → `docs/todo-app-specs.pdf` (no rules / writing guides / reference) |
 | `npm run specs:pdf` | Rules + ADRs + NFRs + C4 diagrams + specs + reference → `docs/oc-cs-speckit-specs.pdf` (auto-discovers; Mermaid/C4 rendered) |
 | `npm run agility:export` | CSV backlog for Agility Excel import (auto-discovers `feature-N-*.md`) |
 | `npm run agility:push` | Push epics, stories, tests via Agility API |
@@ -4288,6 +4490,8 @@ Do not implement behavior not in this spec.
 These files answer: *"What does the app look like right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.
 
+**Student guide:** [writing-living-reference.md](./writing-living-reference.md) ([PDF](./writing-living-reference.pdf)) — when/how to update api, data-model, and behavior.
+
 ## Maintenance
 
 | When | Action |
@@ -4735,3 +4939,231 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 * `Todo belongsTo List`
 * `User hasMany Todo` — `onDelete: CASCADE`
 * `Todo belongsTo User`
+
+<div style="page-break-after: always;"></div>
+
+<!-- source: features/reference/writing-living-reference.md -->
+
+# writing-living-reference.md
+
+# Writing Living Reference
+
+A student guide for maintaining `features/reference/` — the **current integrated snapshot** of the product on `dev`.
+
+**Index:** [README.md](./README.md)  
+**Files:** [api.md](./api.md) · [data-model.md](./data-model.md) · [behavior.md](./behavior.md)  
+**Related:** [framework.md](../framework.md) (merge / DoD) · [writing feature design](../writing-feature-design.md) · [writing feature requirements](../writing-feature-requirements.md)
+
+---
+
+## What living reference is
+
+**Living reference** answers: *“What does the app look like / enforce right now on `dev`?”*
+
+| Artifact | Answers | Authorizes new work? |
+|----------|---------|----------------------|
+| **Feature spec** (`feature-N-*.md`) | *What changes* this feature adds | **Yes** — implement from here |
+| **Living reference** (`features/reference/`) | *What exists* after merges | **No** — snapshot only |
+| **ADRs** | *Why* cross-cutting architecture | Indirectly (constraints) |
+| **Cursor rules** | *How* to code | Patterns, not product scope |
+
+Feature specs are **deltas**. Reference files are **current state**. After Feature 5 ships, `api.md` shows the full `/todo/` surface; Feature 5’s spec only describes the due-date delta.
+
+Reference is **not** auto-generated from specs. Update it in the **same PR** as the implementation (required Definition of Done).
+
+---
+
+## The three files
+
+| File | Contents | Update when… |
+|------|----------|----------------|
+| [**api.md**](./api.md) | Routes, auth, request/response shapes, errors | Routes or payloads change |
+| [**data-model.md**](./data-model.md) | Tables, columns, types/rules, associations | Schema or associations change |
+| [**behavior.md**](./behavior.md) | Product rules in force (ownership, sort, validation, UI rules) | Rules change (not mere path renames) |
+
+### Which file(s) for this change?
+
+| You changed… | Update |
+|--------------|--------|
+| New/changed endpoint or JSON fields | **api.md** |
+| New table/column/FK/association | **data-model.md** |
+| Ownership, sort order, validation limits, empty-state copy, overdue rules, where Log out lives | **behavior.md** |
+| Only internal refactor, same external contract | Usually **none** (confirm no behavior change) |
+| Screen layout polish already implied by existing rules | Usually **none**; if a **stated UI rule** changes → **behavior.md** |
+
+Many features touch **two or three** files (e.g. Feature 5: `dueDate` column → data-model + api + overdue rule → behavior).
+
+---
+
+## Principles for writing living reference
+
+1. **Describe now, not history.** Reference is the integrated product. Provenance tables record *which feature introduced* an area — not a full changelog essay.
+2. **Never authorize scope.** If someone needs new behavior, they write/update a **feature spec** first. Do not “fix production” by editing only `api.md`.
+3. **Update in the same PR as code.** DoD — not a follow-up “docs later” task.
+4. **Edit as a delta on current state.** Add a section, field, or row; don’t rewrite the whole file unless structure is broken.
+5. **Match shipped code.** If the PR returns `dueDate` as `YYYY-MM-DD`, the reference must say that — not an older draft from the spec that never shipped.
+6. **Keep Gherkin in features.** Reference may index rules; deep scenarios stay in `feature-N-*.md` Acceptance Criteria.
+7. **One fact, one place.** Column types live in **data-model**; HTTP paths in **api**; “lists sort A–Z” in **behavior** — don’t triple-paste novels.
+8. **Record provenance.** When you add an area, add/update the Feature provenance table (`Introduced` / Feature N).
+9. **Align with Accepted ADRs.** Ownership/`404` rules should match ADR-0002; don’t invent a conflicting “use 403” in behavior.md.
+10. **Stubs stay empty until Feature 1+.** New apps / `reset:example` start with empty reference shells; fill as features merge.
+
+---
+
+## Writing api.md
+
+### What belongs
+
+- Base path and auth convention (`Authorization: Bearer …`)
+- Endpoint tables: Method, Path, Auth, Purpose
+- Request/response JSON for create/update and important errors
+- Feature provenance for API areas
+
+### Principles
+
+| Do | Don’t |
+|----|--------|
+| Document the **integrated** API after this merge | Only paste this feature’s API section and delete older routes |
+| Show real status codes and error `{ "message": … }` shapes | Vague “returns an error” |
+| Note Auth Yes/No per route | Assume readers remember Feature 1 |
+| Update payloads when fields are added (e.g. `dueDate`) | Leave Feature 3 payloads forever when Feature 5 shipped |
+
+### Example delta (Feature 5 style)
+
+- Keep existing todo routes.
+- Extend create/update body and response docs with optional `dueDate`.
+- Add provenance row: Todo `dueDate` → Feature 5.
+
+---
+
+## Writing data-model.md
+
+### What belongs
+
+- Each table: Field / Type / Rules
+- Associations (`User hasMany List`, cascade deletes, …)
+- Feature provenance for schema areas
+
+### Principles
+
+| Do | Don’t |
+|----|--------|
+| Reflect **shipped** Sequelize/MySQL reality | Speculative columns “we might need” |
+| Mark PK, FK, unique, defaults, DATEONLY vs DATETIME | Copy-paste model `.js` source |
+| For deltas, add/change **only** the new fields and note the feature | Delete unrelated tables from the file |
+| Keep associations in sync with `models/index.js` | Orphan “hasMany” that code doesn’t implement |
+
+---
+
+## Writing behavior.md
+
+### What belongs
+
+Product **rules** currently enforced — ownership, sorting, validation limits, session lifetime, empty-state **copy**, overdue styling rules, MenuBar/logout placement.
+
+Use a compact table shape:
+
+| Rule | Enforcement | Introduced |
+|------|-------------|------------|
+| Cross-user access → **`404`**, never `403` | Controllers + helpers | ADR-0002; Features 2–4 |
+| Lists returned **alphabetically by name** | `findAll` order | Feature 2 |
+
+### Principles
+
+| Do | Don’t |
+|----|--------|
+| State the rule in product language | Dump full Gherkin scenarios |
+| Point at enforcement (middleware, helper, UI) | “The app handles this somehow” |
+| Add a row when a **rule** changes | Duplicate every API path from api.md |
+| Group by area (Auth, Ownership, Lists, Todos, …) | One undifferentiated bullet blob |
+
+**behavior.md vs Screen Requirements:** Screen Requirements in the feature authorize UI for that slice. After merge, durable UI **rules** (exact empty-state string, overdue condition) that others must not regress belong in **behavior.md**.
+
+---
+
+## Workflow (per feature PR)
+
+1. Implement from `features/feature-N-*.md` only.
+2. Before marking DoD complete, ask:
+   - Schema change? → **data-model.md**
+   - Route/payload change? → **api.md**
+   - Rule change? → **behavior.md**
+3. Update provenance tables.
+4. Skim for contradictions (api field missing from data-model; behavior sort order ≠ api `order`).
+5. List the files you touched in the feature’s **Agent implementation request** / DoD checkboxes.
+
+### Agent implementation request (reminder)
+
+Features should say which reference files to update, for example:
+
+```text
+If API routes, payloads, schema, or product rules changed per this spec, update
+@features/reference/api.md, @features/reference/data-model.md, and/or
+@features/reference/behavior.md in the same PR to match shipped code.
+```
+
+**Reference updates for this feature:** list only the files that will change (or `none`).
+
+---
+
+## Provenance tables
+
+Keep a short “who introduced this” index in README and/or each file:
+
+| Area | Introduced |
+|------|------------|
+| Auth, sessions | Feature 1 |
+| Lists CRUD + Dashboard lists view | Feature 2 |
+| … | … |
+
+**Principles:** one row per capability area; update when a **new** area appears; for field-level deltas, a row like `Todo dueDate` → Feature 5 is enough.
+
+---
+
+## Drift and repair
+
+| Symptom | Action |
+|---------|--------|
+| Code has a route not in api.md | Update **api.md** (if intentional) or remove the route (if unauthorized) |
+| Spec says one thing, reference another, code a third | Spec authorizes; fix code + reference to match the **shipped** spec delta |
+| behavior.md missing a rule that tests enforce | Add the rule row |
+| Tempted to add behavior only in reference | Stop — write a feature delta first |
+
+---
+
+## Checklist (before merge)
+
+- [ ] Knew which of api / data-model / behavior apply (or consciously chose none)
+- [ ] Edits describe **current** integrated state after this PR
+- [ ] No new scope that isn’t in the feature spec
+- [ ] Provenance updated for new areas/fields
+- [ ] api ↔ data-model ↔ behavior consistent with each other and with tests
+- [ ] Feature DoD / Agent request lists the reference files touched
+- [ ] Did not “clean up” by deleting still-shipped older feature surface area
+
+---
+
+## Anti-patterns
+
+| Avoid | Do instead |
+|-------|------------|
+| Updating reference weeks after merge | Same PR as implementation |
+| Replacing api.md with only this feature’s endpoints | Merge delta into the full snapshot |
+| Using reference as the requirements doc | Feature specs authorize; reference reflects |
+| Copying entire feature Data Model / API sections verbatim forever | Integrate into current-state structure; drop redundancy |
+| behavior.md as a second Gherkin suite | Rule index + enforcement pointer |
+| Editing reference to “make the agent happier” without a spec | Spec first (constitution) |
+
+---
+
+## How this fits the other guides
+
+```text
+Author the delta (what/how to build)  → writing-feature-requirements.md
+                                        writing-feature-design.md
+Ship the delta + snapshot “what is”   → writing-living-reference.md  (this file)
+Architecture why                      → docs/adr/writing-adrs.md
+Quality bars                          → docs/nfr/writing-quality-attributes.md
+```
+
+After merge, the next feature’s authors read **reference** to know the baseline and write a **new feature file** for the next delta — they do not rewrite Features 1–N.
