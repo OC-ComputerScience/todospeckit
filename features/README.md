@@ -72,12 +72,20 @@ npm run test:backend     # Jest
 npm run test:frontend    # Vitest
 ```
 
-## Export rules & specs to PDF
+## Export specs to PDF
 
-Combine Cursor rules, ADRs, and feature specs into one PDF:
+**Product specs only** (ADRs, NFRs, C4, features — no rules/guides/reference):
 
 ```bash
-npm install              # once — installs md-to-pdf at repo root
+npm run specs:pdf:app
+```
+
+Output: `docs/todo-app-specs.md` · `docs/todo-app-specs.pdf`
+
+**Full methodology pack** (rules + ADRs + NFRs + diagrams + specs + reference):
+
+```bash
+npm install              # once — installs md-mermaid-pdf at repo root
 npm run specs:pdf
 ```
 
@@ -93,7 +101,7 @@ Output:
 - `docs/oc-cs-speckit-specs.md` — combined Markdown (rules, ADRs, specs, reference)
 - `docs/oc-cs-speckit-specs.pdf` — PDF export
 
-**Included (auto-discovered each run):**
+**Included in `specs:pdf` (auto-discovered each run):**
 
 1. All `.cursor/rules/*.mdc` (preferred order, then any extras alphabetically)
 2. `docs/adr/README.md` + every `docs/adr/NNNN-*.md` (numeric order)

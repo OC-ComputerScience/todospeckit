@@ -29,8 +29,10 @@ Project documentation outside feature specs (`features/`) and Cursor rules (`.cu
 | File | Purpose |
 |------|---------|
 | [STARTER-KIT.md](./STARTER-KIT.md) | How to use `npm run starter:zip` for a new SDD app; related: `npm run reset:example` keeps Todo specs and strips product code |
-| [oc-cs-speckit-specs.md](./oc-cs-speckit-specs.md) | Combined Markdown from `npm run specs:pdf` (generated) |
-| [oc-cs-speckit-specs.pdf](./oc-cs-speckit-specs.pdf) | PDF export of rules, ADRs, NFRs, diagrams, specs, reference (generated) |
+| [todo-app-specs.md](./todo-app-specs.md) | Product-only Markdown from `npm run specs:pdf:app` (generated) |
+| [todo-app-specs.pdf](./todo-app-specs.pdf) | Product specs PDF — ADRs, NFRs, C4, features (no rules/guides/reference) |
+| [oc-cs-speckit-specs.md](./oc-cs-speckit-specs.md) | Full pack Markdown from `npm run specs:pdf` (generated) |
+| [oc-cs-speckit-specs.pdf](./oc-cs-speckit-specs.pdf) | Full pack PDF — rules, ADRs, NFRs, diagrams, specs, reference (generated) |
 
 Generated exports are safe to regenerate; do not treat them as the source of truth for requirements.
 
@@ -53,7 +55,8 @@ Generated exports are safe to regenerate; do not treat them as the source of tru
 ### Backlog & exports
 
 - [Agility import](./agility-import/README.md) — `npm run agility:export` / `agility:push`  
-- Specs PDF — `npm run specs:pdf` (includes `docs/adr`, `docs/nfr`, `docs/arch_diagrams`, features, reference)
+- Specs PDF (product only) — `npm run specs:pdf:app` → [todo-app-specs.pdf](./todo-app-specs.pdf)  
+- Specs PDF (full pack) — `npm run specs:pdf` (includes `docs/adr`, `docs/nfr`, `docs/arch_diagrams`, features, reference, rules)
 
 ---
 
