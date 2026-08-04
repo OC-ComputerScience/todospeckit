@@ -29,9 +29,9 @@ Project documentation outside feature specs (`features/`) and Cursor rules (`.cu
 | File | Purpose |
 |------|---------|
 | [STARTER-KIT.md](./STARTER-KIT.md) | How to use `npm run starter:zip` for a new SDD app; related: `npm run reset:example` keeps Todo specs and strips product code |
-| [ASSIGNMENT-rebuild-todo.md](./ASSIGNMENT-rebuild-todo.md) | Student assignment: create GitHub repo → load Speckit → `reset:example` → rebuild Features 1–5 from specs |
-| [ASSIGNMENT-starter-kit.md](./ASSIGNMENT-starter-kit.md) | Student assignment: new product from `speckit-starter-kit.zip` → rename → Feature 1 with Cursor |
-| [ASSIGNMENT-walkthrough-todo.md](./ASSIGNMENT-walkthrough-todo.md) | Student reading tour: SDD, OC Speckit, what folders and files mean |
+| [ASSIGNMENT-rebuild-todo.md](./ASSIGNMENT-rebuild-todo.md) ([PDF](./ASSIGNMENT-rebuild-todo.pdf)) | Student assignment: create GitHub repo → load Speckit → `reset:example` → rebuild Features 1–5 from specs |
+| [ASSIGNMENT-starter-kit.md](./ASSIGNMENT-starter-kit.md) ([PDF](./ASSIGNMENT-starter-kit.pdf)) | Student assignment: new product from `speckit-starter-kit.zip` → rename → Feature 1 with Cursor |
+| [ASSIGNMENT-walkthrough-todo.md](./ASSIGNMENT-walkthrough-todo.md) ([PDF](./ASSIGNMENT-walkthrough-todo.pdf)) | Student reading tour: SDD, OC Speckit, what folders and files mean |
 | [todo-app-specs.md](./todo-app-specs.md) | Product-only Markdown from `npm run specs:pdf:app` (generated) |
 | [todo-app-specs.pdf](./todo-app-specs.pdf) | Product specs PDF — ADRs, NFRs, C4, features (no rules/guides/reference) |
 | [oc-cs-speckit-specs.md](./oc-cs-speckit-specs.md) | Full pack Markdown from `npm run specs:pdf` (generated) |
@@ -57,6 +57,8 @@ Generated exports are safe to regenerate; do not treat them as the source of tru
 - [Assignment: create, reset, rebuild Todo](./ASSIGNMENT-rebuild-todo.md)  
 - [Assignment: new app from starter kit](./ASSIGNMENT-starter-kit.md)  
 - [Assignment: walk through Todo Speckit](./ASSIGNMENT-walkthrough-todo.md) (textual tour)  
+
+Regenerate assignment PDFs: `npm run assignments:pdf`
 
 
 ### Backlog & exports
