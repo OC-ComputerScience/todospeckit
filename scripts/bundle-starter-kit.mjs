@@ -261,18 +261,23 @@ function main() {
     console.log("Applying overlay from scripts/starter-kit/overlay/");
     cpSync(OVERLAY_DIR, target, { recursive: true });
 
-    // Reference stubs ship only via overlay (never the Todo populated snapshots).
-    const requiredReferenceStubs = [
+    // Reference stubs + student writing guides ship via overlay.
+    const requiredOverlayDocs = [
       "features/reference/README.md",
       "features/reference/api.md",
       "features/reference/data-model.md",
       "features/reference/behavior.md",
+      "features/reference/writing-living-reference.md",
+      "features/writing-feature-requirements.md",
+      "features/writing-feature-design.md",
+      "docs/adr/writing-adrs.md",
+      "docs/nfr/writing-quality-attributes.md",
     ];
-    for (const relative of requiredReferenceStubs) {
+    for (const relative of requiredOverlayDocs) {
       const path = join(target, relative);
       if (!existsSync(path)) {
         throw new Error(
-          `Missing starter reference stub after overlay: ${relative} (add under scripts/starter-kit/overlay/)`,
+          `Missing starter kit doc after overlay: ${relative} (add under scripts/starter-kit/overlay/)`,
         );
       }
       console.log(`  ✓ ${relative}`);
@@ -289,6 +294,10 @@ function main() {
     removeMatching(join(target, "docs", "adr"), (name) => /^\d{4}-.*\.md$/i.test(name));
     removeIfExists(join(target, "docs", "oc-cs-speckit-specs.md"));
     removeIfExists(join(target, "docs", "oc-cs-speckit-specs.pdf"));
+    removeIfExists(join(target, "docs", "todo-app-specs.md"));
+    removeIfExists(join(target, "docs", "todo-app-specs.pdf"));
+    removeIfExists(join(target, "docs", "app-specs.md"));
+    removeIfExists(join(target, "docs", "app-specs.pdf"));
     removeMatching(join(target, "docs", "agility-import"), (name) => name.endsWith(".csv"));
     removeIfExists(join(target, "frontend", "src", "views", "Login.vue"));
     removeIfExists(join(target, "frontend", "src", "views", "Register.vue"));

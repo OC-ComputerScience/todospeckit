@@ -4,7 +4,7 @@ Use this zip to start a **new** Spec-Driven Development (SDD) application — no
 
 This package is the **SDD factory**: methodology, Cursor rules, empty Vue + Express + MySQL shells, test harness, and tooling. You write **new** feature specs for your product, then implement them with Cursor.
 
-**Related:** [features/framework.md](../features/framework.md) · [constitution](../.cursor/rules/constitution.mdc)
+**Related:** [features/framework.md](../features/framework.md) · [constitution](../.cursor/rules/constitution.mdc) · [Student assignment](./ASSIGNMENT-starter-kit.md)
 
 ---
 
@@ -25,11 +25,11 @@ This package is the **SDD factory**: methodology, Cursor rules, empty Vue + Expr
 
 | Area | Contents |
 |------|----------|
-| **Methodology** | `features/framework.md`, empty `features/README.md` catalog |
+| **Methodology** | `features/framework.md`, empty catalog, student writing guides (requirements, design, living reference) |
 | **Cursor rules** | All `.cursor/rules/*.mdc` (constitution, **agent-behavior**, structure, API, auth, security, UI, testing, services) |
-| **ADRs** | `docs/adr/README.md` + template (no todo-specific ADRs) |
-| **NFRs** | `docs/nfr/` — quality-attributes stub (fill for your product) |
-| **Reference stubs** | Empty `features/reference/data-model.md`, `api.md`, and `behavior.md` |
+| **ADRs** | `docs/adr/README.md` + template + [writing-adrs.md](../docs/adr/writing-adrs.md) (no todo-specific numbered ADRs) |
+| **NFRs** | `docs/nfr/` — quality-attributes stub + [writing-quality-attributes.md](../docs/nfr/writing-quality-attributes.md) |
+| **Reference stubs** | Empty `features/reference/data-model.md`, `api.md`, and `behavior.md` + [writing-living-reference.md](../features/reference/writing-living-reference.md) |
 | **Tooling** | PDF export, Agility CSV/API scripts, deploy bundle scripts, CI workflows |
 | **Frontend shell** | Vue 3 + Vuetify 4 + Vite + axios client + `App.vue` + placeholder home + harness tests |
 | **Backend shell** | Express + Sequelize config + empty models/routes + harness tests |
@@ -82,7 +82,7 @@ The script:
 |------|---------------|----------------------------|
 | Create zip | `npm run starter:zip` | Same |
 | Copy env files | `cp backend/.env.example backend/.env` | `copy backend\.env.example backend\.env` |
-| PDF export | `npm run specs:pdf` | Same (uses Chrome/Edge if installed, else Puppeteer) |
+| PDF export | `npm run specs:pdf` / `npm run specs:pdf:app` | Same (uses Chrome/Edge if installed, else Puppeteer) |
 | Deploy bundles | `npm run bundle:all` | Same |
 
 ---

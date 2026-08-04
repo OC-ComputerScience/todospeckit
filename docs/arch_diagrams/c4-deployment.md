@@ -1,40 +1,29 @@
 # C4 Level 4 — Deployment
 
-Two machines: the **User PC** runs only the browser; the **Web Server** hosts Apache (static Frontend SPA), the Node app runtime (Backend API), and MySQL.
+Logical deployment: the **User PC** runs the SPA in a browser; the **Web Server** hosts static assets, the Node API, and MySQL.
 
 ```mermaid
 C4Deployment
-title Todo (example) — Deployment (User PC + Web Server)
-
-UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+title Deployment Diagram — Todo
 
 Deployment_Node(userPc, "User PC", "Developer / end-user computer") {
-    Deployment_Node(browser, "Web Browser", "Chrome / Edge / Firefox") {
-        Container(spa, "Frontend SPA", "Vue 3, Vuetify, axios", "Runs in the browser. Loaded from Apache; calls Backend API with Bearer JWT.")
-    }
+  Container(spa, "Web SPA", "Browser + Vue", "Loaded from Apache; runs on the user PC.")
 }
 
 Deployment_Node(webServer, "Web Server", "Classroom or CI deploy host") {
-    Deployment_Node(apache, "Apache", "HTTP / HTTPS static hosting") {
-        Container(staticAssets, "Static SPA assets", "Built Vue dist + .htaccess", "Served to the browser; not the running app.")
-    }
-
-    Deployment_Node(runtime, "App Runtime", "Node.js 20+") {
-        Container(api, "Backend API", "Express, Sequelize", "REST under /todo/. Listens on app port (e.g. 3200).")
-    }
-
-    Deployment_Node(data, "Database Server", "MySQL") {
-        ContainerDb(db, "Database", "MySQL", "users, sessions, lists, todos.")
-    }
+  Container(staticAssets, "Static Assets", "Apache", "Built Vue dist and .htaccess.")
+  Container(api, "API", "Node.js + Express", "REST /todo on port 3200.")
+  ContainerDb(db, "Database", "MySQL", "Users, sessions, lists, and todos.")
 }
 
-Rel(spa, staticAssets, "Loaded from", "HTTPS")
-Rel(spa, api, "JSON API", "Bearer JWT")
+Rel(staticAssets, spa, "Serves", "HTTPS")
+Rel(spa, api, "JSON", "Bearer JWT")
 Rel(api, db, "SQL", "TCP")
 
-UpdateRelStyle(spa, staticAssets, $offsetY="-30")
-UpdateRelStyle(spa, api, $offsetY="-30")
-UpdateRelStyle(api, db, $offsetY="-30")
+UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="2")
+UpdateRelStyle(staticAssets, spa, $offsetY="-20")
+UpdateRelStyle(spa, api, $offsetY="-15")
+UpdateRelStyle(api, db, $offsetX="15")
 ```
 
 ## Typical ports
@@ -48,7 +37,8 @@ UpdateRelStyle(api, db, $offsetY="-30")
 
 ## Notes
 
-- **Local XAMPP classroom:** User PC and Web Server are often the **same** physical machine; the diagram still shows the logical split (browser vs server processes).
+- Nested browser/Apache/runtime/database deployment nodes are intentionally flattened because Mermaid C4 packs deep nesting poorly in PDFs.
+- **Local XAMPP classroom:** User PC and Web Server may be the **same** physical machine; the diagram preserves the logical browser/server boundary.
 - **CI deploy** (`.github/workflows/deploy.yml`): builds SPA + backend, SSH-deploys static files and Node app to the Web Server; DB credentials via secrets.
 
 **Related:** [ADR-0001](../adr/0001-client-server-multi-user-architecture.md) · [c4-container.md](./c4-container.md) · `.github/workflows/deploy.yml`

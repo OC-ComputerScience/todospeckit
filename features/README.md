@@ -3,7 +3,12 @@
 Spec-driven development (SDD) source of truth for **OC CS Speckit** (Todo is the example application in this repo).  
 No application code may be written unless it maps to a requirement in one of these files.
 
-**Methodology:** [framework.md](./framework.md) — how to write, trace, and ship feature specs.
+**Methodology:** [framework.md](./framework.md) — how to write, trace, and ship feature specs.  
+**Student guide (requirements):** [writing-feature-requirements.md](./writing-feature-requirements.md) ([PDF](./writing-feature-requirements.pdf)) — stories, FRs, initial data model, Gherkin AC.  
+**Student guide (design):** [writing-feature-design.md](./writing-feature-design.md) ([PDF](./writing-feature-design.pdf)) — ownership, API, screens, test map, DoD, out of scope.  
+**Student guide (living reference):** [reference/writing-living-reference.md](./reference/writing-living-reference.md) ([PDF](./reference/writing-living-reference.pdf)) — update api / data-model / behavior in the same PR.
+
+Regenerate writing-guide PDFs: `npm run writing-guides:pdf`
 
 **Sprints** (timeboxes, iterations, team planning) live in your agile tool — they are **not** part of these specs. One sprint may contain multiple features; one feature may span sprints. Specs describe **what** to build; sprints describe **when** the team works on it.
 
@@ -28,6 +33,7 @@ Keep these snapshots in sync with the codebase when schema or API changes — **
 | File | Purpose |
 |------|---------|
 | [reference/README.md](./reference/README.md) | How to maintain reference docs |
+| [reference/writing-living-reference.md](./reference/writing-living-reference.md) | Student guide — writing/updating living reference |
 | [reference/data-model.md](./reference/data-model.md) | Current database tables and associations |
 | [reference/api.md](./reference/api.md) | Current REST API under `/todo/` |
 | [reference/behavior.md](./reference/behavior.md) | Current product rules (ownership, sort, validation, UI) |
@@ -66,12 +72,20 @@ npm run test:backend     # Jest
 npm run test:frontend    # Vitest
 ```
 
-## Export rules & specs to PDF
+## Export specs to PDF
 
-Combine Cursor rules, ADRs, and feature specs into one PDF:
+**Product specs only** (ADRs, NFRs, C4, features — no rules/guides/reference):
 
 ```bash
-npm install              # once — installs md-to-pdf at repo root
+npm run specs:pdf:app
+```
+
+Output: `docs/todo-app-specs.md` · `docs/todo-app-specs.pdf`
+
+**Full methodology pack** (rules + ADRs + NFRs + diagrams + specs + reference):
+
+```bash
+npm install              # once — installs md-mermaid-pdf at repo root
 npm run specs:pdf
 ```
 
@@ -87,7 +101,7 @@ Output:
 - `docs/oc-cs-speckit-specs.md` — combined Markdown (rules, ADRs, specs, reference)
 - `docs/oc-cs-speckit-specs.pdf` — PDF export
 
-**Included (auto-discovered each run):**
+**Included in `specs:pdf` (auto-discovered each run):**
 
 1. All `.cursor/rules/*.mdc` (preferred order, then any extras alphabetically)
 2. `docs/adr/README.md` + every `docs/adr/NNNN-*.md` (numeric order)

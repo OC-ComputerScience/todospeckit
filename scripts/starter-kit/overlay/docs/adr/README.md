@@ -13,6 +13,8 @@ Durable **why** decisions for cross-cutting concerns that outlive any single fea
 
 ADRs do **not** replace feature specs or Cursor rules.
 
+**Student guide:** [writing-adrs.md](./writing-adrs.md) — when to write an ADR, naming, section principles, and checklist.
+
 ---
 
 ## When to write an ADR

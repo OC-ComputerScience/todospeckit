@@ -3,7 +3,12 @@
 Spec-driven development (SDD) source of truth for **this** application.  
 No application code may be written unless it maps to a requirement in one of these files.
 
-**Methodology:** [framework.md](./framework.md) — how to write, trace, and ship feature specs.
+**Methodology:** [framework.md](./framework.md) — how to write, trace, and ship feature specs.  
+**Student guide (requirements):** [writing-feature-requirements.md](./writing-feature-requirements.md) — stories, FRs, initial data model, Gherkin AC.  
+**Student guide (design):** [writing-feature-design.md](./writing-feature-design.md) — ownership, API, screens, test map, DoD, out of scope.  
+**Student guide (living reference):** [reference/writing-living-reference.md](./reference/writing-living-reference.md) — update api / data-model / behavior in the same PR.
+
+*(Examples in the writing guides often cite the OC CS Speckit Todo sample app — use them as patterns for your product.)*
 
 **Sprints** live in your agile tool — they are **not** part of these specs.
 
@@ -24,6 +29,7 @@ Keep snapshots in sync when schema, API, or product rules change — **in the sa
 | File | Purpose |
 |------|---------|
 | [reference/README.md](./reference/README.md) | How to maintain reference docs |
+| [reference/writing-living-reference.md](./reference/writing-living-reference.md) | Student guide — writing/updating living reference |
 | [reference/data-model.md](./reference/data-model.md) | Current database tables (update in feature PR when schema changes) |
 | [reference/api.md](./reference/api.md) | Current REST API (update in feature PR when API changes) |
 | [reference/behavior.md](./reference/behavior.md) | Current product rules (update in feature PR when rules change) |
