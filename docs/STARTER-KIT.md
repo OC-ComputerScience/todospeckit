@@ -4,7 +4,7 @@ Use this zip to start a **new** Spec-Driven Development (SDD) application — no
 
 This package is the **SDD factory**: methodology, Cursor rules, empty Vue + Express + MySQL shells, test harness, and tooling. You write **new** feature specs for your product, then implement them with Cursor.
 
-**Related:** [features/framework.md](../features/framework.md) · [constitution](../.cursor/rules/constitution.mdc)
+**Related:** [features/framework.md](../features/framework.md) · [constitution](../.cursor/rules/constitution.mdc) · [Student assignment](./ASSIGNMENT-starter-kit.md)
 
 ---
 
