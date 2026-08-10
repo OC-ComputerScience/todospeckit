@@ -181,3 +181,4 @@ Docs: [Access Token Authentication](https://docs.digital.ai/agility/docs/develop
 - Spec source of truth: `features/`
 - Living API/schema snapshot: `features/reference/`
 - PDF export: `npm run specs:pdf`
+- Student assignment: [ASSIGNMENT-agility-sync.md](../ASSIGNMENT-agility-sync.md)

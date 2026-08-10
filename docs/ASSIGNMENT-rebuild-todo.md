@@ -21,12 +21,12 @@ By the end of this assignment you will be able to:
 
 ## Prerequisites
 
-| Tool | Notes |
-|------|--------|
-| Node.js 24+ | `node -v` |
-| npm | Comes with Node |
-| MySQL | XAMPP, WAMP, or native MySQL |
-| Git + GitHub account | Browser + git CLI |
+| Tool                         | Notes                         |
+| ---------------------------- | ----------------------------- |
+| Node.js 24+                  | `node -v`                     |
+| npm                          | Comes with Node               |
+| MySQL                        | XAMPP, WAMP, or native MySQL  |
+| Git + GitHub account         | Browser + git CLI             |
 | [Cursor](https://cursor.com) | Agent mode for implementation |
 
 Upstream (instructor / org repo): `https://github.com/OC-ComputerScience/todospeckit.git`  
@@ -38,10 +38,12 @@ Upstream (instructor / org repo): `https://github.com/OC-ComputerScience/todospe
 
 1. Open [GitHub → New repository](https://github.com/new).
 2. Set:
-   - **Repository name:** e.g. `todo-speckit` or `todospeckit-<your-username>`
-   - **Visibility:** Public
-   - **Do not** add a README, `.gitignore`, or license (keep it empty so the first push is clean)
-3. Create the repository. Copy the HTTPS or SSH URL, e.g.  
+
+- **Repository name:** e.g. `todo-speckit` or `todospeckit-<your-username>`
+- **Visibility:** Public
+- **Do not** add a README, `.gitignore`, or license (keep it empty so the first push is clean)
+
+3. Create the repository. Copy the HTTPS or SSH URL, e.g.
    `https://github.com/<you>/todo-speckit.git`
 
 ---
@@ -65,8 +67,7 @@ git remote add origin <my-repo>
 git push -u origin main
 ```
 
-Confirm on GitHub that your repo has the full tree (`features/`, `frontend/`, `backend/`, `.cursor/rules/`, etc.).
----
+## Confirm on GitHub that your repo has the full tree (`features/`, `frontend/`, `backend/`, `.cursor/rules/`, etc.).
 
 ## Part C — Local setup (before stripping code)
 
@@ -86,7 +87,7 @@ npm install   # root — PDF / tooling scripts (optional for rebuild)
 
 ### C2. Create MySQL databases
 
-Use **phpMyAdmin** (e.g. via XAMPP: http://localhost/phpmyadmin) or **MySQL Workbench** to create these two databases:
+Use **phpMyAdmin** (e.g. via XAMPP: [http://localhost/phpmyadmin](http://localhost/phpmyadmin)) or **MySQL Workbench** to create these two databases:
 
 ```sql
 CREATE DATABASE `todospeckit-db`;
@@ -146,10 +147,10 @@ cd frontend
 npm run dev
 ```
 
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost:8082 |
-| API | http://localhost:3200/todo/ |
+| Service  | URL                                                        |
+| -------- | ---------------------------------------------------------- |
+| Frontend | [http://localhost:8082](http://localhost:8082)             |
+| API      | [http://localhost:3200/todo/](http://localhost:3200/todo/) |
 
 From the **repo root** (new terminal or `cd ..` back from `backend` / `frontend`):
 
@@ -258,13 +259,13 @@ Only harness / shell tests should run and pass. Feature suites are gone until yo
 
 Implement features **in order**. Branch from `dev` each time. Use Cursor **Agent** mode; `@` mention the feature file.
 
-| Order | Spec | Branch |
-|-------|------|--------|
-| 1 | [feature-1-user-auth.md](../features/feature-1-user-auth.md) | `feature/1-user-auth` |
-| 2 | [feature-2-todo-list-management.md](../features/feature-2-todo-list-management.md) | `feature/2-todo-list-management` |
-| 3 | [feature-3-todo-list-item-management.md](../features/feature-3-todo-list-item-management.md) | `feature/3-todo-list-item-management` |
-| 4 | [feature-4-user-profile-management.md](../features/feature-4-user-profile-management.md) | `feature/4-user-profile-management` |
-| 5 | [feature-5-todo-due-date.md](../features/feature-5-todo-due-date.md) | `feature/5-todo-due-date` |
+| Order | Spec                                                                                         | Branch                                |
+| ----- | -------------------------------------------------------------------------------------------- | ------------------------------------- |
+| 1     | [feature-1-user-auth.md](../features/feature-1-user-auth.md)                                 | `feature/1-user-auth`                 |
+| 2     | [feature-2-todo-list-management.md](../features/feature-2-todo-list-management.md)           | `feature/2-todo-list-management`      |
+| 3     | [feature-3-todo-list-item-management.md](../features/feature-3-todo-list-item-management.md) | `feature/3-todo-list-item-management` |
+| 4     | [feature-4-user-profile-management.md](../features/feature-4-user-profile-management.md)     | `feature/4-user-profile-management`   |
+| 5     | [feature-5-todo-due-date.md](../features/feature-5-todo-due-date.md)                         | `feature/5-todo-due-date`             |
 
 Features 4 and 5 both depend on 1–3; they do not depend on each other (you may do either after Feature 3).
 
@@ -296,6 +297,15 @@ git pull origin dev
 git checkout -b feature/N-short-name   # exact name from the table above
 ```
 
+#### Implement the code - instruct the agent
+
+1. Enter the command: Implement feature @feature-1-user-auth.md (for example)
+2. Watch the agent plan, implement and test the code.
+
+#### User test the code
+
+if changes were made in the backend code. Restart the backing and test the applicaiotn to see how the featuer was implemented.
+
 #### After implementation — commit and merge into `dev`
 
 1. In **Source Control**, stage changes, commit with a clear message, and push the feature branch.
@@ -326,15 +336,17 @@ Implement @features/feature-N-….md per its Agent implementation request and De
 
 ### E3. Micro-step order (every feature)
 
-| Step | Ask Cursor for | Verify |
-|------|----------------|--------|
-| 1 | Backend models + associations | Backend starts (`cd backend` then `npm run dev`) |
-| 2 | Routes + controllers + auth helpers | API responds |
-| 3 | Backend tests (Gherkin / Test Coverage Map) | `npm run test:backend` |
-| 4 | Frontend `*Services.js` + axios client | No axios in views |
-| 5 | Views + components | Frontend starts (`cd frontend` then `npm run dev`) |
-| 6 | Frontend tests | `npm run test:frontend` |
-| 7 | Router / e2e manual check | Browser flow works |
+This how the agent implements the feature.
+
+| Step | Ask Cursor for                              | Verify                                             |
+| ---- | ------------------------------------------- | -------------------------------------------------- |
+| 1    | Backend models + associations               | Backend starts (`cd backend` then `npm run dev`)   |
+| 2    | Routes + controllers + auth helpers         | API responds                                       |
+| 3    | Backend tests (Gherkin / Test Coverage Map) | `npm run test:backend`                             |
+| 4    | Frontend `*Services.js` + axios client      | No axios in views                                  |
+| 5    | Views + components                          | Frontend starts (`cd frontend` then `npm run dev`) |
+| 6    | Frontend tests                              | `npm run test:frontend`                            |
+| 7    | Router / e2e manual check                   | Browser flow works                                 |
 
 After each feature: `npm test` from repo root must pass. Update `features/reference/api.md`, `data-model.md`, and/or `behavior.md` in the **same** PR when schema or API changes.
 
@@ -369,17 +381,17 @@ A feature is done when:
 
 Your repo should show:
 
-| Branch / artifact | Expected |
-|-------------------|----------|
-| `main` | Scaffold after `reset:example` (specs + empty shells, no feature product code) |
-| `dev` | Completed features merged; `npm test` passes |
-| Feature branches / PRs | One branch per feature into `dev` (not into `main`) |
+| Branch / artifact      | Expected                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------ |
+| `main`                 | Scaffold after `reset:example` (specs + empty shells, no feature product code) |
+| `dev`                  | Completed features merged; `npm test` passes                                   |
+| Feature branches / PRs | One branch per feature into `dev` (not into `main`)                            |
 
 ### Suggested commit milestones
 
-1. `Initial import` / first push of Speckit  
-2. `Reset Todo example to scaffold; keep feature specs` on `main`  
-3. `Create dev from main`  
+1. `Initial import` / first push of Speckit
+2. `Reset Todo example to scaffold; keep feature specs` on `main`
+3. `Create dev from main`
 4. One merge (or PR) per feature into `dev`
 
 ---
@@ -427,11 +439,11 @@ git checkout dev && git merge feature/1-user-auth && git push origin dev
 
 ## Troubleshooting
 
-| Problem | Fix |
-|---------|-----|
-| Agent implements on `main` or `dev` | Stop; check out `feature/N-…` first (constitution + `feature-branch` rule) |
-| Agent invents behavior not in the spec | Refuse; update `features/` first or drop the code |
-| Wrong stack / API shape | Cite `@.cursor/rules/` (e.g. `api-conventions`, `ui-style-system`) |
-| Tests weakened to “pass” | Require real Gherkin coverage; no `expect(true).toBe(true)` |
-| `reset:example` refused | Pass `--yes`; use `--dry-run` first |
-| Confused with starter zip | `starter:zip` = **new** product (no Todo specs). This assignment uses **`reset:example`** |
+| Problem                                | Fix                                                                                   |
+| -------------------------------------- | ------------------------------------------------------------------------------------- |
+| Agent implements on `main` or `dev`    | Stop; check out `feature/N-…` first (constitution + `feature-branch` rule)            |
+| Agent invents behavior not in the spec | Refuse; update `features/` first or drop the code                                     |
+| Wrong stack / API shape                | Cite `@.cursor/rules/` (e.g. `api-conventions`, `ui-style-system`)                    |
+| Tests weakened to “pass”               | Require real Gherkin coverage; no `expect(true).toBe(true)`                           |
+| `reset:example` refused                | Pass `--yes`; use `--dry-run` first                                                   |
+| Confused with starter zip              | `starter:zip` = **new** product (no Todo specs). This assignment uses `reset:example` |
