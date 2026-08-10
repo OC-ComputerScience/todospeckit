@@ -20,6 +20,7 @@ const ASSIGNMENTS = [
   "docs/ASSIGNMENT-walkthrough-todo.md",
   "docs/ASSIGNMENT-rebuild-todo.md",
   "docs/ASSIGNMENT-starter-kit.md",
+  "docs/ASSIGNMENT-agility-sync.md",
 ];
 
 const SYSTEM_CHROME_PATHS = [
